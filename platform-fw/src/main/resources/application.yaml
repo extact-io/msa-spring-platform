@@ -1,0 +1,35 @@
+
+config_ordinal: 50
+#----------------------------------
+# Applications Configurations
+#----------------------------------
+rms:
+  app.name: 未設定
+  openapi:
+    title: 未設定
+    contact:
+      name: extact.io
+      url: https://github.com/extact-io
+
+#----------------------------------
+# MicroProfile Configurations
+#----------------------------------
+mp:
+  openapi:
+    scan.exclude.classes: io.extact.msa.spring.platform.fw.webapi.ManagementResource
+
+#----------------------------------
+# Helidon Configurations
+#----------------------------------
+tracing:
+  enabled: false ## デフォルトでOFFで有効化したい場合に起動パラメータもしくは環境変数で有効化設定をする
+
+#TODO: Remove when https://github.com/helidon-io/helidon/issues/5537 is fixed
+security:
+  providers:
+      - jwt:
+          atn-token:
+            verify-signature: false
+          sign-token:
+            outbound:
+              - name: "propagate-token"

@@ -1,0 +1,9 @@
+logging.level:
+  org.springframework:
+    boot.autoconfigure: info
+  ConfigDump: debug
+
+rms.debug.configdump:
+  enable: true
+  #system-properties: on
+  #system-environment: on

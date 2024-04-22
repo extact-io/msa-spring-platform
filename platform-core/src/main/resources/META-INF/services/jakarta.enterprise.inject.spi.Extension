@@ -1,0 +1,2 @@
+io.extact.msa.spring.platform.core.extension.ApplicationInitializerCdiExtension
+io.extact.msa.spring.platform.core.health.HealthCheckRegisterExtension

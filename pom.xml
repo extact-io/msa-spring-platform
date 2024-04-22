@@ -1,0 +1,48 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>io.extact</groupId>
+		<artifactId>msa-spring-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../msa-spring-parent/pom.xml</relativePath>
+	</parent>
+	<artifactId>msa-spring-platform</artifactId>
+	<packaging>pom</packaging>
+	<name>msa-spring-platform</name>
+	<description>Platform Parent POM</description>
+	<repositories>
+		<repository>
+			<id>github</id>
+			<name>GitHub Apache Maven Packages</name>
+			<url>https://maven.pkg.github.com/extact-io/msa-spring-parent</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-access</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<modules>
+		<module>test-lib</module>
+		<module>platform-core</module>
+		<module>platform-fw</module>
+		<module>platform-fw-test-lib</module>
+		<module>report-aggregate</module>
+	</modules>
+</project>

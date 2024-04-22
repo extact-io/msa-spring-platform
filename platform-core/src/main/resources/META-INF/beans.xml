@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="https://jakarta.ee/xml/ns/jakartaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/beans_3_0.xsd"
+        version="3.0" bean-discovery-mode="annotated">
+  <scan>
+    <!-- exclude server modules if client module is available -->
+    <exclude name="io.extact.msa.spring.platform.core.health.*">
+      <if-system-property name="rms.runtime.process" value="client" />
+    </exclude>
+    <exclude name="io.extact.msa.spring.platform.core.jwt.*">
+      <if-system-property name="rms.runtime.process" value="client" />
+    </exclude>
+  </scan>
+</beans>
