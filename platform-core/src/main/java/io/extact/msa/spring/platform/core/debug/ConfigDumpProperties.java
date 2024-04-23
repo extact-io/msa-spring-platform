@@ -19,6 +19,6 @@ public class ConfigDumpProperties {
     @Data
     static class Filter {
         private boolean enable = true;
-        private List<String> pattern = new ArrayList<>();
+        private List<String> patterns = new ArrayList<>();
     }
 }

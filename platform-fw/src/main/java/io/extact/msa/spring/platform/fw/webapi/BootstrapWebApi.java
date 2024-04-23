@@ -4,7 +4,7 @@ import java.util.logging.LogManager;
 
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
-import io.extact.msa.spring.platform.core.env.Environment;
+import io.extact.msa.spring.platform.core.env.EnvConfiguration;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -46,7 +46,7 @@ public class BootstrapWebApi {
     }
 
     private static void startupLog() {
-        var mainJarInfo = Environment.getMainJarInfo();
+        var mainJarInfo = EnvConfiguration.getMainJarInfo();
         log.info("Main Jar Information=>" + System.lineSeparator() +
                 "\tStartup-Module:" + mainJarInfo.startupModuleInfo() + System.lineSeparator() +
                 "\tVersion:" + mainJarInfo.getVersion() + System.lineSeparator() +

@@ -1,9 +1,17 @@
+spring:
+  main.banner-mode: off
+
 logging.level:
   org.springframework:
     boot.autoconfigure: info
   ConfigDump: debug
 
-rms.debug.configdump:
-  enable: true
-  #system-properties: on
-  #system-environment: on
+rms.debug:
+  configdump:
+    enable: false # change to true in the test class
+    #system-properties: on
+    #system-environment: on
+  sleep:
+    enable: false # change to true in the test class
+    time: 1s
+

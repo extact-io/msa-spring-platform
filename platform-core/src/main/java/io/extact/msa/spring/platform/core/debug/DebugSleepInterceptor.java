@@ -6,49 +6,38 @@ import static java.lang.annotation.RetentionPolicy.*;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.time.Duration;
 
-import org.eclipse.microprofile.config.Config;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.springframework.beans.factory.annotation.Value;
 
-import io.extact.msa.spring.platform.core.debug.DebugSleepInterceptor.DebugSleep;
-import jakarta.annotation.Priority;
-import jakarta.inject.Inject;
-import jakarta.interceptor.AroundInvoke;
-import jakarta.interceptor.Interceptor;
-import jakarta.interceptor.InterceptorBinding;
-import jakarta.interceptor.InvocationContext;
 import lombok.extern.slf4j.Slf4j;
 
-// TODO: AOPで作り直す
-@Interceptor
-@Priority(Interceptor.Priority.APPLICATION)
-@DebugSleep
+@Aspect
 @Slf4j
 public class DebugSleepInterceptor {
 
+    @Value("${rms.debug.sleep.enable:false}")
     private boolean sleepEnable;
-    private int sleepTime;
+    @Value("${rms.debug.sleep.time:0s}")
+    private Duration sleepTime;
 
-    @Inject
-    public DebugSleepInterceptor(Config config) {
-        this.sleepEnable = config.getOptionalValue("rms.debug.sleep.enable", boolean.class).orElse(false);
-        this.sleepTime = config.getOptionalValue("rms.debug.sleep.time", int.class).orElse(0);
-    }
-
-    @AroundInvoke
-    public Object obj(InvocationContext ic) throws Exception {
+    @Around("@annotation(io.extact.msa.spring.platform.core.debug.DebugSleepInterceptor.DebugSleep)"
+            + " || within(@io.extact.msa.spring.platform.core.debug.DebugSleepInterceptor.DebugSleep *)")
+    public Object invoke(ProceedingJoinPoint joinPoint) throws Throwable {
         if (sleepEnable) {
-            log.info("start debug sleep[{}msec]......", this.sleepTime);
+            log.info("start debug sleep[{}msec]......", this.sleepTime.getSeconds());
             Thread.sleep(sleepTime);
             log.info("end debug sleep.");
         }
-        return ic.proceed();
+        return joinPoint.proceed();
     }
 
     @Inherited
-    @InterceptorBinding
     @Retention(RUNTIME)
     @Target({ METHOD, TYPE })
     public @interface DebugSleep {
-
     }
 }

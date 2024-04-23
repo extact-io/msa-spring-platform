@@ -8,7 +8,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 
-class MainJarInfoTest {
+class MainJarInformationTest {
 
     private static final String MAIN_MANIFEST_JAR_PROP = "rms.env.main.jar";
 
@@ -30,7 +30,7 @@ class MainJarInfoTest {
         System.setProperty(MAIN_MANIFEST_JAR_PROP, "environment-test-normal\\.zip$");
 
         Config config = ConfigProvider.getConfig();
-        MainJarInfo mainJarInfo = MainJarInfo.builder().build(config);
+        MainJarInformation mainJarInfo = MainJarInformation.builder().create(config);
 
         assertThat(mainJarInfo.getApplicationName()).isEqualTo("RentalManagementSystem");
         assertThat(mainJarInfo.getJarName()).isEqualTo("environment-test-normal.zip");
@@ -47,7 +47,7 @@ class MainJarInfoTest {
         System.setProperty(MAIN_MANIFEST_JAR_PROP, "dummy\\.jar$");
 
         Config config = ConfigProvider.getConfig();
-        MainJarInfo mainJarInfo = MainJarInfo.builder().build(config);
+        MainJarInformation mainJarInfo = MainJarInformation.builder().create(config);
 
         assertThat(mainJarInfo).isNull();
     }
@@ -55,7 +55,7 @@ class MainJarInfoTest {
     @Test
     void tetGetMainJarInfoNoProperty() {
         Config config = ConfigProvider.getConfig();
-        MainJarInfo mainJarInfo = MainJarInfo.builder().build(config);
+        MainJarInformation mainJarInfo = MainJarInformation.builder().create(config);
         assertThat(mainJarInfo).isNull();
     }
 
@@ -65,7 +65,7 @@ class MainJarInfoTest {
         System.setProperty(MAIN_MANIFEST_JAR_PROP, "jakarta");
 
         Config config = ConfigProvider.getConfig();
-        MainJarInfo mainJarInfo = MainJarInfo.builder().build(config);
+        MainJarInformation mainJarInfo = MainJarInformation.builder().create(config);
         assertThat(mainJarInfo).isNull();
     }
 
@@ -75,7 +75,7 @@ class MainJarInfoTest {
         System.setProperty(MAIN_MANIFEST_JAR_PROP, "jakarta\\.inject-api");
 
         Config config = ConfigProvider.getConfig();
-        MainJarInfo mainJarInfo = MainJarInfo.builder().build(config);
+        MainJarInformation mainJarInfo = MainJarInformation.builder().create(config);
         assertThat(mainJarInfo.startupModuleInfo()).isEqualTo("-");
     }
 }

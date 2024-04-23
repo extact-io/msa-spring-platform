@@ -27,43 +27,35 @@ import lombok.extern.slf4j.Slf4j;
  *     system-environment: off
  *     filter:
  *       enable: true
- *       pattern:
+ *       patterns:
  *         - security
  *         - env.rms
  * </pre>
  */
-// TODO: 設定をSpring BootのスタイルのConfigurutaionPropertiesにする！
 // TODO: ConfigurationPropertiesに移動したらPro Strping BootのAutoConfigurationとかを参考にしてやってみよう
 @Slf4j(topic = "ConfigDump")
 public class ConfigDump {
 
-    private static final String CONFIG_PREFIX = "rms.debug.configdump";
     private Environment env;
+    private ConfigDumpProperties dumpProps;
 
-    ConfigDump(Environment env) {
+    ConfigDump(Environment env, ConfigDumpProperties dumpConfig) {
         this.env = env;
+        this.dumpProps = dumpConfig;
     }
 
     @PostConstruct
     void init() {
 
-        if (!log.isDebugEnabled()) {
-            return;
-        }
-
-        if (!Optional.ofNullable(env.getProperty(CONFIG_PREFIX + ".enable", Boolean.class)).orElse(false)) {
+        if (!log.isDebugEnabled() || !dumpProps.isEnable()) {
             return;
         }
 
         Set<String> allPropertyNames = getAllPropertyNames();
 
         List<String> filters = Collections.emptyList();
-        if (Optional.ofNullable(env.getProperty(CONFIG_PREFIX + ".filter.enable", Boolean.class)).orElse(true)) {
-            filters = allPropertyNames.stream()
-                    .filter(name -> name.startsWith(CONFIG_PREFIX + ".filter.pattern"))
-                    .filter(name -> Optional.ofNullable(env.getProperty(name)).isPresent())
-                    .map(env::getProperty)
-                    .toList();
+        if (dumpProps.getFilter().isEnable()) {
+            filters = dumpProps.getFilter().getPatterns();
         }
 
         Predicate<String> containsKeyword = new ContainsKeyworkWithForwardMatch(filters);
@@ -83,14 +75,10 @@ public class ConfigDump {
                 .filter(source -> Map.class.isAssignableFrom(source.getSource().getClass()))
                 .filter(source -> {
                     if (StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME.equals(source.getName())) {
-                        return Optional
-                                .ofNullable(env.getProperty(CONFIG_PREFIX + ".system-properties", Boolean.class))
-                                .orElse(false);
+                        return dumpProps.isSystemProperties();
                     }
                     if (StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME.equals(source.getName())) {
-                        return Optional
-                                .ofNullable(env.getProperty(CONFIG_PREFIX + ".system-environment", Boolean.class))
-                                .orElse(false);
+                        return dumpProps.isSystemEnvironment();
                     }
                     return true;
                 })

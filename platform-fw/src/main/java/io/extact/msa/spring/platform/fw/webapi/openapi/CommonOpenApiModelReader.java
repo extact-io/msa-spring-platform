@@ -13,7 +13,7 @@ import org.eclipse.microprofile.openapi.models.info.Info;
 import org.eclipse.microprofile.openapi.models.media.Content;
 import org.eclipse.microprofile.openapi.models.media.Schema.SchemaType;
 
-import io.extact.msa.spring.platform.core.env.Environment;
+import io.extact.msa.spring.platform.core.env.EnvConfiguration;
 import io.extact.msa.spring.platform.fw.exception.webapi.GenericErrorInfo;
 import io.extact.msa.spring.platform.fw.exception.webapi.ValidationErrorInfoImpl;
 
@@ -69,7 +69,7 @@ public class CommonOpenApiModelReader implements OASModelReader {
         var info = CDI.current().select(InfoConfig.class, ConfigProperties.Literal.NO_PREFIX).get();
         return OASFactory.createInfo()
                 .title(info.title)
-                .version(Environment.getMainJarInfo().getVersion())
+                .version(EnvConfiguration.getMainJarInfo().getVersion())
                 .contact(OASFactory.createContact()
                         .name(info.name)
                         .url(info.url));
