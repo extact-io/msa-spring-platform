@@ -29,7 +29,7 @@ public class MainJarInformationFactory {
     public MainJarInformation create() {
         URL manifestUrl = findTargetManifestUrl();
         if (manifestUrl == null) {
-            return MainJarInformation.builder().build();
+            return MainJarInformation.UNKNOWN;
         }
         return buidFromManifestUrl(manifestUrl);
     }

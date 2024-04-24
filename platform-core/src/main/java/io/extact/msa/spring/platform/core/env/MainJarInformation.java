@@ -9,6 +9,8 @@ import lombok.Getter;
 @Getter
 public class MainJarInformation {
 
+    public static final MainJarInformation UNKNOWN = MainJarInformation.builder().build();
+
     static final String INIT_VALUE = "-";
 
     @Builder.Default

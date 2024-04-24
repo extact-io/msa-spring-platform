@@ -2,80 +2,76 @@ package io.extact.msa.spring.platform.core.env;
 
 import static org.assertj.core.api.Assertions.*;
 
-import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.config.ConfigProvider;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.test.context.TestPropertySource;
 
+/*
+ * !!NOTE!!
+ * Eclipseでこのテストを実行する場合は/rms-platform/testdata/environment-test-normal.zipを
+ * 外部jarとして追加する（mavenから実行する場合はpomに設定を入れているので特別な手順は不要）
+ * また'*.jar'にすると.gitignoreでファイルをcommitできないので*.zipにしている
+ */
+//@EnabledIfSystemProperty(named = "mvn.cli.profile", matches = "on") // execute cli only
 class MainJarInformationTest {
 
-    private static final String MAIN_MANIFEST_JAR_PROP = "rms.env.main.jar";
+    @SpringBootTest(classes = EnvConfiguration.class, webEnvironment = WebEnvironment.NONE)
+    @TestPropertySource(properties = "rms.env.main.jar=environment-test-normal\\.zip$")
+    @Nested
+    class NormalTest {
+        @Test
+        void test(@Autowired MainJarInformation jarInfo) {
 
-    @AfterEach
-    void teardown( ) {
-        System.clearProperty(MAIN_MANIFEST_JAR_PROP);
+            assertThat(jarInfo.getApplicationName()).isEqualTo("RentalManagementSystem");
+            assertThat(jarInfo.getJarName()).isEqualTo("environment-test-normal.zip");
+            assertThat(jarInfo.getMainClassName()).isEqualTo("dummy.Dummy");
+            assertThat(jarInfo.getVersion()).isEqualTo("0.0.1-SNAPSHOT");
+            assertThat(jarInfo.getBuildTimeInfo()).isNotNull();
+
+            assertThat(jarInfo.startupModuleInfo())
+                    .isEqualTo("RentalManagementSystem/environment-test-normal.zip/dummy.Dummy");
+        }
     }
 
-    /*
-     * !!NOTE!!
-     * Eclipseでこのテストを実行する場合は/rms-platform/testdata/environment-test-normal.zipを
-     * 外部jarとして追加する（mavenから実行する場合はpomに設定を入れているので特別な手順は不要）
-     */
-    @EnabledIfSystemProperty(named = "mvn.cli.profile", matches = "on") // execute cli only
-    @Test
-    void tetGetMainJarInfo() {
-
-        // *.jar is registered as .gitignore and cannot be uploaded, so the extension is zip.
-        System.setProperty(MAIN_MANIFEST_JAR_PROP, "environment-test-normal\\.zip$");
-
-        Config config = ConfigProvider.getConfig();
-        MainJarInformation mainJarInfo = MainJarInformation.builder().create(config);
-
-        assertThat(mainJarInfo.getApplicationName()).isEqualTo("RentalManagementSystem");
-        assertThat(mainJarInfo.getJarName()).isEqualTo("environment-test-normal.zip");
-        assertThat(mainJarInfo.getMainClassName()).isEqualTo("dummy.Dummy");
-        assertThat(mainJarInfo.getVersion()).isEqualTo("0.0.1-SNAPSHOT");
-        assertThat(mainJarInfo.getBuildtimeInfo()).isNotNull();
-
-        assertThat(mainJarInfo.startupModuleInfo()).isEqualTo("RentalManagementSystem/environment-test-normal.zip/dummy.Dummy");
+    @SpringBootTest(classes = EnvConfiguration.class, webEnvironment = WebEnvironment.NONE)
+    @TestPropertySource(properties = "rms.env.main.jar=dummy\\.jar$")
+    @Nested
+    class MainJarInfoNotFoundTest {
+        @Test
+        void test(@Autowired MainJarInformation jarInfo) {
+            assertThat(jarInfo).isSameAs(MainJarInformation.UNKNOWN);
+        }
     }
 
-    @Test
-    void tetGetMainJarInfoNotFound() {
-
-        System.setProperty(MAIN_MANIFEST_JAR_PROP, "dummy\\.jar$");
-
-        Config config = ConfigProvider.getConfig();
-        MainJarInformation mainJarInfo = MainJarInformation.builder().create(config);
-
-        assertThat(mainJarInfo).isNull();
+    @SpringBootTest(classes = EnvConfiguration.class, webEnvironment = WebEnvironment.NONE)
+    @Nested
+    class MainJarInfoNoProperty {
+        @Test
+        void test(@Autowired MainJarInformation jarInfo) {
+            assertThat(jarInfo).isSameAs(MainJarInformation.UNKNOWN);
+        }
     }
 
-    @Test
-    void tetGetMainJarInfoNoProperty() {
-        Config config = ConfigProvider.getConfig();
-        MainJarInformation mainJarInfo = MainJarInformation.builder().create(config);
-        assertThat(mainJarInfo).isNull();
+    @SpringBootTest(classes = EnvConfiguration.class, webEnvironment = WebEnvironment.NONE)
+    @TestPropertySource(properties = "jakarta")
+    @Nested
+    class MainJarInfoTooManyMatch {
+        @Test
+        void tetGetMainJarInfoTooManyMatch(@Autowired MainJarInformation jarInfo) {
+            assertThat(jarInfo).isSameAs(MainJarInformation.UNKNOWN);
+        }
     }
 
-    @Test
-    void tetGetMainJarInfoTooManyMatch() {
-
-        System.setProperty(MAIN_MANIFEST_JAR_PROP, "jakarta");
-
-        Config config = ConfigProvider.getConfig();
-        MainJarInformation mainJarInfo = MainJarInformation.builder().create(config);
-        assertThat(mainJarInfo).isNull();
-    }
-
-    @Test
-    void tetGetMainJarInfoUnknownApplicationName() {
-
-        System.setProperty(MAIN_MANIFEST_JAR_PROP, "jakarta\\.inject-api");
-
-        Config config = ConfigProvider.getConfig();
-        MainJarInformation mainJarInfo = MainJarInformation.builder().create(config);
-        assertThat(mainJarInfo.startupModuleInfo()).isEqualTo("-");
+    @SpringBootTest(classes = EnvConfiguration.class, webEnvironment = WebEnvironment.NONE)
+    @TestPropertySource(properties = "jakarta\\.inject-api")
+    @Nested
+    class MainJarInfoUnknownApplicationName {
+        @Test
+        void tetGetMainJarInfoUnknownApplicationName(@Autowired MainJarInformation jarInfo) {
+            assertThat(jarInfo.startupModuleInfo()).isEqualTo("-");
+        }
     }
 }
