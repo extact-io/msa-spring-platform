@@ -8,14 +8,14 @@ import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import jakarta.enterprise.context.Dependent;
 
 @Dependent
-public class ReadnessCheckRestClientFactoryImpl implements ReadnessCheckRestClientFactory {
+public class ReadinessCheckRestClientFactoryImpl implements ReadinessCheckRestClientFactory {
 
     @Override
-    public ReadnessCheckRestClient create(String baseUrl) {
+    public ReadinessCheckRestClient create(String baseUrl) {
         try {
             return RestClientBuilder.newBuilder()
                     .baseUri(new URI(baseUrl))
-                    .build(ReadnessCheckRestClient.class);
+                    .build(ReadinessCheckRestClient.class);
         } catch (URISyntaxException e) {
             throw new IllegalStateException(e);
         }

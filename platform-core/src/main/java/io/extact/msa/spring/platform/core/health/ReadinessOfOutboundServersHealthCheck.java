@@ -13,8 +13,8 @@ import org.eclipse.microprofile.health.HealthCheckResponse.Status;
 import org.eclipse.microprofile.health.Readiness;
 
 import io.extact.msa.spring.platform.core.health.client.GenericCheckResponse;
-import io.extact.msa.spring.platform.core.health.client.ReadnessCheckRestClient;
-import io.extact.msa.spring.platform.core.health.client.ReadnessCheckRestClientFactory;
+import io.extact.msa.spring.platform.core.health.client.ReadinessCheckRestClient;
+import io.extact.msa.spring.platform.core.health.client.ReadinessCheckRestClientFactory;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,12 +23,12 @@ import lombok.extern.slf4j.Slf4j;
 public class ReadinessOfOutboundServersHealthCheck {
 
     private static final String PROBE_URL_CONFIG_KEY = "rms.healthCheck.readinessOfOutboundServersHealthCheck.probe.url";
-    private ReadnessCheckRestClientFactory factory;
+    private ReadinessCheckRestClientFactory factory;
     private List<String> probeUrls;
 
     @Inject
     public ReadinessOfOutboundServersHealthCheck(
-            ReadnessCheckRestClientFactory factory,
+            ReadinessCheckRestClientFactory factory,
             @ConfigProperty(name = PROBE_URL_CONFIG_KEY) List<String> probeUrls) {
         this.factory = factory;
         this.probeUrls = probeUrls;
@@ -85,10 +85,10 @@ public class ReadinessOfOutboundServersHealthCheck {
     static class CheckTask {
 
         String probeUrl;
-        ReadnessCheckRestClient client;
+        ReadinessCheckRestClient client;
         CompletableFuture<GenericCheckResponse> future;
 
-        CheckTask(String probeUrl, ReadnessCheckRestClient client) {
+        CheckTask(String probeUrl, ReadinessCheckRestClient client) {
             this.probeUrl = probeUrl;
             this.client = client;
             this.future = client.probeReadnessAsync().toCompletableFuture();

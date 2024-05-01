@@ -30,7 +30,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import io.extact.msa.spring.platform.core.health.DbReadinessCheckTest.DbReadinessCheckTestWrapper;
 import io.extact.msa.spring.platform.core.health.client.GenericCheckResponse;
-import io.extact.msa.spring.platform.core.health.client.ReadnessCheckRestClient;
+import io.extact.msa.spring.platform.core.health.client.ReadinessCheckRestClient;
 import io.extact.msa.spring.test.junit5.JulToSLF4DelegateExtension;
 import io.extact.msa.spring.test.utils.TestUtils;
 import io.helidon.microprofile.config.ConfigCdiExtension;
@@ -58,13 +58,13 @@ import io.helidon.microprofile.tests.junit5.HelidonTest;
 @AddConfig(key = "health.timeout-millis", value = "3600000")
 class DbReadinessCheckTest {
 
-    private ReadnessCheckRestClient client;
+    private ReadinessCheckRestClient client;
 
     @BeforeEach
     void setup() throws Exception {
         this.client = RestClientBuilder.newBuilder()
                 .baseUri(new URI("http://localhost:7001"))
-                .build(ReadnessCheckRestClient.class);
+                .build(ReadinessCheckRestClient.class);
     }
 
     @Test

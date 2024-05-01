@@ -8,7 +8,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
 @Path("/health/ready")
-public interface ReadnessCheckRestClient extends AutoCloseable {
+public interface ReadinessCheckRestClient extends AutoCloseable {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     CompletionStage<GenericCheckResponse> probeReadnessAsync();

@@ -25,8 +25,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import io.extact.msa.spring.platform.core.health.ReadinessOfOutboundServersHealthCheckTest.ReadnessCheckRestClientFactoryStub;
 import io.extact.msa.spring.platform.core.health.client.GenericCheckResponse;
-import io.extact.msa.spring.platform.core.health.client.ReadnessCheckRestClient;
-import io.extact.msa.spring.platform.core.health.client.ReadnessCheckRestClientFactory;
+import io.extact.msa.spring.platform.core.health.client.ReadinessCheckRestClient;
+import io.extact.msa.spring.platform.core.health.client.ReadinessCheckRestClientFactory;
 import io.extact.msa.spring.test.junit5.JulToSLF4DelegateExtension;
 import io.helidon.microprofile.config.ConfigCdiExtension;
 import io.helidon.microprofile.health.HealthCdiExtension;
@@ -62,13 +62,13 @@ import io.helidon.microprofile.tests.junit5.HelidonTest;
 @AddBean(value = ReadnessCheckRestClientFactoryStub.class, scope = Dependent.class)
 class ReadinessOfOutboundServersHealthCheckTest {
 
-    private ReadnessCheckRestClient client;
+    private ReadinessCheckRestClient client;
 
     @BeforeEach
     void setup() throws Exception {
         this.client =  RestClientBuilder.newBuilder()
                 .baseUri(new URI("http://localhost:7001"))
-                .build(ReadnessCheckRestClient.class);
+                .build(ReadinessCheckRestClient.class);
     }
 
     @Test
@@ -131,14 +131,14 @@ class ReadinessOfOutboundServersHealthCheckTest {
 
     // ----------------------------------------------------- stub inner classes.
 
-    static class ReadnessCheckRestClientFactoryStub implements ReadnessCheckRestClientFactory {
+    static class ReadnessCheckRestClientFactoryStub implements ReadinessCheckRestClientFactory {
         @Override
-        public ReadnessCheckRestClient create(String baseUrl) {
+        public ReadinessCheckRestClient create(String baseUrl) {
             return new ReadnessCheckRestClientStub(baseUrl.endsWith("9999"));
         }
     }
 
-    static class ReadnessCheckRestClientStub implements ReadnessCheckRestClient {
+    static class ReadnessCheckRestClientStub implements ReadinessCheckRestClient {
         private boolean error;
 
         public ReadnessCheckRestClientStub(boolean error) {

@@ -9,9 +9,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import io.extact.msa.spring.platform.core.health.client.ReadnessCheckRestClient;
-import io.extact.msa.spring.platform.core.health.client.ReadnessCheckRestClientFactory;
-import io.extact.msa.spring.platform.core.health.client.ReadnessCheckRestClientFactoryImpl;
+import io.extact.msa.spring.platform.core.health.client.ReadinessCheckRestClient;
+import io.extact.msa.spring.platform.core.health.client.ReadinessCheckRestClientFactory;
+import io.extact.msa.spring.platform.core.health.client.ReadinessCheckRestClientFactoryImpl;
 import io.extact.msa.spring.test.junit5.JulToSLF4DelegateExtension;
 import io.helidon.microprofile.config.ConfigCdiExtension;
 import io.helidon.microprofile.health.HealthCdiExtension;
@@ -36,12 +36,12 @@ import jakarta.inject.Inject;
 // ---- following specific parts
 @AddExtension(HealthCdiExtension.class)
 @AddBean(SimpleReadinessCheck.class)
-@AddBean(ReadnessCheckRestClientFactoryImpl.class)
+@AddBean(ReadinessCheckRestClientFactoryImpl.class)
 class SimpleReadinessCheckTest {
 
     @Inject
-    private ReadnessCheckRestClientFactory factory;
-    private ReadnessCheckRestClient client;
+    private ReadinessCheckRestClientFactory factory;
+    private ReadinessCheckRestClient client;
 
     @BeforeEach
     void setup() throws Exception {
