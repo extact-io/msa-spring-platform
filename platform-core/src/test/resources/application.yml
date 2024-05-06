@@ -1,17 +1,40 @@
-spring:
-  main.banner-mode: off
-
 logging.level:
   org.springframework:
     boot.autoconfigure: info
   ConfigDump: debug
 
-rms.debug:
-  configdump:
-    enable: false # change to true in the test class
-    #system-properties: on
-    #system-environment: on
-  sleep:
-    enable: false # change to true in the test class
-    time: 1s
+spring:
+  main.banner-mode: off
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+        exclude: "env,beans"
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+      group:
+        readiness:
+          include: "readinessState,db,dependentServers"
+      validate-group-membership: false # groupにindicatorが存在しない場合もエラーにしない設定
+
+rms:
+  debug:
+    configdump:
+      enable: false # change to true in the test class
+      #system-properties: on
+      #system-environment: on
+    sleep:
+      enable: false # change to true in the test class
+      time: 1s
+  health:
+    depend-services:
+      - http://localhost:7002/actuator/health/readiness
+      - http://localhost:7003/actuator/health/readiness
+      - http://localhost:7004/actuator/health/readiness
+
 

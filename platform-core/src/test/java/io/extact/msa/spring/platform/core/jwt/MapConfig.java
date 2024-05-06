@@ -10,7 +10,6 @@ import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigValue;
 import org.eclipse.microprofile.config.spi.ConfigSource;
 import org.eclipse.microprofile.config.spi.Converter;
-import org.jboss.weld.exceptions.UnsupportedOperationException;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

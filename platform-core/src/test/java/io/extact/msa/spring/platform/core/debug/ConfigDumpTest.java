@@ -13,7 +13,7 @@ class ConfigDumpTest {
 
     @Configuration
     @Import(DebugConfiguration.class)
-    static class TesConfig {
+    static class TestConfig {
     }
 
     @Test

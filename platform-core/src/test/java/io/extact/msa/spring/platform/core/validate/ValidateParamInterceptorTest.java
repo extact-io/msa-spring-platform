@@ -2,6 +2,16 @@ package io.extact.msa.spring.platform.core.validate;
 
 import static org.assertj.core.api.Assertions.*;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import io.extact.msa.spring.platform.core.validate.ValidateParamInterceptorTest.AnnotateVariationGroupDefTestBean;
+import io.extact.msa.spring.platform.core.validate.ValidateParamInterceptorTest.AnnotateVariationNoneGroupDefTestBean;
+import io.extact.msa.spring.platform.core.validate.ValidateParamInterceptorTest.GroupVariationTestBean;
+import io.extact.msa.spring.test.junit5.JulToSLF4DelegateExtension;
+import io.helidon.microprofile.tests.junit5.AddBean;
+import io.helidon.microprofile.tests.junit5.DisableDiscovery;
+import io.helidon.microprofile.tests.junit5.HelidonTest;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
@@ -10,22 +20,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.groups.Default;
 import jakarta.ws.rs.DELETE;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-
-import io.extact.msa.spring.platform.core.validate.ValidateParamInterceptorTest.AnnotateVariationGroupDefTestBean;
-import io.extact.msa.spring.platform.core.validate.ValidateParamInterceptorTest.AnnotateVariationNoneGroupDefTestBean;
-import io.extact.msa.spring.platform.core.validate.ValidateParamInterceptorTest.GroupVariationTestBean;
-import io.extact.msa.spring.test.junit5.JulToSLF4DelegateExtension;
-import io.helidon.microprofile.config.ConfigCdiExtension;
-import io.helidon.microprofile.tests.junit5.AddBean;
-import io.helidon.microprofile.tests.junit5.AddExtension;
-import io.helidon.microprofile.tests.junit5.DisableDiscovery;
-import io.helidon.microprofile.tests.junit5.HelidonTest;
-
 @HelidonTest
 @DisableDiscovery
-@AddExtension(ConfigCdiExtension.class)
 @AddBean(value = ValidateParamInterceptor.class, scope = Dependent.class)
 @AddBean(ValidateParamInterceptor.InnerValidatorImpl.class)
 @AddBean(GroupVariationTestBean.class)
