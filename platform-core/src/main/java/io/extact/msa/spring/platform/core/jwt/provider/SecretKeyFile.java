@@ -2,10 +2,7 @@ package io.extact.msa.spring.platform.core.jwt.provider;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAKey;
@@ -16,47 +13,36 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
+import org.springframework.core.io.Resource;
+
 import lombok.Cleanup;
 
 /**
  * 鍵ファイルを読み込んで鍵インスタンスにするクラス。
- * 指定されたパスはファイルパス, リソースパスの順でファイルを探索する。
  */
 public class SecretKeyFile {
 
     public static final KeyType PRIVATE = new PrivateKeyCreator();
     public static final KeyType PUBLIC = new PublicKeyCreator();
 
-    private String path;
+    private Resource location;
 
-    public SecretKeyFile(String path) {
-        this.path = path;
+    public SecretKeyFile(Resource location) {
+        this.location = location;
     }
 
     public String readFile() throws IOException {
-        @Cleanup BufferedReader buff = null;
-        buff = tryOpenFromFilePath(path);
-        buff = buff != null ? buff : tryOpenFromResourcePath(path); // fallback to resource
 
-        var pem = new StringBuilder();
+        @Cleanup
+        BufferedReader buff = new BufferedReader(new InputStreamReader(location.getInputStream()));
+
+        StringBuilder pem = new StringBuilder();
         String line;
         while ((line = buff.readLine()) != null) {
             pem.append(line);
         }
+
         return pem.toString();
-    }
-
-    private BufferedReader tryOpenFromFilePath(String path) {
-        try {
-            return Files.newBufferedReader(Paths.get(path));
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-    private BufferedReader tryOpenFromResourcePath(String path) {
-        InputStream is = this.getClass().getResourceAsStream(path);
-        return new BufferedReader(new InputStreamReader(is));
     }
 
     public <T> T generateKey(KeyType keyType) {

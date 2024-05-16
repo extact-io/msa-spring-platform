@@ -9,7 +9,10 @@ import java.util.Set;
  * @see GenerateToken
  */
 public interface UserClaims {
+
     String getUserId();
+
     String getUserPrincipalName();
+
     Set<String> getGroups();
 }

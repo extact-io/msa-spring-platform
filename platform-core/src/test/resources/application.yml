@@ -4,7 +4,12 @@ logging.level:
   ConfigDump: debug
 
 spring:
-  main.banner-mode: off
+  main:
+    banner-mode: off
+  info:
+    git:
+      location: classpath:META-INF/git.properties # デフォルトの位置変更
+
 
 management:
   endpoints:
@@ -36,5 +41,11 @@ rms:
       - http://localhost:7002/actuator/health/readiness
       - http://localhost:7003/actuator/health/readiness
       - http://localhost:7004/actuator/health/readiness
-
+  jwt-provider:
+    private-key:
+      location: classpath:/path/to/your/file
+    claim:
+      issuer: your-application
+      issuedAt: -1            # 発行日時[-1はnow()]（秒単位）
+      exp: 60                 # 有効期限（分単位）
 

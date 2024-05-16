@@ -3,9 +3,9 @@ package io.extact.msa.spring.platform.core.jwt.validate;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.microprofile.jwt.Claims;
-import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jose4j.jwt.JwtClaims;
+
+import io.extact.msa.spring.platform.core.jwt.JsonWebToken;
 
 public class Jose4jJsonWebToken implements JsonWebToken {
 
@@ -17,13 +17,13 @@ public class Jose4jJsonWebToken implements JsonWebToken {
 
     @Override
     public String getName() {
-        return getClaim(Claims.upn.name());
+        return getClaim("upn");
     }
 
     @Override
     public Set<String> getGroups() {
         // MP-JWTはSetを要求するため変換
-        return new HashSet<>(getClaim(Claims.groups.name()));
+        return new HashSet<>(getClaim("groups"));
     }
 
     @Override
@@ -37,4 +37,8 @@ public class Jose4jJsonWebToken implements JsonWebToken {
         return (T) jwt.getClaimValue(claimName);
     }
 
+    @Override
+    public <T> T getClaim(String claimName, Class<T> type) {
+        return this.getClaim(claimName);
+    }
 }

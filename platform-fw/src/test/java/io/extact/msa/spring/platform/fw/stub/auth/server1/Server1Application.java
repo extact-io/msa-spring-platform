@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.Application;
 
 import org.eclipse.microprofile.auth.LoginConfig;
 
-import io.extact.msa.spring.platform.core.jwt.provider.JwtProvideResponseFilter;
+import io.extact.msa.spring.platform.core.jwt.provider.JwtProvideResponseAdvice;
 import io.extact.msa.spring.platform.fw.login.LoginUserFromJwtRequestFilter;
 import io.extact.msa.spring.platform.fw.webapi.RmsBaseApplications;
 
@@ -32,7 +32,7 @@ public class Server1Application extends Application {
 
     private Set<Class<?>> getWebApiClasses() {
         return Set.of(
-                JwtProvideResponseFilter.class,
+                JwtProvideResponseAdvice.class,
                 LoginUserFromJwtRequestFilter.class,
                 Server1Resource.class);
     }

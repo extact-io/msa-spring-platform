@@ -9,13 +9,14 @@ import static org.junit.jupiter.params.provider.Arguments.*;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.core.io.ClassPathResource;
 
+import io.extact.msa.spring.platform.core.jwt.JwtProviderProperties.Claim;
+import io.extact.msa.spring.platform.core.jwt.JwtProviderProperties.PrivateKey;
 import io.extact.msa.spring.platform.core.jwt.provider.JsonWebTokenGenerator;
 import io.extact.msa.spring.platform.core.jwt.provider.UserClaims;
 import io.extact.msa.spring.platform.core.jwt.provider.impl.Auth0RsaJwtGenerator;
@@ -26,17 +27,22 @@ import io.extact.msa.spring.platform.core.jwt.validate.JsonWebTokenValidator;
 
 class JsonWebTokenGeneratorTest {
 
-    private MapConfig mapConfig;
+    private JwtProviderProperties properties;
 
     @BeforeEach
-    void setup() {
-        // デフォルト値の設定
-        MapConfig config = new MapConfig();
-        config.setPrivateKeyPath("/jwt.key");
-        config.setIssuer("testApplication");
-        config.setIssuedAt(-1L);
-        config.setExpirationTime(60);
-        this.mapConfig = config;
+    void beforeEach() {
+
+        PrivateKey privateKey = new PrivateKey();
+        privateKey.setLocation(new ClassPathResource("/jwt.key"));
+
+        Claim claim = new Claim();
+        claim.setIssuer("testApplication");
+        claim.setIssuedAt(-1L);
+        claim.setExp(60);
+
+        properties = new JwtProviderProperties();
+        properties.setPrivateKey(privateKey);
+        properties.setClaim(claim);
     }
 
     @ParameterizedTest
@@ -46,18 +52,17 @@ class JsonWebTokenGeneratorTest {
             JsonWebTokenValidatorFactory validatorFactory) throws JwtValidateException {
 
         // テストし易いように発行日時と有効期限を固定
-        long now = System.currentTimeMillis() / 1000L; // 秒で表した現在日時
-        mapConfig.setIssuedAt(now); // 発行日時を固定で設定
-        mapConfig.setExpirationTime(0);
+        long now = System.currentTimeMillis() / 1000L;  // 秒で表した現在日時
+        properties.getClaim().setIssuedAt(now);           // 発行日時を固定で設定
+        properties.getClaim().setExp(0);
 
         // Tokenの生成
-        JsonWebTokenGenerator testGenerator = generatorFactoyr.create(mapConfig);
+        JsonWebTokenGenerator testGenerator = generatorFactoyr.create(properties);
         UserClaims userClaims = new SimpleUserClaims();
         String token = testGenerator.generateToken(userClaims);
 
         // 生成したTokenをJOSE4JとAuth0とで検査
-        JwtConfig jwtConfig = JwtConfig.of(mapConfig);
-        JsonWebTokenValidator validator = validatorFactory.create(jwtConfig);
+        JsonWebTokenValidator validator = validatorFactory.create(properties);
         JsonWebToken jwt = validator.validate(token);
 
         // 復元したJSONが元通りか確認
@@ -97,32 +102,40 @@ class JsonWebTokenGeneratorTest {
     }
 
     static class JsonWebTokenGeneratorFactory {
+
         static final JsonWebTokenGeneratorFactory JOSE4J_GENERATOR = new JsonWebTokenGeneratorFactory(JOSE4J);
         static final JsonWebTokenGeneratorFactory AUTH0_GENERATOR = new JsonWebTokenGeneratorFactory(AUTH0);
+
         ImplType implType;
+
         JsonWebTokenGeneratorFactory(ImplType implType) {
             this.implType = implType;
         }
-        JsonWebTokenGenerator create(Config config) {
+
+        JsonWebTokenGenerator create(JwtProviderProperties properties) {
             return switch (implType) {
-                case JOSE4J -> new Jose4jRsaJwtGenerator(config);
-                case AUTH0 -> new Auth0RsaJwtGenerator(config);
+                case JOSE4J -> new Jose4jRsaJwtGenerator(properties);
+                case AUTH0 -> new Auth0RsaJwtGenerator(properties);
             };
         }
 
     }
 
     static class JsonWebTokenValidatorFactory {
+
         static final JsonWebTokenValidatorFactory JOSE4J_VALIDATOR = new JsonWebTokenValidatorFactory(JOSE4J);
         static final JsonWebTokenValidatorFactory AUTH0_VALIDATOR = new JsonWebTokenValidatorFactory(AUTH0);
+
         ImplType implType;
+
         JsonWebTokenValidatorFactory(ImplType implType) {
             this.implType = implType;
         }
-        JsonWebTokenValidator create(JwtConfig jwtConfig) {
+
+        JsonWebTokenValidator create(JwtProviderProperties properties) {
             return switch (implType) {
-                case JOSE4J -> new Jose4jTokenValidator(jwtConfig);
-                case AUTH0 -> new Auth0TokenValidator(jwtConfig);
+                case JOSE4J -> new Jose4jTokenValidator(properties);
+                case AUTH0 -> new Auth0TokenValidator(properties);
             };
         }
     }

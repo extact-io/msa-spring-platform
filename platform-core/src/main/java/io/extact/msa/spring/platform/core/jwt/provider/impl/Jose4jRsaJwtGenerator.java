@@ -5,33 +5,29 @@ import static org.jose4j.jws.AlgorithmIdentifiers.*;
 import java.security.interfaces.RSAPrivateKey;
 import java.util.ArrayList;
 
-import org.eclipse.microprofile.config.Config;
 import org.jose4j.jws.JsonWebSignature;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.NumericDate;
 import org.jose4j.lang.JoseException;
 
-import io.extact.msa.spring.platform.core.jwt.JwtConfig;
+import io.extact.msa.spring.platform.core.jwt.JwtProviderProperties;
 import io.extact.msa.spring.platform.core.jwt.provider.JsonWebTokenGenerator;
 import io.extact.msa.spring.platform.core.jwt.provider.SecretKeyFile;
 import io.extact.msa.spring.platform.core.jwt.provider.UserClaims;
-import jakarta.inject.Inject;
 
-//@ConfiguableScoped
 public class Jose4jRsaJwtGenerator implements JsonWebTokenGenerator {
 
-    private JwtConfig jwtConfig;
+    private JwtProviderProperties properties;
 
-    @Inject
-    public  Jose4jRsaJwtGenerator(Config config) {
-        this.jwtConfig = JwtConfig.of(config);
+    public Jose4jRsaJwtGenerator(JwtProviderProperties properties) {
+        this.properties = properties;
     }
 
     @Override
     public String generateToken(UserClaims userClaims) {
 
-        var jws = new JsonWebSignature(); // 署名オブジェクト
-        var privateKey = createPrivateKey(); // RSA秘密鍵(p8フォーマット)
+        JsonWebSignature jws = new JsonWebSignature(); // 署名オブジェクト
+        RSAPrivateKey privateKey = createPrivateKey(); // RSA秘密鍵(p8フォーマット)
 
         JwtClaims claims = createClaims(userClaims);
         jws.setPayload(claims.toJson());
@@ -48,26 +44,26 @@ public class Jose4jRsaJwtGenerator implements JsonWebTokenGenerator {
     }
 
     private RSAPrivateKey createPrivateKey() {
-        SecretKeyFile keyFile = new SecretKeyFile(jwtConfig.getPrivateKeyPath());
+        SecretKeyFile keyFile = new SecretKeyFile(properties.getPrivateKey().getLocation());
         return keyFile.generateKey(SecretKeyFile.PRIVATE);
     }
 
     private JwtClaims createClaims(UserClaims userClaims) {
 
         // MicroProfile-JWTで必須とされている項目のみ設定
-        var claims = new JwtClaims();
+        JwtClaims claims = new JwtClaims();
 
         // 発行者
-        claims.setIssuer(jwtConfig.getIssuer());
+        claims.setIssuer(properties.getClaim().getIssuer());
         // ユーザ識別子
         claims.setSubject(userClaims.getUserId());
         // 有効期限(exp)
-        claims.setExpirationTimeMinutesInTheFuture(jwtConfig.getExpirationTime());
+        claims.setExpirationTimeMinutesInTheFuture(properties.getClaim().getExpirationTime());
         // 発行日時(iat)
-        if (jwtConfig.isIssuedAtToNow()) {
+        if (properties.getClaim().isIssuedAtToNow()) {
             claims.setIssuedAtToNow();
         } else {
-            claims.setIssuedAt(NumericDate.fromSeconds(jwtConfig.getIssuedAt()));
+            claims.setIssuedAt(NumericDate.fromSeconds(properties.getClaim().getIssuedAt()));
         }
         // tokenId(jti)
         claims.setGeneratedJwtId();

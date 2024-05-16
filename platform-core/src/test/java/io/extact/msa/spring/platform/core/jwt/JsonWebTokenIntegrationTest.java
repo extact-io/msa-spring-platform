@@ -20,7 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import io.extact.msa.spring.platform.core.jwt.JsonWebTokenIntegrationTest.TestLoginApplication;
 import io.extact.msa.spring.platform.core.jwt.JsonWebTokenIntegrationTest.TestStubApplication;
 import io.extact.msa.spring.platform.core.jwt.provider.GenerateToken;
-import io.extact.msa.spring.platform.core.jwt.provider.JwtProvideResponseFilter;
+import io.extact.msa.spring.platform.core.jwt.provider.JwtProvideResponseAdvice;
 import io.extact.msa.spring.platform.core.jwt.provider.UserClaims;
 import io.extact.msa.spring.platform.core.jwt.provider.impl.Auth0RsaJwtGenerator;
 import io.extact.msa.spring.test.junit5.JulToSLF4DelegateExtension;
@@ -232,7 +232,7 @@ public class JsonWebTokenIntegrationTest {
             return Set.of(
                         TestLoginResource.class,
                         //ServerHeaderDumpFilter.class,
-                        JwtProvideResponseFilter.class
+                        JwtProvideResponseAdvice.class
                     );
         }
     }

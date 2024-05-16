@@ -3,10 +3,10 @@ package io.extact.msa.spring.platform.core.jwt.validate;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.microprofile.jwt.Claims;
-import org.eclipse.microprofile.jwt.JsonWebToken;
-
+import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+
+import io.extact.msa.spring.platform.core.jwt.JsonWebToken;
 
 public class Auth0JsonWebToken implements JsonWebToken {
 
@@ -18,12 +18,12 @@ public class Auth0JsonWebToken implements JsonWebToken {
 
     @Override
     public String getName() {
-        return jwt.getClaim(Claims.upn.name()).asString();
+        return jwt.getClaim("upn").asString();
     }
 
     @Override
     public Set<String> getGroups() {
-        return new HashSet<>(jwt.getClaim(Claims.groups.name()).asList(String.class));
+        return new HashSet<>(jwt.getClaim("groups").asList(String.class));
     }
 
     @Override
@@ -33,20 +33,22 @@ public class Auth0JsonWebToken implements JsonWebToken {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T getClaim(Claims claim) {
-        if (claim.getType().equals(String.class)) {
-            return (T) jwt.getClaim(claim.name()).asString();
+    public <T> T getClaim(String claimName, Class<T> type) {
+
+        if (type.equals(String.class)) {
+            return (T) jwt.getClaim(claimName).asString();
         }
-        if (claim.getType().equals(Long.class)) {
-            return (T) jwt.getClaim(claim.name()).asLong();
+        if (type.equals(Long.class)) {
+            return (T) jwt.getClaim(claimName).asLong();
         }
-        if (claim.getType().equals(Set.class)) {
-            var claimValue = jwt.getClaim(claim.name());
+        if (type.equals(Set.class)) {
+            Claim claimValue = jwt.getClaim(claimName);
             return !claimValue.isMissing() && !claimValue.isNull()
-                    ? (T) new HashSet<>(jwt.getClaim(claim.name()).asList(String.class))
+                    ? (T) new HashSet<>(jwt.getClaim(claimName).asList(String.class))
                     : null;
         }
-        return (T) jwt.getClaim(claim.name()).toString();
+
+        return (T) jwt.getClaim(claimName).toString();
     }
 
     @Override

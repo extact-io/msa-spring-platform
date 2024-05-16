@@ -2,6 +2,7 @@ package io.extact.msa.spring.platform.core.health;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -11,14 +12,16 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.Status;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestClient;
 
 import io.extact.msa.spring.platform.core.health.client.ProbeResult;
@@ -31,6 +34,13 @@ import lombok.ToString;
 
 /**
  * DependentServersHealthIndicatorに対するテスト。
+ * <pre>
+ * ・テストドライバ：RestClient
+ *     ↓ HTTP(RANDOM)
+ * ・実物  ：DependentServersHealthIndicator ← テスト対象
+ * ・スタブ：ReadinessProbeRestClientFactoryStub
+ * ・スタブ：ReadinessProbeRestClientStub
+ * </pre>
  * ReadinessProbeRestClientのテストは別の観点で実施している。
  */
 class DependentServersHealthIndicatorTest {
@@ -38,12 +48,12 @@ class DependentServersHealthIndicatorTest {
     private static final String TEST_ENDPOINT = "http://localhost:%s/actuator/health/dependentServers";
 
     @Configuration(proxyBeanMethods = false)
-    @SpringBootApplication
+    @EnableAutoConfiguration
     @Import(HealthConfiguration.class)
     private static class TestConfig {
 
         @Bean
-        @Primary
+        @Primary // main側のHealthConfigurationの登録より優先させる（上書き）
         ReadinessProbeRestClientFactory readinessProbeRestClientFactoryStub() {
             return new ReadinessProbeRestClientFactoryStub();
         }
@@ -85,6 +95,78 @@ class DependentServersHealthIndicatorTest {
         }
     }
 
+    @SpringBootTest(classes = TestConfig.class, webEnvironment = WebEnvironment.RANDOM_PORT)
+    @TestPropertySource(properties = "rms.health.depend-services[0]=http://localhost:8001/ok")
+    @TestPropertySource(properties = "rms.health.depend-services[1]=http://localhost:8002/ng")
+    @Nested
+    class NgResultTest {
+
+        private RestClient testClient;
+
+        @BeforeEach
+        void beforeEach(@Value("${local.server.port}") int port) {
+            testClient = RestClient.builder()
+                    .baseUrl(TEST_ENDPOINT.formatted(port))
+                    .defaultStatusHandler(new NopResponseErrorHandler())
+                    .build();
+        }
+
+        @Test
+        void test() {
+
+            DependentServersHealthResponse expected = new DependentServersHealthResponse();
+            expected.setStatus(Status.DOWN.getCode());
+
+            Map<String, String> expectedDetail = Map.of(
+                    "http://localhost:8001/ok", Status.UP.getCode(),
+                    "http://localhost:8002/ng", Status.DOWN.getCode());
+            expected.setDetails(expectedDetail);
+
+            DependentServersHealthResponse actual = testClient
+                    .get()
+                    .retrieve()
+                    .body(DependentServersHealthResponse.class);
+
+            assertThat(actual).isEqualTo(expected);
+        }
+    }
+
+    @SpringBootTest(classes = TestConfig.class, webEnvironment = WebEnvironment.RANDOM_PORT)
+    @TestPropertySource(properties = "rms.health.depend-services[0]=http://localhost:8001/ok")
+    @TestPropertySource(properties = "rms.health.depend-services[1]=http://localhost:8002/error")
+    @Nested
+    class ErrorResultTest {
+
+        private RestClient testClient;
+
+        @BeforeEach
+        void beforeEach(@Value("${local.server.port}") int port) {
+            testClient = RestClient.builder()
+                    .baseUrl(TEST_ENDPOINT.formatted(port))
+                    .defaultStatusHandler(new NopResponseErrorHandler())
+                    .build();
+        }
+
+        @Test
+        void test() {
+
+            DependentServersHealthResponse expected = new DependentServersHealthResponse();
+            expected.setStatus(Status.DOWN.getCode());
+
+            Map<String, String> expectedDetail = Map.of(
+                    "http://localhost:8001/ok", Status.UP.getCode(),
+                    "http://localhost:8002/error", Status.DOWN.getCode());
+            expected.setDetails(expectedDetail);
+
+            DependentServersHealthResponse actual = testClient
+                    .get()
+                    .retrieve()
+                    .body(DependentServersHealthResponse.class);
+
+            assertThat(actual).isEqualTo(expected);
+        }
+    }
+
     @Getter
     @Setter
     @ToString
@@ -109,13 +191,24 @@ class DependentServersHealthIndicatorTest {
             return switch (url) {
                 case String s when s.endsWith("ok") -> new ProbeResult(url, Status.UP);
                 case String s when s.endsWith("ng") -> new ProbeResult(url, Status.DOWN);
-                default -> throw new IllegalArgumentException("Unexpected value: " + url);
+                default -> new ProbeResult(url, Status.DOWN);
             };
         }
 
         @Override
         public CompletionStage<ProbeResult> probeReadinessAsync(String url) {
             return CompletableFuture.supplyAsync(() -> this.probeReadiness(url));
+        }
+    }
+
+    static class NopResponseErrorHandler implements ResponseErrorHandler {
+        @Override
+        public boolean hasError(ClientHttpResponse response) throws IOException {
+            return true;
+        }
+        @Override
+        public void handleError(ClientHttpResponse response) throws IOException {
+            // nop
         }
     }
 }

@@ -1,5 +1,8 @@
 package io.extact.msa.spring.platform.core.env;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.info.BuildProperties;
+import org.springframework.boot.info.GitProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -8,7 +11,9 @@ import org.springframework.core.env.Environment;
 public class EnvConfiguration {
 
     @Bean
-    MainJarInformation mainJarInformation(Environment environment) {
-        return new MainJarInformationFactory(environment).create();
+    MainModuleInformation mainJarInformation(Environment environment,
+            @Autowired(required = false) BuildProperties buildProperties,
+            @Autowired(required = false) GitProperties gitProperties) {
+        return new MainModuleInformation(environment, buildProperties, gitProperties);
     }
 }

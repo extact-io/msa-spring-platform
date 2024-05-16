@@ -7,8 +7,6 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import jakarta.ws.rs.NameBinding;
-
 /**
  * 認証トークンの発行を表すアノテーション。
  * このアノテーションが付与されているメソッド実行後に認証トークンの発行が行われる。
@@ -17,8 +15,7 @@ import jakarta.ws.rs.NameBinding;
  * 実装すること。
  */
 @Inherited
-@NameBinding
-@Retention(RUNTIME)
 @Target({ METHOD, TYPE })
+@Retention(RUNTIME)
 public @interface GenerateToken {
 }
