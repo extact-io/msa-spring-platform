@@ -9,8 +9,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.JWTVerifier;
 
 import io.extact.msa.spring.platform.core.jwt.JsonWebToken;
-import io.extact.msa.spring.platform.core.jwt.JwtProviderProperties;
 import io.extact.msa.spring.platform.core.jwt.JwtValidateException;
+import io.extact.msa.spring.platform.core.jwt.provider.JwtProviderProperties;
 import io.extact.msa.spring.platform.core.jwt.provider.SecretKeyFile;
 
 public class Auth0TokenValidator implements JsonWebTokenValidator {

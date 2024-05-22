@@ -9,7 +9,7 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
-import jakarta.inject.Inject;
+import io.extact.msa.spring.platform.core.jwt.ConditionalOnJwtProviderEnable;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
  * ターゲットメソッドで例外が発生した場合このAdviceは呼び出されることはない。
  */
 @RestControllerAdvice
+@ConditionalOnJwtProviderEnable
 @Slf4j
 public class JwtProvideResponseAdvice implements ResponseBodyAdvice<Object> {
 
@@ -24,7 +25,6 @@ public class JwtProvideResponseAdvice implements ResponseBodyAdvice<Object> {
 
     private JsonWebTokenGenerator tokenGenerator;
 
-    @Inject
     public JwtProvideResponseAdvice(JsonWebTokenGenerator generator) {
         this.tokenGenerator = generator;
     }

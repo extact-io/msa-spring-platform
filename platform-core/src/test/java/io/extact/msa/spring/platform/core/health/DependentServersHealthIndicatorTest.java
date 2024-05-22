@@ -2,7 +2,6 @@ package io.extact.msa.spring.platform.core.health;
 
 import static org.assertj.core.api.Assertions.*;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -19,18 +18,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
-import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestClient;
 
 import io.extact.msa.spring.platform.core.health.client.ProbeResult;
 import io.extact.msa.spring.platform.core.health.client.ReadinessProbeRestClient;
 import io.extact.msa.spring.platform.core.health.client.ReadinessProbeRestClientFactory;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import io.extact.msa.spring.platform.core.testlib.NopResponseErrorHandler;
+import lombok.Data;
 
 /**
  * DependentServersHealthIndicatorに対するテスト。
@@ -167,10 +162,7 @@ class DependentServersHealthIndicatorTest {
         }
     }
 
-    @Getter
-    @Setter
-    @ToString
-    @EqualsAndHashCode
+    @Data
     static class DependentServersHealthResponse {
         private String status;
         private Map<String, String> details;
@@ -198,17 +190,6 @@ class DependentServersHealthIndicatorTest {
         @Override
         public CompletionStage<ProbeResult> probeReadinessAsync(String url) {
             return CompletableFuture.supplyAsync(() -> this.probeReadiness(url));
-        }
-    }
-
-    static class NopResponseErrorHandler implements ResponseErrorHandler {
-        @Override
-        public boolean hasError(ClientHttpResponse response) throws IOException {
-            return true;
-        }
-        @Override
-        public void handleError(ClientHttpResponse response) throws IOException {
-            // nop
         }
     }
 }

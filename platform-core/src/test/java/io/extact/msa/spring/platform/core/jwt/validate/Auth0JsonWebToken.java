@@ -17,16 +17,6 @@ public class Auth0JsonWebToken implements JsonWebToken {
     }
 
     @Override
-    public String getName() {
-        return jwt.getClaim("upn").asString();
-    }
-
-    @Override
-    public Set<String> getGroups() {
-        return new HashSet<>(jwt.getClaim("groups").asList(String.class));
-    }
-
-    @Override
     public Set<String> getClaimNames() {
         return new HashSet<>(jwt.getClaims().keySet());
     }

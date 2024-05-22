@@ -8,8 +8,8 @@ import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 import org.springframework.core.io.ClassPathResource;
 
 import io.extact.msa.spring.platform.core.jwt.JsonWebToken;
-import io.extact.msa.spring.platform.core.jwt.JwtProviderProperties;
 import io.extact.msa.spring.platform.core.jwt.JwtValidateException;
+import io.extact.msa.spring.platform.core.jwt.provider.JwtProviderProperties;
 import io.extact.msa.spring.platform.core.jwt.provider.SecretKeyFile;
 
 public class Jose4jTokenValidator implements JsonWebTokenValidator {

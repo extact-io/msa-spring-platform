@@ -15,10 +15,11 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.core.io.ClassPathResource;
 
-import io.extact.msa.spring.platform.core.jwt.JwtProviderProperties.Claim;
-import io.extact.msa.spring.platform.core.jwt.JwtProviderProperties.PrivateKey;
 import io.extact.msa.spring.platform.core.jwt.provider.JsonWebTokenGenerator;
+import io.extact.msa.spring.platform.core.jwt.provider.JwtProviderProperties;
 import io.extact.msa.spring.platform.core.jwt.provider.UserClaims;
+import io.extact.msa.spring.platform.core.jwt.provider.JwtProviderProperties.Claim;
+import io.extact.msa.spring.platform.core.jwt.provider.JwtProviderProperties.PrivateKey;
 import io.extact.msa.spring.platform.core.jwt.provider.impl.Auth0RsaJwtGenerator;
 import io.extact.msa.spring.platform.core.jwt.provider.impl.Jose4jRsaJwtGenerator;
 import io.extact.msa.spring.platform.core.jwt.validate.Auth0TokenValidator;
@@ -67,7 +68,7 @@ class JsonWebTokenGeneratorTest {
 
         // 復元したJSONが元通りか確認
         assertThat(jwt.getName()).isEqualTo(userClaims.getUserPrincipalName());
-        assertThat(jwt.getIssuer()).isEqualTo(jwtConfig.getIssuer());
+        assertThat(jwt.getIssuer()).isEqualTo(properties.getClaim().getIssuer());
         assertThat(jwt.getAudience()).isNull();
         assertThat(jwt.getSubject()).isEqualTo(userClaims.getUserId());
         assertThat(jwt.getTokenID()).isNotNull();

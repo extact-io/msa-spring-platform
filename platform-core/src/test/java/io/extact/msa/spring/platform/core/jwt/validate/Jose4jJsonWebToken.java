@@ -1,6 +1,7 @@
 package io.extact.msa.spring.platform.core.jwt.validate;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.jose4j.jwt.JwtClaims;
@@ -16,14 +17,9 @@ public class Jose4jJsonWebToken implements JsonWebToken {
     }
 
     @Override
-    public String getName() {
-        return getClaim("upn");
-    }
-
-    @Override
     public Set<String> getGroups() {
-        // MP-JWTはSetを要求するため変換
-        return new HashSet<>(getClaim("groups"));
+        List<String> groups = getClaim("groups");
+        return new HashSet<String>(groups);
     }
 
     @Override

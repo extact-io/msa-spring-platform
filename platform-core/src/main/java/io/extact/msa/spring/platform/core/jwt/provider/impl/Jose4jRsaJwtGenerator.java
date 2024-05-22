@@ -10,8 +10,8 @@ import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.NumericDate;
 import org.jose4j.lang.JoseException;
 
-import io.extact.msa.spring.platform.core.jwt.JwtProviderProperties;
 import io.extact.msa.spring.platform.core.jwt.provider.JsonWebTokenGenerator;
+import io.extact.msa.spring.platform.core.jwt.provider.JwtProviderProperties;
 import io.extact.msa.spring.platform.core.jwt.provider.SecretKeyFile;
 import io.extact.msa.spring.platform.core.jwt.provider.UserClaims;
 

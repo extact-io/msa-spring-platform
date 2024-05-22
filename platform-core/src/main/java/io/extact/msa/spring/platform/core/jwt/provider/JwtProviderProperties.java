@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.core.jwt;
+package io.extact.msa.spring.platform.core.jwt.provider;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.Resource;
@@ -9,6 +9,7 @@ import lombok.Data;
 @Data
 public class JwtProviderProperties {
 
+    private boolean enable = false;
     private PrivateKey privateKey;
     private Claim claim;
 

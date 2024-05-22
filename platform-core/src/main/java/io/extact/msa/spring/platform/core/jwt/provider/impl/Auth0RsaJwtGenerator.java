@@ -10,8 +10,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator.Builder;
 import com.auth0.jwt.algorithms.Algorithm;
 
-import io.extact.msa.spring.platform.core.jwt.JwtProviderProperties;
 import io.extact.msa.spring.platform.core.jwt.provider.JsonWebTokenGenerator;
+import io.extact.msa.spring.platform.core.jwt.provider.JwtProviderProperties;
 import io.extact.msa.spring.platform.core.jwt.provider.SecretKeyFile;
 import io.extact.msa.spring.platform.core.jwt.provider.UserClaims;
 
