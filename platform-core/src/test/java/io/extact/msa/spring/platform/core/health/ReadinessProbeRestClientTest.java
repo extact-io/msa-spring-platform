@@ -15,6 +15,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,16 +35,23 @@ import io.extact.msa.spring.platform.core.health.client.ReadinessProbeRestClient
  * </pre>
  * ReadinessProbeRestClientのテストは別の観点で実施している。
  */
-@SpringBootTest(classes = ReadinessProbeRestClientTest.TestConfig.class, webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ReadinessProbeRestClientTest {
 
     @Configuration(proxyBeanMethods = false)
     @EnableAutoConfiguration
     @Import(HealthConfiguration.class)
-    private static class TestConfig {
+    static class TestConfig {
+
         @Bean
         TestStubResource testStubResource() {
             return new TestStubResource();
+        }
+
+        @Bean
+        SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+            http.authorizeHttpRequests((requests) -> requests.anyRequest().anonymous());
+            return http.build();
         }
     }
 

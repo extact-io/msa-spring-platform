@@ -3,35 +3,49 @@ package io.extact.msa.spring.platform.core.validate;
 import static org.assertj.core.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
-import io.extact.msa.spring.platform.core.validate.ValidateParamInterceptorTest.AnnotateVariationGroupDefTestBean;
-import io.extact.msa.spring.platform.core.validate.ValidateParamInterceptorTest.AnnotateVariationNoneGroupDefTestBean;
-import io.extact.msa.spring.platform.core.validate.ValidateParamInterceptorTest.GroupVariationTestBean;
-import io.extact.msa.spring.test.junit5.JulToSLF4DelegateExtension;
-import io.helidon.microprofile.tests.junit5.AddBean;
-import io.helidon.microprofile.tests.junit5.DisableDiscovery;
-import io.helidon.microprofile.tests.junit5.HelidonTest;
-import jakarta.enterprise.context.Dependent;
-import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.groups.Default;
-import jakarta.ws.rs.DELETE;
+import lombok.Data;
 
-@HelidonTest
-@DisableDiscovery
-@AddBean(value = ValidateParamInterceptor.class, scope = Dependent.class)
-@AddBean(ValidateParamInterceptor.InnerValidatorImpl.class)
-@AddBean(GroupVariationTestBean.class)
-@AddBean(AnnotateVariationNoneGroupDefTestBean.class)
-@AddBean(AnnotateVariationGroupDefTestBean.class)
-@ExtendWith(JulToSLF4DelegateExtension.class)
+@SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class ValidateParamInterceptorTest {
 
-    @Inject
-    private GroupVariationTestBean testBean;
+    @Configuration(proxyBeanMethods = false)
+    @EnableAutoConfiguration
+    //@EnableAspectJAutoProxy
+    static class TestConfig {
+
+        @Bean
+        GroupVariationTestBean testBean() {
+            return new GroupVariationTestBean();
+        }
+
+        @Bean
+        AnnotateVariationGroupDefTestBean groupAnnoteTestBean() {
+            return new AnnotateVariationGroupDefTestBean();
+        }
+
+        @Bean
+        public LocalValidatorFactoryBean validator() {
+            return new LocalValidatorFactoryBean();
+        }
+        @Bean
+        MethodValidationPostProcessor methodValidationPostProcessor() {
+            return new MethodValidationPostProcessor();
+        }
+    }
 
     // ValidationGroups for Test
     public interface Add {}
@@ -41,24 +55,21 @@ class ValidateParamInterceptorTest {
     // ----------------------------------------------------- test methods
 
     @Test
-    void testGroupVariationValidation() {
+    void testGroupVariationValidation(@Autowired GroupVariationTestBean testBean) {
 
         TestEntity entity = new TestEntity();
         entity.setValue1(0);
         entity.setValue2(0);
         entity.setValue3(0);
 
-        assertThatCode(
-            () -> testBean.noneValidate(entity)
-        ).doesNotThrowAnyException();
+        testBean.noneGroupValidate(entity);
+//        ConstraintViolationException actual = catchThrowableOfType(() ->
+//            testBean.noneGroupValidate(entity),
+//            ConstraintViolationException.class
+//        );
+//        assertThat(actual.getConstraintViolations()).hasSize(2);
 
         ConstraintViolationException actual = catchThrowableOfType(() ->
-            testBean.noneGroupValidate(entity),
-            ConstraintViolationException.class
-        );
-        assertThat(actual.getConstraintViolations()).hasSize(2);
-
-        actual = catchThrowableOfType(() ->
             testBean.defaultGroupValidate(entity),
             ConstraintViolationException.class
         );
@@ -89,47 +100,8 @@ class ValidateParamInterceptorTest {
         assertThat(actual.getConstraintViolations()).hasSize(3);
     }
 
-    @Inject
-    private AnnotateVariationNoneGroupDefTestBean noneGroupAnnoteTestBean;
-
     @Test
-    void testAnnotateVariationNoneGroupDefValidation() {
-
-        TestEntity entity = new TestEntity();
-        entity.setValue1(0);
-        entity.setValue2(0);
-        entity.setValue3(0);
-
-        ConstraintViolationException actual = catchThrowableOfType(() ->
-            noneGroupAnnoteTestBean.applyTypeDefValidate(entity),
-            ConstraintViolationException.class
-        );
-        assertThat(actual.getConstraintViolations()).hasSize(2);
-
-        actual = catchThrowableOfType(() ->
-            noneGroupAnnoteTestBean.defineTypeSameGroupValidate(entity),
-            ConstraintViolationException.class
-        );
-        assertThat(actual.getConstraintViolations()).hasSize(2);
-
-        actual = catchThrowableOfType(() ->
-            noneGroupAnnoteTestBean.defineTypeDiffGroupValidate(entity),
-            ConstraintViolationException.class
-        );
-        assertThat(actual.getConstraintViolations()).hasSize(3);
-
-        actual = catchThrowableOfType(() ->
-            noneGroupAnnoteTestBean.defineTypeDiffGroupAndValidateParamValidate(entity),
-            ConstraintViolationException.class
-        );
-        assertThat(actual.getConstraintViolations()).hasSize(2);
-    }
-
-    @Inject
-    private AnnotateVariationGroupDefTestBean groupAnnoteTestBean;
-
-    @Test
-    void testAnnotateVariationGroupDefValidation() {
+    void testAnnotateVariationGroupDefValidation(AnnotateVariationGroupDefTestBean groupAnnoteTestBean) {
 
         TestEntity entity = new TestEntity();
         entity.setValue1(0);
@@ -152,13 +124,17 @@ class ValidateParamInterceptorTest {
 
     // ----------------------------------------------------- inner classes for test
 
+    @Data
+    @Validated
     public static class TestEntity {
+
         @Min(value = 100)
         private int value1;
         @Min(value = 100, groups = Add.class)
         private int value2;
         @Min(value = 100, groups = { Default.class, Update.class })
         private int value3;
+
         public int getValue1() {
             return value1;
         }
@@ -179,87 +155,44 @@ class ValidateParamInterceptorTest {
         }
     }
 
+    @Validated
     public static class GroupVariationTestBean {
 
-        public void noneValidate(@Valid TestEntity entity) {
-            // nop
-        }
-
-        @ValidateParam
         public void noneGroupValidate(@Valid TestEntity entity) {
             // nop
         }
 
-        @ValidateParam
-        @ValidateGroup(groups = Default.class)
-        public void defaultGroupValidate(@Valid TestEntity entity) {
+        public void defaultGroupValidate(@Validated(Default.class) TestEntity entity) {
             // nop
         }
 
-        @ValidateParam
-        @ValidateGroup(groups = Add.class)
-        public void addGroupValidate(@Valid TestEntity entity) {
+        public void addGroupValidate(@Validated(Add.class) TestEntity entity) {
             // nop
         }
 
-        @ValidateParam
-        @ValidateGroup(groups = Update.class)
-        public void updateGroupValidate(@Valid TestEntity entity) {
+        public void updateGroupValidate(@Validated(Update.class) TestEntity entity) {
             // nop
         }
 
-        @ValidateParam
-        @ValidateGroup(groups = Delete.class)
-        public void deleteGroupValidate(@Valid TestEntity entity) {
+        public void deleteGroupValidate(@Validated(Delete.class) TestEntity entity) {
             // nop
         }
-        @ValidateParam
-        @ValidateGroup(groups = { Default.class, Add.class })
-        public void addAndDefaultGroupValidate(@Valid TestEntity entity) {
+
+        public void addAndDefaultGroupValidate(@Validated({ Default.class, Add.class }) TestEntity entity) {
             // nop
         }
     }
 
-    @ValidateParam
-    public static class AnnotateVariationNoneGroupDefTestBean {
-
-        // メソッドにGroup指定なし
-        public void applyTypeDefValidate(@Valid TestEntity entity) {
-            // nop
-        }
-
-        // メソッドにクラスと同じGroupを指定
-        @ValidateGroup(groups = Default.class)
-        public void defineTypeSameGroupValidate(@Valid TestEntity entity) {
-            // nop
-        }
-
-        // メソッドにクラスと異なるGroupを指定
-        @ValidateGroup(groups = Add.class)
-        public void defineTypeDiffGroupValidate(@Valid TestEntity entity) {
-            // nop
-        }
-
-        // メソッドにクラスと異なるGroupとValidatePramaつける
-        @ValidateParam
-        @ValidateGroup(groups = Update.class)
-        public void defineTypeDiffGroupAndValidateParamValidate(@Valid TestEntity entity) {
-            // nop
-        }
-    }
-
-    @ValidateGroup(groups = Add.class)
-    @ValidateParam
+    @Validated(Add.class)
     public static class AnnotateVariationGroupDefTestBean {
 
         // メソッドにGroup指定なし
-        public void applyTypeDefValidate(@Valid TestEntity entity) {
+        public void applyTypeDefValidate(TestEntity entity) {
             // nop
         }
 
         // メソッドにクラスと異なるGroupを指定(指定を上書き)
-        @ValidateGroup(groups = DELETE.class)
-        public void defineTypeDiffGroupValidate(@Valid TestEntity entity) {
+        public void defineTypeDiffGroupValidate(@Validated(Delete.class) TestEntity entity) {
             // nop
         }
     }

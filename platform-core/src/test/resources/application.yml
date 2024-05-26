@@ -44,15 +44,15 @@ rms:
       - http://localhost:7004/actuator/health/readiness
   jwt-provider:
     enable: true
-    private-key:
-      location: ${jwt.private.key}
+    private-key: classpath:/jwt.key
+    clock:
+      type: system
+      fixed-datetime: 2024-01-01T12:30 # typeがsystemの場合は無視される
     claim:
       issuer: JsonWebTokenIntegrationTest
-      issuedAt: -1            # 発行日時[-1はnow()]（秒単位）
       exp: 60                 # 有効期限（分単位）
-jwt:
-  public:
-    key: classpath:/jwt.pub.key
-  private:
-    key: classpath:/jwt.key
+  jwt-validator:
+    public-key: classpath:/jwt.pub.key
+    claim:
+      issuer: ${rms.jwt-provider.claim.issuer}
 

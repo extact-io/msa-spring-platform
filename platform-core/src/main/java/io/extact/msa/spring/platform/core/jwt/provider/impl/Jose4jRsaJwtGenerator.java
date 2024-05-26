@@ -2,7 +2,7 @@ package io.extact.msa.spring.platform.core.jwt.provider.impl;
 
 import static org.jose4j.jws.AlgorithmIdentifiers.*;
 
-import java.security.interfaces.RSAPrivateKey;
+import java.time.Instant;
 import java.util.ArrayList;
 
 import org.jose4j.jws.JsonWebSignature;
@@ -11,9 +11,8 @@ import org.jose4j.jwt.NumericDate;
 import org.jose4j.lang.JoseException;
 
 import io.extact.msa.spring.platform.core.jwt.provider.JsonWebTokenGenerator;
-import io.extact.msa.spring.platform.core.jwt.provider.JwtProviderProperties;
-import io.extact.msa.spring.platform.core.jwt.provider.SecretKeyFile;
 import io.extact.msa.spring.platform.core.jwt.provider.UserClaims;
+import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderProperties;
 
 public class Jose4jRsaJwtGenerator implements JsonWebTokenGenerator {
 
@@ -27,12 +26,11 @@ public class Jose4jRsaJwtGenerator implements JsonWebTokenGenerator {
     public String generateToken(UserClaims userClaims) {
 
         JsonWebSignature jws = new JsonWebSignature(); // 署名オブジェクト
-        RSAPrivateKey privateKey = createPrivateKey(); // RSA秘密鍵(p8フォーマット)
 
         JwtClaims claims = createClaims(userClaims);
         jws.setPayload(claims.toJson());
         jws.setAlgorithmHeaderValue(RSA_USING_SHA256);
-        jws.setKey(privateKey);
+        jws.setKey(properties.getPrivateKey()); // RSA秘密鍵(p8フォーマット)
         jws.setDoKeyValidation(false);
 
         try {
@@ -41,11 +39,6 @@ public class Jose4jRsaJwtGenerator implements JsonWebTokenGenerator {
         } catch (JoseException e) {
             throw new IllegalStateException(e);
         }
-    }
-
-    private RSAPrivateKey createPrivateKey() {
-        SecretKeyFile keyFile = new SecretKeyFile(properties.getPrivateKey().getLocation());
-        return keyFile.generateKey(SecretKeyFile.PRIVATE);
     }
 
     private JwtClaims createClaims(UserClaims userClaims) {
@@ -57,14 +50,12 @@ public class Jose4jRsaJwtGenerator implements JsonWebTokenGenerator {
         claims.setIssuer(properties.getClaim().getIssuer());
         // ユーザ識別子
         claims.setSubject(userClaims.getUserId());
-        // 有効期限(exp)
-        claims.setExpirationTimeMinutesInTheFuture(properties.getClaim().getExpirationTime());
         // 発行日時(iat)
-        if (properties.getClaim().isIssuedAtToNow()) {
-            claims.setIssuedAtToNow();
-        } else {
-            claims.setIssuedAt(NumericDate.fromSeconds(properties.getClaim().getIssuedAt()));
-        }
+        Instant now = properties.getClock().getClock().instant();
+        claims.setIssuedAt(NumericDate.fromMilliseconds(now.toEpochMilli()));
+        // 有効期限(exp)
+        Instant expirationTime = properties.getClaim().getExpirationTime(now);
+        claims.setExpirationTime(NumericDate.fromMilliseconds(expirationTime.toEpochMilli()));
         // tokenId(jti)
         claims.setGeneratedJwtId();
         // ユーザ名(MicroProfile-JWTのカスタムClaim)

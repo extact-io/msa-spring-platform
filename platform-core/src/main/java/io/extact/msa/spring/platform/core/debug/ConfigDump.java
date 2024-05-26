@@ -32,7 +32,6 @@ import lombok.extern.slf4j.Slf4j;
  *         - env.rms
  * </pre>
  */
-// TODO: ConfigurationPropertiesに移動したらPro Strping BootのAutoConfigurationとかを参考にしてやってみよう
 @Slf4j(topic = "ConfigDump")
 public class ConfigDump {
 

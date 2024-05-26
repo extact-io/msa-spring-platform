@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.core.jwt.validate;
+package io.extact.msa.spring.platform.core.jwt.provider.validate;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -6,7 +6,7 @@ import java.util.Set;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
-import io.extact.msa.spring.platform.core.jwt.JsonWebToken;
+import io.extact.msa.spring.platform.core.jwt.provider.JsonWebToken;
 
 public class Auth0JsonWebToken implements JsonWebToken {
 

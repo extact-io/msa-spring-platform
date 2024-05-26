@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.core.jwt.validate;
+package io.extact.msa.spring.platform.core.jwt.provider.validate;
 
 import java.security.interfaces.RSAPublicKey;
 
@@ -7,10 +7,8 @@ import org.jose4j.jwt.consumer.JwtConsumer;
 import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 import org.springframework.core.io.ClassPathResource;
 
-import io.extact.msa.spring.platform.core.jwt.JsonWebToken;
-import io.extact.msa.spring.platform.core.jwt.JwtValidateException;
-import io.extact.msa.spring.platform.core.jwt.provider.JwtProviderProperties;
-import io.extact.msa.spring.platform.core.jwt.provider.SecretKeyFile;
+import io.extact.msa.spring.platform.core.jwt.provider.JsonWebToken;
+import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderProperties;
 
 public class Jose4jTokenValidator implements JsonWebTokenValidator {
 

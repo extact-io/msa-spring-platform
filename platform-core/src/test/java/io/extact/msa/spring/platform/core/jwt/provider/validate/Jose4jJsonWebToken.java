@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.core.jwt.validate;
+package io.extact.msa.spring.platform.core.jwt.provider.validate;
 
 import java.util.HashSet;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.jose4j.jwt.JwtClaims;
 
-import io.extact.msa.spring.platform.core.jwt.JsonWebToken;
+import io.extact.msa.spring.platform.core.jwt.provider.JsonWebToken;
 
 public class Jose4jJsonWebToken implements JsonWebToken {
 

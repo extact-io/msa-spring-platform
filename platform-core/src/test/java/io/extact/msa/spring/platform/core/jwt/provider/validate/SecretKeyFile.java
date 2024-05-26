@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.core.jwt.provider;
+package io.extact.msa.spring.platform.core.jwt.provider.validate;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -62,6 +62,7 @@ public class SecretKeyFile {
 
     @SuppressWarnings("unchecked")
     static class PrivateKeyCreator implements KeyType {
+
         @Override
         public RSAPrivateKey of(String pem) {
             String privateKey = pem
@@ -82,6 +83,7 @@ public class SecretKeyFile {
 
     @SuppressWarnings("unchecked")
     static class PublicKeyCreator implements KeyType {
+
         @Override
         public RSAPublicKey of(String pem) {
             String publicKey = pem

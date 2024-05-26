@@ -7,7 +7,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.security.interfaces.RSAPublicKey;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -21,26 +20,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
-import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
-import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -54,13 +46,14 @@ import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import ch.qos.logback.access.tomcat.LogbackValve;
 import io.extact.msa.spring.platform.core.jwt.provider.GenerateToken;
-import io.extact.msa.spring.platform.core.jwt.provider.JsonWebTokenGenerator;
-import io.extact.msa.spring.platform.core.jwt.provider.JwtProvideResponseAdvice;
-import io.extact.msa.spring.platform.core.jwt.provider.JwtProviderProperties;
 import io.extact.msa.spring.platform.core.jwt.provider.UserClaims;
+import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderConfiguration;
+import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderProperties;
+import io.extact.msa.spring.platform.core.jwt.validator.AuthorizeRequestCustomizer;
+import io.extact.msa.spring.platform.core.jwt.validator.JwtValidatorConfiguration;
 import io.extact.msa.spring.platform.core.testlib.NopResponseErrorHandler;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -74,57 +67,20 @@ public class JsonWebTokenIntegrationTest {
     @Configuration(proxyBeanMethods = false)
     @EnableAutoConfiguration
     @EnableWebSecurity(debug = true)
-    @Import(JwtProviderConfiguration.class)
+    @Import({ JwtProviderConfiguration.class, JwtValidatorConfiguration.class })
     static class TestConfig {
 
         @Bean
-        JwtProvideResponseAdvice jwtProvideResponseAdvice(JsonWebTokenGenerator generator) {
-            return new JwtProvideResponseAdvice(generator);
+        AuthorizeRequestCustomizer authorizeRequestCustomizer() {
+
+            // TODO Improve when https://github.com/microsoft/vscode-java-pack/issues/530 is fixed
+            return (AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry configurer) -> configurer
+                    .requestMatchers("/login").permitAll()
+                    .requestMatchers("/role/a").hasRole("roleA")
+                    .requestMatchers("/role/c/**").hasRole("roleC")
+                    .requestMatchers("/check").hasRole("roleCheck")
+                    .anyRequest().authenticated();
         }
-
-        @Bean
-        SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-            http
-                    .authorizeHttpRequests((requests) -> requests
-                            .requestMatchers("/login").permitAll()
-                            .anyRequest().authenticated())
-                    .csrf((csrf) -> csrf.disable())
-                    .oauth2ResourceServer((oauth2) -> oauth2
-                            .jwt(jwt -> jwt
-                                    .jwtAuthenticationConverter(jwtAuthenticationConverter())))
-                    .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                    .exceptionHandling((exceptions) -> exceptions
-                            .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
-                            .accessDeniedHandler(new BearerTokenAccessDeniedHandler()));
-            return http.build();
-        }
-
-        // ----------------------------------- for test facilities
-
-        JwtAuthenticationConverter jwtAuthenticationConverter() {
-            JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-            grantedAuthoritiesConverter.setAuthoritiesClaimName("groups");
-
-            JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-            jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
-            return jwtAuthenticationConverter;
-        }
-
-        @Bean
-        JwtDecoder jwtDecoder(@Value("${jwt.public.key}") RSAPublicKey key) {
-            return NimbusJwtDecoder.withPublicKey(key).build();
-        }
-
-        @Bean
-        TomcatServletWebServerFactory servletContainer() {
-            TomcatServletWebServerFactory tomcatServletWebServerFactory = new TomcatServletWebServerFactory();
-            LogbackValve valve = new LogbackValve();
-            valve.setFilename(LogbackValve.DEFAULT_FILENAME);
-            tomcatServletWebServerFactory.addContextValves(valve);
-            return tomcatServletWebServerFactory;
-        }
-
-        // ----------------------------------- for test stub beans
 
         @Bean
         LoginResource testLoginResource() {
@@ -204,7 +160,7 @@ public class JsonWebTokenIntegrationTest {
         assertThat(auth.getName()).isEqualTo("test");
 
         List<String> roles = auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-        assertThat(roles).containsExactlyInAnyOrder("SCOPE_roleA", "SCOPE_roleB");
+        assertThat(roles).containsExactlyInAnyOrder("ROLE_roleA", "ROLE_roleB");
 
         // jwt assertion
         assertThat(auth.getCredentials()).isInstanceOf(Jwt.class);
@@ -226,6 +182,48 @@ public class JsonWebTokenIntegrationTest {
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
+    @Test
+    void testAuthorization() {
+
+        // response assertion
+        ResponseEntity<TestUserClaims> response = loginClient.login(SUCCESS);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        String tokenId = response.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+        Map<String, String> header = Map.of(HttpHeaders.AUTHORIZATION, tokenId);
+
+        // check roles
+        ResponseEntity<String> actual = resourceClient.roleA(header);
+        assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        actual = resourceClient.roleC(header);
+        assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+
+        actual = resourceClient.roleCc(header);
+        assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+
+        actual = resourceClient.everyone(header);
+        assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    void testCheck() {
+
+        // response assertion
+        ResponseEntity<TestUserClaims> response = loginClient.login(SUCCESS);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        // BAD_REQUEST(バリデーションエラー)ではなく認証エラーが返ってくること
+        ResponseEntity<String> actual = resourceClient.check(Collections.emptyMap(), "");
+        assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+
+        // BAD_REQUEST(バリデーションエラー)ではなく認可エラーが返ってくること
+        String tokenId = response.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+        Map<String, String> header = Map.of(HttpHeaders.AUTHORIZATION, tokenId);
+        actual = resourceClient.check(header, "");
+        assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
     // ----------------------------------------------------- client side stub interface
 
     public interface LoginRestClient {
@@ -241,6 +239,21 @@ public class JsonWebTokenIntegrationTest {
 
         @GetExchange("/hello")
         ResponseEntity<String> hello(@RequestHeader Map<String, ?> headers);
+
+        @GetExchange("/role/a")
+        ResponseEntity<String> roleA(@RequestHeader Map<String, ?> headers);
+
+        @GetExchange("/role/c")
+        ResponseEntity<String> roleC(@RequestHeader Map<String, ?> headers);
+
+        @GetExchange("/role/c/c")
+        ResponseEntity<String> roleCc(@RequestHeader Map<String, ?> headers);
+
+        @GetExchange("/everyone")
+        ResponseEntity<String> everyone(@RequestHeader Map<String, ?> headers);
+
+        @GetExchange("/check")
+        ResponseEntity<String> check(@RequestHeader Map<String, ?> headers, @RequestParam("val") String val);
     }
 
 
@@ -269,6 +282,31 @@ public class JsonWebTokenIntegrationTest {
             actualAuthenticationOnServerSide = authentication;
             return "Hello, " + authentication.getName() + "!";
         }
+
+        @GetMapping("/role/a")
+        public String roleA() {
+            return "ok";
+        }
+
+        @GetMapping("/role/c")
+        public String roleC() {
+            return "ok";
+        }
+
+        @GetMapping("/role/c/c")
+        public String roleCc() {
+            return "ok";
+        }
+
+        @GetMapping("/everyone")
+        public String everyone() {
+            return "ok";
+        }
+
+        @GetMapping("/check")
+        public String check(@RequestParam("val") @NotBlank String val) {
+            return "ok";
+        }
     }
 
     @Target({ElementType.TYPE, ElementType.METHOD})
@@ -279,8 +317,13 @@ public class JsonWebTokenIntegrationTest {
     @RestControllerAdvice(annotations = ExceptionMapping.class)
     static class ResourceExceptionMapper extends ResponseEntityExceptionHandler {
 
+        @ExceptionHandler(AccessDeniedException.class)
+        public ResponseEntity<Void> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
         @ExceptionHandler(Exception.class)
-        public ResponseEntity<Void> handleNotFoundException(Exception ex, WebRequest request) {
+        public ResponseEntity<Void> handleErrorException(Exception ex, WebRequest request) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

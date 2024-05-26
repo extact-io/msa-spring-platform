@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.core.jwt.validate;
+package io.extact.msa.spring.platform.core.jwt.provider.validate;
 
 import java.security.interfaces.RSAPublicKey;
 
@@ -8,10 +8,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.JWTVerifier;
 
-import io.extact.msa.spring.platform.core.jwt.JsonWebToken;
-import io.extact.msa.spring.platform.core.jwt.JwtValidateException;
-import io.extact.msa.spring.platform.core.jwt.provider.JwtProviderProperties;
-import io.extact.msa.spring.platform.core.jwt.provider.SecretKeyFile;
+import io.extact.msa.spring.platform.core.jwt.provider.JsonWebToken;
+import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderProperties;
 
 public class Auth0TokenValidator implements JsonWebTokenValidator {
 

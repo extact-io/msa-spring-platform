@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Import;
@@ -14,8 +13,7 @@ import org.springframework.test.context.TestPropertySource;
 class MainModuleInformationTest {
 
 
-    // ProjectInfoAutoConfiguration is required to activate BuildProperies, GitProperties
-    @Import({ ProjectInfoAutoConfiguration.class, EnvConfiguration.class })
+    @Import(EnvConfiguration.class)
     static class TestConfig {
     }
 
