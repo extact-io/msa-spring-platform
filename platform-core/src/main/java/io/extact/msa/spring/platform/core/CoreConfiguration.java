@@ -1,5 +1,6 @@
 package io.extact.msa.spring.platform.core;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -12,6 +13,7 @@ import ch.qos.logback.access.tomcat.LogbackValve;
 public class CoreConfiguration {
 
     @Bean
+    @ConditionalOnClass(LogbackValve.class)
     @ConditionalOnWebApplication(type = Type.SERVLET)
     TomcatServletWebServerFactory servletContainer() {
         TomcatServletWebServerFactory tomcatServletWebServerFactory = new TomcatServletWebServerFactory();
