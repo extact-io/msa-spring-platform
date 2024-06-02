@@ -2,23 +2,24 @@ package io.extact.msa.spring.platform.fw.domain.constraint;
 
 import java.util.Set;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validator;
-
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import io.extact.msa.spring.test.assertj.ConstraintViolationSetAssert;
-import io.extact.msa.spring.test.junit5.ValidatorParameterExtension;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-@ExtendWith(ValidatorParameterExtension.class)
+@SpringBootTest(classes = LocalValidatorFactoryBean.class, webEnvironment = WebEnvironment.NONE)
 class PhoneNumberTest {
 
     @Test
-    void testValidate(Validator validator) {
+    void testValidate(@Autowired Validator validator) {
         var OK= new Data("1234567890");
         Set<ConstraintViolation<Data>> result = validator.validate(OK);
         ConstraintViolationSetAssert.assertThat(result)

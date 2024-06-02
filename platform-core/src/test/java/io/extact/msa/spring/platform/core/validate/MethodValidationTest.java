@@ -10,8 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
@@ -34,15 +32,6 @@ class MethodValidationTest {
         @Bean
         AnnotateVariationGroupDefTestBean groupAnnoteTestBean() {
             return new AnnotateVariationGroupDefTestBean();
-        }
-
-        @Bean
-        public LocalValidatorFactoryBean validator() {
-            return new LocalValidatorFactoryBean();
-        }
-        @Bean
-        MethodValidationPostProcessor methodValidationPostProcessor() {
-            return new MethodValidationPostProcessor();
         }
     }
 

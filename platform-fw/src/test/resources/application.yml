@@ -1,0 +1,9 @@
+logging.level:
+  org.springframework:
+    boot.autoconfigure: info
+    security: debug
+  ConfigDump: debug
+
+spring:
+  main:
+    banner-mode: off

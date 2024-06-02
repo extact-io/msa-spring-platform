@@ -12,6 +12,28 @@
 	<description>framework of the application</description>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.extact</groupId>
+			<artifactId>msa-spring-test-lib</artifactId>
+		</dependency>
+
+
 		<!-- ======================================== -->
 		<!-- *** provided scope dependencies ***      -->
 		<!-- ======================================== -->
@@ -28,6 +50,7 @@
 		<dependency>
 			<groupId>jakarta.enterprise</groupId>
 			<artifactId>jakarta.enterprise.cdi-api</artifactId>
+			<version>4.0.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -55,32 +78,31 @@
 		<dependency>
 			<groupId>org.eclipse.microprofile.jwt</groupId>
 			<artifactId>microprofile-jwt-auth-api</artifactId>
+			<version>2.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.microprofile.config</groupId>
 			<artifactId>microprofile-config-api</artifactId>
+			<version>3.0.3</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.microprofile.openapi</groupId>
 			<artifactId>microprofile-openapi-api</artifactId>
+			<version>3.1.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.microprofile.rest.client</groupId>
 			<artifactId>microprofile-rest-client-api</artifactId>
+			<version>3.0.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.microprofile.fault-tolerance</groupId>
 			<artifactId>microprofile-fault-tolerance-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<!-- for BootstrapWebApi -->
-		<dependency>
-			<groupId>io.helidon.microprofile.cdi</groupId>
-			<artifactId>helidon-microprofile-cdi</artifactId>
+			<version>4.0.2</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -95,136 +117,6 @@
 			<artifactId>commons-csv</artifactId>
 			<scope>provided</scope>
 		</dependency>
-
-		<!-- ======================================== -->
-		<!-- *** test scope dependencies(APIs) *** -->
-		<!-- ======================================== -->
-		<!-- for test libraries -->
-		<dependency>
-			<groupId>io.extact</groupId>
-			<artifactId>msa-spring-test-lib</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>jakarta.transaction</groupId>
-			<artifactId>jakarta.transaction-api</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- below are the libraries needed only to run the tests. -->
-		<dependency>
-			<groupId>io.helidon.microprofile.server</groupId>
-			<artifactId>helidon-microprofile-server</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.helidon.microprofile.health</groupId>
-			<artifactId>helidon-microprofile-health</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.helidon.health</groupId>
-			<artifactId>helidon-health-checks</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.helidon.microprofile.rest-client</groupId>
-			<artifactId>helidon-microprofile-rest-client</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.helidon.microprofile.jwt</groupId>
-			<artifactId>helidon-microprofile-jwt-auth</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- for JTA/JPA runtimes -->
-		<dependency>
-			<groupId>io.helidon.integrations.cdi</groupId>
-			<artifactId>helidon-integrations-cdi-jta-weld</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.helidon.integrations.cdi</groupId>
-			<artifactId>helidon-integrations-cdi-datasource-hikaricp</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.helidon.integrations.cdi</groupId>
-			<artifactId>helidon-integrations-cdi-jpa</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.helidon.integrations.cdi</groupId>
-			<artifactId>helidon-integrations-cdi-eclipselink</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>org.eclipse.persistence.jpa</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<!--
-		The jackson dependency was removed in the following issue,
-		but the dependency was added provisionally because the alternative method is unknown.
-		https://github.com/oracle/helidon/issues/1109
-		-->
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.dataformat</groupId>
-			<artifactId>jackson-dataformat-yaml</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- for BeanValidation runtimes -->
-		<dependency>
-			<groupId>org.glassfish.jersey.ext</groupId>
-			<artifactId>jersey-bean-validation</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish</groupId>
-			<artifactId>jakarta.el</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- for jax-rs ext runtime -->
-		<!-- for binding to application/json. It won't work without this -->
-		<dependency>
-			<groupId>org.glassfish.jersey.media</groupId>
-			<artifactId>jersey-media-json-binding</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- for jwt auth runtime -->
-		<dependency>
-			<groupId>com.auth0</groupId>
-			<artifactId>java-jwt</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<!--
-		<dependency>
-			<groupId>org.bitbucket.b_c</groupId>
-			<artifactId>jose4j</artifactId>
-			<scope>test</scope>
-		</dependency>
-		-->
 	</dependencies>
 	<build>
 		<plugins>

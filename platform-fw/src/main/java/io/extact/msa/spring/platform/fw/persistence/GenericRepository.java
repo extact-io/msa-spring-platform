@@ -2,15 +2,18 @@ package io.extact.msa.spring.platform.fw.persistence;
 
 import java.util.List;
 
-import jakarta.validation.Valid;
+import org.springframework.validation.annotation.Validated;
 
-import io.extact.msa.spring.platform.core.validate.ValidateParam;
+import io.extact.msa.spring.platform.fw.domain.constraint.ValidationGroups.Add;
+import io.extact.msa.spring.platform.fw.domain.constraint.ValidationGroups.Update;
+import jakarta.validation.Valid;
 
 /**
  * 永続先に依らないリポジトリの共通操作
  *
  * @param <T> エンティティの型
  */
+@Validated
 public interface GenericRepository<T> {
 
     /**
@@ -30,20 +33,22 @@ public interface GenericRepository<T> {
 
     /**
      * エンティティを追加する。
-     * 実装クラスもしくはメソッドに{@link ValidateParam}をアノテートすることでメソッド実行前に
      * {@link Valid}によりオブジェクトのValidationが実行される。
      *
      * @param entity エンティティ
      */
-    void add(T entity);
+    @Validated(Add.class)
+    void add(@Valid T entity);
 
     /**
      * エンティティを更新する。
+     * {@link Valid}によりオブジェクトのValidationが実行される。
      *
      * @param entity 更新内容
      * @return 更新後エンティティ。更新対象が存在しない場合はnull
      */
-    T update(T entity);
+    @Validated(Update.class)
+    T update(@Valid T entity);
 
     /**
      * エンティティを削除する。

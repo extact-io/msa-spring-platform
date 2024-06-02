@@ -7,18 +7,12 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import jakarta.validation.Valid;
-
 import io.extact.msa.spring.platform.fw.domain.IdProperty;
 import io.extact.msa.spring.platform.fw.domain.Transformable;
-import io.extact.msa.spring.platform.fw.domain.constraint.ValidationGroups.Add;
-import io.extact.msa.spring.platform.fw.domain.constraint.ValidationGroups.Update;
 import io.extact.msa.spring.platform.fw.persistence.GenericRepository;
 import io.extact.msa.spring.platform.fw.persistence.file.io.FileAccessor;
 import io.extact.msa.spring.platform.fw.persistence.file.io.IoSystemException;
 import io.extact.msa.spring.platform.fw.persistence.file.producer.EntityArrayConverter;
-import io.extact.msa.spring.platform.core.validate.ValidateGroup;
-import io.extact.msa.spring.platform.core.validate.ValidateParam;
 
 public class AbstractFileRepository<T extends Transformable & IdProperty> implements GenericRepository<T>, FileRepository {
 
@@ -52,18 +46,14 @@ public class AbstractFileRepository<T extends Transformable & IdProperty> implem
                 .toList();
     }
 
-    @ValidateParam
-    @ValidateGroup(groups = Add.class)
     @Override
-    public void add(@Valid T entity) {
+    public void add(T entity) {
         var nextSeq = this.getNextSequence();
         entity.setId(nextSeq);
         save(entity.transform(entityConverter::toArray));
     }
 
-    @ValidateParam
-    @ValidateGroup(groups = Update.class)
-    public T update(@Valid T entity) {
+    public T update(T entity) {
         var replaced = new AtomicBoolean(false);
         var lines = load().stream()
                 .map(items -> {

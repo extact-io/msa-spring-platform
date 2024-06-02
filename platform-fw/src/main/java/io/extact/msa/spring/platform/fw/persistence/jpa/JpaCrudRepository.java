@@ -2,15 +2,9 @@ package io.extact.msa.spring.platform.fw.persistence.jpa;
 
 import java.util.List;
 
-import jakarta.persistence.EntityManager;
-import jakarta.validation.Valid;
-
-import io.extact.msa.spring.platform.core.validate.ValidateGroup;
-import io.extact.msa.spring.platform.core.validate.ValidateParam;
 import io.extact.msa.spring.platform.fw.domain.IdProperty;
-import io.extact.msa.spring.platform.fw.domain.constraint.ValidationGroups.Add;
-import io.extact.msa.spring.platform.fw.domain.constraint.ValidationGroups.Update;
 import io.extact.msa.spring.platform.fw.persistence.GenericRepository;
+import jakarta.persistence.EntityManager;
 
 public abstract class JpaCrudRepository<T extends IdProperty> implements GenericRepository<T> {
 
@@ -26,18 +20,14 @@ public abstract class JpaCrudRepository<T extends IdProperty> implements Generic
                 .getResultList();
     }
 
-    @ValidateParam
-    @ValidateGroup(groups = Add.class)
     @Override
-    public void add(@Valid T entity) {
+    public void add(T entity) {
         this.getEntityManage().persist(entity);
         this.getEntityManage().flush();
     }
 
-    @ValidateParam
-    @ValidateGroup(groups = Update.class)
     @Override
-    public T update(@Valid T entity) {
+    public T update(T entity) {
         if (!this.getEntityManage().contains(entity) && get(entity.getId()) == null) {
             return null;
         }
