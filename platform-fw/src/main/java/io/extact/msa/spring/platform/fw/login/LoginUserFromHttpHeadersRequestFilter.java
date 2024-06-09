@@ -14,12 +14,12 @@ import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
-
-import io.extact.msa.spring.platform.fw.external.PropagateLoginUserClientHeadersFactory;
+import io.extact.msa.spring.platform.fw.auth.LoginUserImpl;
+import io.extact.msa.spring.platform.fw.external.PropagateLoginUserRequestInitializer;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * {@link PropagateLoginUserClientHeadersFactory}と対になるサーバ側のファイルター
+ * {@link PropagateLoginUserRequestInitializer}と対になるサーバ側のファイルター
  */
 @Priority(Priorities.AUTHENTICATION)
 @ConstrainedTo(RuntimeType.SERVER)

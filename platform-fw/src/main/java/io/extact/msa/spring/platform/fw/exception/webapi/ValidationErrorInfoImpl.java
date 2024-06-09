@@ -1,8 +1,7 @@
 package io.extact.msa.spring.platform.fw.exception.webapi;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import io.extact.msa.spring.platform.fw.exception.RmsValidationException.ValidationErrorInfo;
 import io.extact.msa.spring.platform.fw.exception.RmsValidationException.ValidationErrorItem;
@@ -11,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Schema(description = "パラメータチェックエラー情報")
 @NoArgsConstructor // for JSON Deserialize
 public class ValidationErrorInfoImpl extends GenericErrorInfo implements ValidationErrorInfo {
 
@@ -24,9 +22,7 @@ public class ValidationErrorInfoImpl extends GenericErrorInfo implements Validat
 
     @Override
     public List<ValidationErrorItem> getErrorItems() {
-        return errorItems.stream()
-                .map(i -> (ValidationErrorItem) i)
-                .toList();
+        return new ArrayList<>(errorItems);
     }
 
     public void setErrorItems(List<ValidationErrorItemImpl> errorItems) {
@@ -36,16 +32,11 @@ public class ValidationErrorInfoImpl extends GenericErrorInfo implements Validat
 
     // ----------------------------------------------------- inner classes
 
-    @Schema(description = "1件ごとのチェックエラー情報")
     @NoArgsConstructor // for JSON Deserialize
     @AllArgsConstructor
     @Getter @Setter
     public static class ValidationErrorItemImpl implements ValidationErrorItem {
-
-        @Schema(description = "エラーとなった項目")
         private String fieldName;
-
-        @Schema(description = "エラーメッセージ")
         private String message;
     }
 }

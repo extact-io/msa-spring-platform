@@ -8,12 +8,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.time.LocalDateTime;
 
+import io.extact.msa.spring.platform.fw.domain.constraint.BeforeAfterDateTime.BeforeAfterDateTimeValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.Payload;
-
-import io.extact.msa.spring.platform.fw.domain.constraint.BeforeAfterDateTime.BeforeAfterDateTimeValidator;
 
 @Documented
 @Constraint(validatedBy = { BeforeAfterDateTimeValidator.class })
@@ -21,15 +20,15 @@ import io.extact.msa.spring.platform.fw.domain.constraint.BeforeAfterDateTime.Be
 @Retention(RUNTIME)
 public @interface BeforeAfterDateTime {
 
-    String message() default "{io.extact.msa.spring.platform.fw.domain.constraint.BeforeAfterDateTime.message}";
+    String message() default "{message.io.extact.msa.spring.platform.fw.domain.constraint.BeforeAfterDateTime}";
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
 
-    String from() default "start datetime";
+    String from() default "label.use.from.datetime";
 
-    String to() default "end datetime";
+    String to() default "label.use.to.datetime";
 
     @Target({ TYPE, ANNOTATION_TYPE })
     @Retention(RUNTIME)

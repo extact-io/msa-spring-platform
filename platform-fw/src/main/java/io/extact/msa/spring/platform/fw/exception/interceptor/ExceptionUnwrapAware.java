@@ -7,10 +7,7 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import jakarta.interceptor.InterceptorBinding;
-
 @Inherited
-@InterceptorBinding
 @Retention(RUNTIME)
 @Target({ METHOD, TYPE })
 public @interface ExceptionUnwrapAware {

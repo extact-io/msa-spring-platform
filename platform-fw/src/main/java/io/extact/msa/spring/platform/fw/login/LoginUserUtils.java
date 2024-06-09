@@ -1,7 +1,10 @@
 package io.extact.msa.spring.platform.fw.login;
 
+import io.extact.msa.spring.platform.fw.auth.LoginUser;
+
 public class LoginUserUtils {
 
+    // TODO ThreadLocalはやめてる
     private static final InheritableThreadLocal<LoginUser> LOGIN_USER = new InheritableThreadLocal<LoginUser>() {
         @Override
         protected LoginUser initialValue() {

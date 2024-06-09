@@ -1,33 +1,26 @@
 package io.extact.msa.spring.platform.fw.exception.interceptor;
 
-import jakarta.annotation.Priority;
-import jakarta.inject.Inject;
-import jakarta.interceptor.AroundInvoke;
-import jakarta.interceptor.Interceptor;
-import jakarta.interceptor.InvocationContext;
-
-import org.eclipse.microprofile.config.Config;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
 
 import io.extact.msa.spring.platform.fw.exception.RmsNetworkConnectionException;
 import lombok.extern.slf4j.Slf4j;
 
-@Interceptor
-@Priority(Interceptor.Priority.PLATFORM_AFTER + 1000)
-@NetworkConnectionErrorAware
+@Aspect
+@Order(1)
 @Slf4j
 public class NetworkConnectionErrorInterceptor {
-    
-    private Config config;
-    
-    @Inject
-    public NetworkConnectionErrorInterceptor(Config config) {
-        this.config = config;
-    }
 
-    @AroundInvoke
-    public Object obj(InvocationContext ic) throws Exception {
+    @Value("${rms.app.name:unknown}")
+    private String sourceAppName;
+
+    @Around("@annotation(io.extact.msa.spring.platform.fw.exception.interceptor.NetworkConnectionErrorAware)")
+    public Object invoke(ProceedingJoinPoint joinPoint) throws Throwable {
         try {
-            return ic.proceed();
+            return joinPoint.proceed();
         } catch (Exception original) {
             Throwable test = original;
             while (!(test.getClass().getPackage().getName().equals("java.net"))) {
@@ -36,15 +29,14 @@ public class NetworkConnectionErrorInterceptor {
                     throw original;
                 }
             }
-            var message = makeErrorInfoMessage(ic);
+            String message = makeErrorInfoMessage(joinPoint);
             log.warn(message, original);
             throw new RmsNetworkConnectionException(message, original);
         }
     }
 
-    private String makeErrorInfoMessage(InvocationContext ic) {
-        var sourceAppName = config.getValue("rms.app.name", String.class);
-        var destinationClass = ic.getTarget().getClass().getSimpleName();
-        return String.format("Network error on call from %s to %s", sourceAppName, destinationClass);
+    private String makeErrorInfoMessage(ProceedingJoinPoint joinPoint) {
+        String destinationClass = joinPoint.getTarget().getClass().getSimpleName();
+        return "Network error on call from %s to %s".formatted(sourceAppName, destinationClass);
     }
 }

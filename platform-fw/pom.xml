@@ -20,6 +20,16 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
@@ -31,7 +41,46 @@
 		<dependency>
 			<groupId>io.extact</groupId>
 			<artifactId>msa-spring-test-lib</artifactId>
+			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>io.extact</groupId>
+			<artifactId>msa-spring-platform-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-access</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- ======================================== -->
+		<!-- *** provided scope dependencies(APIs) *** -->
+		<!-- ======================================== -->
+		<!--
+		NOTE：The following is in the compile scope, but those that do not need dependency
+			  such as ui should be excluded on the user side.
+		-->
+		<!-- dependent Implementation Libs -->
+		<dependency>
+			<groupId>org.bitbucket.b_c</groupId>
+			<artifactId>jose4j</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.auth0</groupId>
+			<artifactId>java-jwt</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+
+
+
 
 
 		<!-- ======================================== -->
@@ -42,10 +91,6 @@
 		provided scoped is included in the classpath at test.
 		NOTE: Redefines scope on the user side
 		-->
-		<dependency>
-			<groupId>io.extact</groupId>
-			<artifactId>msa-spring-platform-core</artifactId>
-		</dependency>
 		<!-- dependent JakartaEE APIs -->
 		<dependency>
 			<groupId>jakarta.enterprise</groupId>
@@ -105,13 +150,6 @@
 			<version>4.0.2</version>
 			<scope>provided</scope>
 		</dependency>
-
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-csv</artifactId>

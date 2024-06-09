@@ -14,6 +14,8 @@ import jakarta.ws.rs.container.ContainerResponseFilter;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
+import io.extact.msa.spring.platform.fw.auth.LoginUser;
+import io.extact.msa.spring.platform.fw.auth.LoginUserImpl;
 import lombok.extern.slf4j.Slf4j;
 
 /**

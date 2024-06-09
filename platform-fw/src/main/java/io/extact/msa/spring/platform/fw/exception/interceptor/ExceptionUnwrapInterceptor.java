@@ -3,19 +3,19 @@ package io.extact.msa.spring.platform.fw.exception.interceptor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.CompletionException;
 
-import jakarta.annotation.Priority;
-import jakarta.interceptor.AroundInvoke;
-import jakarta.interceptor.Interceptor;
-import jakarta.interceptor.InvocationContext;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.springframework.core.annotation.Order;
 
-@Interceptor
-@Priority(Interceptor.Priority.APPLICATION)
-@ExceptionUnwrapAware
+@Aspect
+@Order(0)
 public class ExceptionUnwrapInterceptor {
-    @AroundInvoke
-    public Object obj(InvocationContext ic) throws Throwable {
+
+    @Around("@annotation(io.extact.msa.spring.platform.fw.exception.interceptor.ExceptionUnwrapAware)")
+    public Object invoke(ProceedingJoinPoint joinPoint) throws Throwable {
         try {
-            return ic.proceed();
+            return joinPoint.proceed();
         } catch (CompletionException e) {
             throw e.getCause();
         } catch (InvocationTargetException e) {

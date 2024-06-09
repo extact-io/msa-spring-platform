@@ -26,7 +26,7 @@ import jakarta.validation.constraints.Size;
 @NotNull // 空文字列はSizeで2重にエラーに掛かるのでNotBlankではなくNotNullにしている
 @Size(min = 5, max = 10)
 public @interface Passowrd {
-    String message() default "{io.extact.msa.spring.platform.fw.domain.constraint.Generic.message}";
+    String message() default "{message.io.extact.msa.spring.platform.fw.domain.constraint.Generic}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 

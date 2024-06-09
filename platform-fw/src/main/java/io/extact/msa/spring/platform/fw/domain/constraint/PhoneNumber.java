@@ -23,11 +23,11 @@ import jakarta.validation.constraints.Size;
 @Constraint(validatedBy = {})
 @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
 @Retention(RUNTIME)
-@Pattern(regexp = "[0-9\\-]*", message = "{io.extact.msa.spring.user.domain.constraint.PhoneNumberCharacter.message}")
+@Pattern(regexp = "[0-9\\-]*", message = "{message.io.extact.msa.spring.user.domain.constraint.PhoneNumberCharacter}")
 @Size(max = 14)
 public @interface PhoneNumber {
 
-    String message() default "{io.extact.msa.spring.platform.fw.domain.constraint.Generic.message}";
+    String message() default "{message.io.extact.msa.spring.platform.fw.domain.constraint.Generic}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 
