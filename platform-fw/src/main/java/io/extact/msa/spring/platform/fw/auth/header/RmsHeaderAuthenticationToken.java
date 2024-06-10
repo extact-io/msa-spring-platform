@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 import io.extact.msa.spring.platform.fw.auth.LoginUser;
 import io.extact.msa.spring.platform.fw.auth.RmsAuthentication;
+import io.extact.msa.spring.platform.fw.auth.UserIdPrincipal;
 import lombok.ToString;
 
 @ToString
@@ -28,6 +29,7 @@ public class RmsHeaderAuthenticationToken extends AbstractAuthenticationToken im
         this.principal = principal;
         this.credentials = credentials;
         this.loginUser = loginUser;
+        this.setAuthenticated(true);
     }
 
     @Override

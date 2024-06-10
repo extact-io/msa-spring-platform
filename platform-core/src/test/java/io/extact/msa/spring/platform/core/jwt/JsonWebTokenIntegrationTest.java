@@ -30,9 +30,15 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
+import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -50,8 +56,8 @@ import io.extact.msa.spring.platform.core.jwt.provider.GenerateToken;
 import io.extact.msa.spring.platform.core.jwt.provider.UserClaims;
 import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderConfiguration;
 import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderProperties;
-import io.extact.msa.spring.platform.core.jwt.validator.AuthorizeRequestCustomizer;
-import io.extact.msa.spring.platform.core.jwt.validator.JwtValidatorConfiguration;
+import io.extact.msa.spring.platform.core.jwt.validation.AuthorizeRequestCustomizer;
+import io.extact.msa.spring.platform.core.jwt.validation.JwtValidationConfiguration;
 import io.extact.msa.spring.platform.core.testlib.NopResponseErrorHandler;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -67,8 +73,36 @@ public class JsonWebTokenIntegrationTest {
     @Configuration(proxyBeanMethods = false)
     @EnableAutoConfiguration
     @EnableWebSecurity(debug = true)
-    @Import({ JwtProviderConfiguration.class, JwtValidatorConfiguration.class })
+    @Import({ JwtProviderConfiguration.class, JwtValidationConfiguration.class })
     static class TestConfig {
+
+        @Bean
+        SecurityFilterChain securityFilterChain(HttpSecurity http, AuthorizeRequestCustomizer requestCustomizer)
+                throws Exception {
+
+            return http
+                    .authorizeHttpRequests(requestCustomizer)
+                    .csrf((csrf) -> csrf.disable())
+                    .oauth2ResourceServer((oauth2) -> oauth2
+                            .jwt(jwt -> jwt
+                                    .jwtAuthenticationConverter(jwtAuthenticationConverter())))
+                    .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                    .exceptionHandling((exceptions) -> exceptions
+                            .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
+                            .accessDeniedHandler(new BearerTokenAccessDeniedHandler()))
+                    .build();
+        }
+
+        JwtAuthenticationConverter jwtAuthenticationConverter() {
+            JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+            grantedAuthoritiesConverter.setAuthoritiesClaimName("groups");
+            grantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+
+            JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+            jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
+            return jwtAuthenticationConverter;
+        }
+
 
         @Bean
         AuthorizeRequestCustomizer authorizeRequestCustomizer() {

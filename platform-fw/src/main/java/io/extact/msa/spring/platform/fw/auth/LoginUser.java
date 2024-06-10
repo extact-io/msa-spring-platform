@@ -10,14 +10,15 @@ import lombok.ToString;
 
 public interface LoginUser {
 
-    public static final LoginUser UNKNOWN_USER = LoginUser.of(-1, Collections.emptySet());
+    public static final int ANONYMOUS_ID = -1;
+    public static final LoginUser ANONYMOUS_USER = LoginUser.of(ANONYMOUS_ID, Collections.emptySet());
 
     int getUserId();
 
     Set<String> getGroups();
 
     default boolean isUnknownUser() {
-        return this == UNKNOWN_USER;
+        return this == ANONYMOUS_USER;
     }
 
     default String getGroupsByStringValue() {

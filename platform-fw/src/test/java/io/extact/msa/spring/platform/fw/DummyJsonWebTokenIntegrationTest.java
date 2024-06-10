@@ -8,12 +8,10 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.security.interfaces.RSAPublicKey;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,26 +29,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
-import org.springframework.security.config.authentication.AuthenticationManagerBeanDefinitionParser.NullAuthenticationProvider;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtValidators;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
-import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
-import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -69,9 +54,8 @@ import io.extact.msa.spring.platform.core.jwt.provider.GenerateToken;
 import io.extact.msa.spring.platform.core.jwt.provider.UserClaims;
 import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderConfiguration;
 import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderProperties;
-import io.extact.msa.spring.platform.core.jwt.validator.AuthorizeRequestCustomizer;
-import io.extact.msa.spring.platform.fw.auth.anonymous.RmsAnonymousAuthenticationFilter;
-import io.extact.msa.spring.platform.fw.auth.jwt.RmsJwtAuthenticationConverter;
+import io.extact.msa.spring.platform.core.jwt.validation.AuthorizeRequestCustomizer;
+import io.extact.msa.spring.platform.fw.auth.jwt.RmsJwtAuthenticationConfiguration;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -86,60 +70,9 @@ public class DummyJsonWebTokenIntegrationTest {
     @Configuration(proxyBeanMethods = false)
     @EnableAutoConfiguration
     @EnableWebSecurity(debug = true)
-    @Import({ JwtProviderConfiguration.class})
+    @Import({ JwtProviderConfiguration.class, RmsJwtAuthenticationConfiguration.class })
+    //@Import({ JwtProviderConfiguration.class, RmsHeaderAuthenticationConfiguration.class })
     static class TestConfig {
-
-        @Bean
-        SecurityFilterChain securityFilterChain(HttpSecurity http, AuthorizeRequestCustomizer requestCustomizer)
-                throws Exception {
-
-            AuthenticationManagerBuilder authenticationManagerBuilder = http
-                    .getSharedObject(AuthenticationManagerBuilder.class);
-            authenticationManagerBuilder.authenticationProvider(new NullAuthenticationProvider());
-
-            return http
-                    .authorizeHttpRequests(requestCustomizer)
-                    .httpBasic(Customizer.withDefaults())
-                    .anonymous(anonymous -> anonymous.authenticationFilter(anonymousAuthenticationFilter()))
-                    .csrf((csrf) -> csrf.disable())
-                    .oauth2ResourceServer((oauth2) -> oauth2
-                            .jwt(jwt -> jwt
-                                    .jwtAuthenticationConverter(jwtAuthenticationConverter())))
-                    .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                    .exceptionHandling((exceptions) -> exceptions
-                            .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
-                            .accessDeniedHandler(new BearerTokenAccessDeniedHandler()))
-                    .build();
-        }
-
-        AnonymousAuthenticationFilter anonymousAuthenticationFilter() {
-
-            // default values from AnonymousAuthenticationFilter
-            String key = UUID.randomUUID().toString();
-            Object principal = "anonymousUser";
-            List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS");
-
-            return new RmsAnonymousAuthenticationFilter(key, principal, authorities);
-        }
-
-        RmsJwtAuthenticationConverter jwtAuthenticationConverter() {
-            JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-            grantedAuthoritiesConverter.setAuthoritiesClaimName("groups");
-            grantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
-
-            RmsJwtAuthenticationConverter jwtAuthenticationConverter = new RmsJwtAuthenticationConverter();
-            jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
-            return jwtAuthenticationConverter;
-        }
-
-        @Bean
-        JwtDecoder jwtDecoder(@Value("${rms.jwt-validator.public-key}") RSAPublicKey key,
-                @Value("${rms.jwt-validator.claim.issuer}") String issuer) {
-
-            NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withPublicKey(key).build();
-            jwtDecoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(issuer));
-            return jwtDecoder;
-        }
 
         @Bean
         AuthorizeRequestCustomizer authorizeRequestCustomizer() {

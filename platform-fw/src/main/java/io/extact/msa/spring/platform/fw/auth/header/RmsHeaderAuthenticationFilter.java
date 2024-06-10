@@ -19,6 +19,7 @@ import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import io.extact.msa.spring.platform.fw.auth.LoginUser;
+import io.extact.msa.spring.platform.fw.auth.UserIdPrincipal;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -73,8 +74,7 @@ public class RmsHeaderAuthenticationFilter extends OncePerRequestFilter {
                 this.logger.debug("Set SecurityContextHolder to %s".formatted(authenticationResult));
             }
             filterChain.doFilter(request, response);
-        }
-        catch (AuthenticationException failed) {
+        } catch (AuthenticationException failed) {
             this.securityContextHolderStrategy.clearContext();
             this.logger.trace("Failed to process authentication request", failed);
             this.authenticationFailureHandler.onAuthenticationFailure(request, response, failed);
@@ -89,7 +89,7 @@ public class RmsHeaderAuthenticationFilter extends OncePerRequestFilter {
         }
 
         UserIdPrincipal principal = new UserIdPrincipal(userId);
-        if (principal.userId() == LoginUser.UNKNOWN_USER.getUserId()) {
+        if (principal.userId() == LoginUser.ANONYMOUS_USER.getUserId()) {
             return null; // go to AnonymousAuthenticationFilter
         }
 
@@ -101,32 +101,25 @@ public class RmsHeaderAuthenticationFilter extends OncePerRequestFilter {
         return authenticationToken;
     }
 
-
     // ---------------------------------------------------- setter for configure
 
-    public void setSecurityContextHolderStrategy(SecurityContextHolderStrategy securityContextHolderStrategy) {
-        Assert.notNull(securityContextHolderStrategy, "securityContextHolderStrategy cannot be null");
-        this.securityContextHolderStrategy = securityContextHolderStrategy;
+    public void setSecurityContextHolderStrategy(SecurityContextHolderStrategy strategy) {
+        Assert.notNull(strategy, "strategy cannot be null");
+        this.securityContextHolderStrategy = strategy;
     }
 
-    public void setSecurityContextRepository(SecurityContextRepository securityContextRepository) {
-        Assert.notNull(securityContextRepository, "securityContextRepository cannot be null");
-        this.securityContextRepository = securityContextRepository;
+    public void setSecurityContextRepository(SecurityContextRepository repository) {
+        Assert.notNull(repository, "repository cannot be null");
+        this.securityContextRepository = repository;
     }
 
-    public void setAuthenticationEntryPoint(final AuthenticationEntryPoint authenticationEntryPoint) {
-        Assert.notNull(authenticationEntryPoint, "authenticationEntryPoint cannot be null");
-        this.authenticationEntryPoint = authenticationEntryPoint;
+    public void setAuthenticationEntryPoint(final AuthenticationEntryPoint entryPoint) {
+        Assert.notNull(entryPoint, "entryPoint cannot be null");
+        this.authenticationEntryPoint = entryPoint;
     }
 
-    public void setAuthenticationFailureHandler(final AuthenticationFailureHandler authenticationFailureHandler) {
-        Assert.notNull(authenticationFailureHandler, "authenticationFailureHandler cannot be null");
-        this.authenticationFailureHandler = authenticationFailureHandler;
-    }
-
-    public void setAuthenticationDetailsSource(
-            AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource) {
-        Assert.notNull(authenticationDetailsSource, "authenticationDetailsSource cannot be null");
-        this.authenticationDetailsSource = authenticationDetailsSource;
+    public void setAuthenticationFailureHandler(final AuthenticationFailureHandler failureHandler) {
+        Assert.notNull(failureHandler, "failureHandler cannot be null");
+        this.authenticationFailureHandler = failureHandler;
     }
 }

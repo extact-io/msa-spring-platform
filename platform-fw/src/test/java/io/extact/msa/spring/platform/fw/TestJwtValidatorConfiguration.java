@@ -17,7 +17,7 @@ import org.springframework.security.oauth2.server.resource.web.access.BearerToke
 import org.springframework.security.web.SecurityFilterChain;
 
 import io.extact.msa.spring.platform.core.CoreConfiguration;
-import io.extact.msa.spring.platform.core.jwt.validator.AuthorizeRequestCustomizer;
+import io.extact.msa.spring.platform.core.jwt.validation.AuthorizeRequestCustomizer;
 import io.extact.msa.spring.platform.fw.auth.jwt.RmsJwtAuthenticationConverter;
 
 @Configuration(proxyBeanMethods = false)

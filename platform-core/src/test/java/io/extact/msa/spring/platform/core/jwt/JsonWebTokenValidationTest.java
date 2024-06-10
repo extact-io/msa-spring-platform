@@ -34,8 +34,8 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import io.extact.msa.spring.platform.core.jwt.provider.JsonWebTokenGenerator;
 import io.extact.msa.spring.platform.core.jwt.provider.UserClaims;
 import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderConfiguration;
-import io.extact.msa.spring.platform.core.jwt.validator.AuthorizeRequestCustomizer;
-import io.extact.msa.spring.platform.core.jwt.validator.JwtValidatorConfiguration;
+import io.extact.msa.spring.platform.core.jwt.validation.AuthorizeRequestCustomizer;
+import io.extact.msa.spring.platform.core.jwt.validation.JwtValidationConfiguration;
 import io.extact.msa.spring.platform.core.testlib.NopResponseErrorHandler;
 
 public class JsonWebTokenValidationTest {
@@ -164,7 +164,7 @@ public class JsonWebTokenValidationTest {
     @Configuration(proxyBeanMethods = false)
     @EnableAutoConfiguration
     @EnableWebSecurity(debug = true)
-    @Import({ JwtProviderConfiguration.class, JwtValidatorConfiguration.class })
+    @Import({ JwtProviderConfiguration.class, JwtValidationConfiguration.class })
     static class TestConfig {
 
         @Bean

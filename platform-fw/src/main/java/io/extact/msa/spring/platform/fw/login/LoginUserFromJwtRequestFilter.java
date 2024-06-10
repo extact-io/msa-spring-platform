@@ -33,7 +33,7 @@ public class LoginUserFromJwtRequestFilter implements ContainerRequestFilter, Co
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        LoginUser loginUser = LoginUser.UNKNOWN_USER;
+        LoginUser loginUser = LoginUser.ANONYMOUS_USER;
         if (jwt.getName() != null) {
             loginUser = LoginUserImpl.of(Integer.parseInt(jwt.getSubject()), jwt.getGroups());
         }

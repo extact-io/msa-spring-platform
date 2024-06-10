@@ -8,7 +8,7 @@ public class LoginUserUtils {
     private static final InheritableThreadLocal<LoginUser> LOGIN_USER = new InheritableThreadLocal<LoginUser>() {
         @Override
         protected LoginUser initialValue() {
-            return LoginUser.UNKNOWN_USER;
+            return LoginUser.ANONYMOUS_USER;
         }
     };
 
