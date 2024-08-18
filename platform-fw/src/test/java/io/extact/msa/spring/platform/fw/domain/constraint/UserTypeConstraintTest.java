@@ -7,12 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
-import io.extact.msa.spring.platform.fw.domain.vo.UserType;
+import io.extact.msa.spring.platform.fw.domain.type.UserType;
 import io.extact.msa.spring.test.assertj.ConstraintViolationSetAssert;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
-@SpringBootTest(classes = ValidationTestConfig.class, webEnvironment = WebEnvironment.NONE)
+@SpringBootTest(classes = ValidationConfiguration.class, webEnvironment = WebEnvironment.NONE)
 class UserTypeConstraintTest {
 
     @Test

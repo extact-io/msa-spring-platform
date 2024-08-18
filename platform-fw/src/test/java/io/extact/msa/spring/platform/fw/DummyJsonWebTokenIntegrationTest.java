@@ -34,6 +34,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -55,6 +56,7 @@ import io.extact.msa.spring.platform.core.jwt.provider.UserClaims;
 import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderConfiguration;
 import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderProperties;
 import io.extact.msa.spring.platform.core.jwt.validation.AuthorizeRequestCustomizer;
+import io.extact.msa.spring.platform.fw.auth.RmsAuthentication;
 import io.extact.msa.spring.platform.fw.auth.jwt.RmsJwtAuthenticationConfiguration;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -269,9 +271,10 @@ public class DummyJsonWebTokenIntegrationTest {
 
         @GetMapping("/login")
         @GenerateToken
-        public TestUserClaims login(Authentication authentication, @RequestParam("pttn") String pttn) {
+        public TestUserClaims login(Authentication authentication, @RequestParam("pttn") String pttn, @CurrentSecurityContext(expression = "authentication") RmsAuthentication rmsAuth) {
 
             System.out.println("★：args auth->" + authentication);
+            System.out.println("★：args rmsAuth->" + rmsAuth);
             System.out.println("★：Context auth->" + SecurityContextHolder.getContext().getAuthentication());
 
             if (pttn.equals(ERROR)) {

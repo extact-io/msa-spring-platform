@@ -1,6 +1,5 @@
 package io.extact.msa.spring.platform.fw.auth.header;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -18,7 +17,6 @@ import io.extact.msa.spring.platform.core.jwt.validation.AuthorizeRequestCustomi
 import io.extact.msa.spring.platform.fw.auth.anonymous.RmsAnonymousAuthenticationFilter;
 
 @Configuration(proxyBeanMethods = false)
-@EnableAutoConfiguration
 @EnableWebSecurity(debug = true)
 @Import(CoreConfiguration.class)
 public class RmsHeaderAuthenticationConfiguration {

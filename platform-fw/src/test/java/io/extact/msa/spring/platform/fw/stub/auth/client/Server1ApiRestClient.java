@@ -4,9 +4,9 @@ import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
-import io.extact.msa.spring.platform.fw.external.PropagateJwtRequestInitializer;
+import io.extact.msa.spring.platform.fw.auth.client.CustomizableClientRequest;
+import io.extact.msa.spring.platform.fw.auth.client.BearerTokenRequestInitializer;
 import io.extact.msa.spring.platform.fw.external.PropagateResponseExceptionMapper;
-import io.extact.msa.spring.platform.fw.external.jwt.CustomizableClientRequest;
 import io.extact.msa.spring.platform.fw.stub.auth.client_sever1.ClientServer1Api;
 import jakarta.ws.rs.Path;
 
@@ -15,7 +15,7 @@ import jakarta.ws.rs.Path;
 //@RegisterProvider(RmsTypeParameterFeature.class)
 @RegisterProvider(PropagateResponseExceptionMapper.class)
 @RegisterProvider(CustomizableClientRequest.class)
-@RegisterClientHeaders(PropagateJwtRequestInitializer.class)
+@RegisterClientHeaders(BearerTokenRequestInitializer.class)
 @Path("/server1")
 public interface Server1ApiRestClient extends ClientServer1Api {
 }

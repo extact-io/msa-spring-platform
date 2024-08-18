@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.domain.vo;
+package io.extact.msa.spring.platform.fw.domain.type;
 
 import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDateTime;

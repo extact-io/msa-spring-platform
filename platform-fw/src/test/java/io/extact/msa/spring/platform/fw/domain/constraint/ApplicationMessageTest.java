@@ -25,12 +25,12 @@ import jakarta.validation.constraints.Size;
 class ApplicationMessageTest {
 
     @Configuration(proxyBeanMethods = false)
-    @Import(ValidationTestConfig.class)
+    @Import(ValidationConfiguration.class)
     static class TestConfig {
 
         @Bean
         @Primary
-        MessageSource messageSourceForTest() {
+        MessageSource testMessageSource() {
             ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
             messageSource.setBasenames("classpath:application-messages", "classpath:test-application-messages");
             messageSource.setDefaultEncoding("UTF-8");

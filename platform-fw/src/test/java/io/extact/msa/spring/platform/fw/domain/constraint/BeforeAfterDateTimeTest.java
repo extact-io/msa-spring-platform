@@ -13,7 +13,7 @@ import io.extact.msa.spring.test.assertj.ConstraintViolationSetAssert;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
-@SpringBootTest(classes = ValidationTestConfig.class, webEnvironment = WebEnvironment.NONE)
+@SpringBootTest(classes = ValidationConfiguration.class, webEnvironment = WebEnvironment.NONE)
 class BeforeAfterDateTimeTest {
 
     @Test

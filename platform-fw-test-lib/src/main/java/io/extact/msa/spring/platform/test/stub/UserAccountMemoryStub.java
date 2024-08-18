@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import io.extact.msa.spring.platform.fw.domain.vo.UserType;
+import io.extact.msa.spring.platform.fw.domain.type.UserType;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
 import io.extact.msa.spring.platform.test.stub.dto.AddUserAccountStubDto;

@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+import io.extact.msa.spring.platform.fw.domain.type.UserType;
+
 class UserTypeTest {
 
     @Test
