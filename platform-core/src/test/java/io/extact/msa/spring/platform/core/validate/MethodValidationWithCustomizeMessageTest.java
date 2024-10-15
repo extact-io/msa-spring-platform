@@ -5,6 +5,10 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -18,11 +22,6 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 import org.springframework.validation.method.MethodValidationException;
 import org.springframework.validation.method.ParameterErrors;
 import org.springframework.validation.method.ParameterValidationResult;
-
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import lombok.Data;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class MethodValidationWithCustomizeMessageTest {
@@ -49,14 +48,20 @@ class MethodValidationWithCustomizeMessageTest {
     @Test
     void testGroupVariationValidation(@Autowired VariationTestBean testBean) {
 
-        TestEntity entity = new TestEntity(null, 1);
-        entity.setDetails(List.of(new Detail(), new Detail()));
-        entity.setDetailMap(Map.of("No.1", new Detail()));
+        TestEntity entity = new TestEntity(
+                null,
+                1,
+                List.of(new Detail(null), new Detail(null)),
+                Map.of("No.1", new Detail(null)));
 
         MethodValidationException actual = catchThrowableOfType(
-                () -> testBean.validate(null, List.of(new Detail(), new Detail()), null, entity, List.of(entity)),
+                () -> testBean.validate(
+                        null,
+                        List.of(new Detail(null), new Detail(null)),
+                        null,
+                        entity,
+                        List.of(entity)),
                 MethodValidationException.class);
-
 
         // 1チェック項目に複数エラーが発生する可能性があるためParameterValidationResultは
         // チェック項目 x 発生エラーの2次元配列の構造になってるので1次元のエラーメッセージにflatしている
@@ -122,38 +127,31 @@ class MethodValidationWithCustomizeMessageTest {
     }
 
 
-    static record ErrorItem(String itemName, String message) {
+    static record ErrorItem(
+            String itemName,
+            String message) {
     }
 
-
-    @Data
-    public static class TestEntity {
-        @NotNull
-        private final Integer value1;
-        @Min(100)
-        private final Integer value2;
-        @Valid
-        @NotNull
-        private List<Detail> details;
-        @Valid
-        @NotNull
-        private Map<String, Detail> detailMap;
+    static record TestEntity(
+            @NotNull Integer value1,
+            @Min(100) Integer value2,
+            @NotNull @Valid List<Detail> details,
+            @NotNull @Valid Map<String, Detail> detailMap) {
     }
 
-    @Data
-    public static class Detail {
-        @NotNull
-        private String message;
+    static record Detail(
+            @NotNull String message) {
     }
 
     @Validated // Interceptorを掛けるためにクラスへのアノテートは必要
-    public static class VariationTestBean {
+    static class VariationTestBean {
 
-        public int validate(@NotNull Integer param, @NotNull @Valid List<Detail> details,
+        public int validate(
+                @NotNull Integer param,
+                @NotNull @Valid List<Detail> details,
                 @NotNull @Valid Map<String, Detail> detailMap,
                 @Valid TestEntity entity,
-                @Valid List<TestEntity> entitys
-                ) {
+                @Valid List<TestEntity> entitys) {
             return 101;
         }
     }

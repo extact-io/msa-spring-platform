@@ -12,7 +12,7 @@ import org.springframework.test.context.TestPropertySource;
 class ConfigDumpTest {
 
     @Configuration
-    @Import(DebugConfiguration.class)
+    @Import(DebugConfig.class)
     static class TestConfig {
     }
 

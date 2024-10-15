@@ -55,12 +55,12 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import io.extact.msa.spring.platform.core.jwt.provider.GenerateToken;
 import io.extact.msa.spring.platform.core.jwt.provider.UserClaims;
-import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderConfiguration;
+import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderConfig;
 import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderProperties;
 import io.extact.msa.spring.platform.core.jwt.validation.AuthorizeHttpRequestCustomizer;
-import io.extact.msa.spring.platform.core.jwt.validation.JwtValidationConfiguration;
-import io.extact.msa.spring.platform.core.testlib.NopResponseErrorHandler;
+import io.extact.msa.spring.platform.core.jwt.validation.JwtValidationConfig;
 import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
+import io.extact.msa.spring.test.spring.NopResponseErrorHandler;
 import lombok.Data;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -76,7 +76,7 @@ public class JsonWebTokenIntegrationTest {
     @Configuration(proxyBeanMethods = false)
     @EnableAutoConfiguration
     @EnableWebSecurity(debug = true)
-    @Import({ JwtProviderConfiguration.class, JwtValidationConfiguration.class })
+    @Import({ JwtProviderConfig.class, JwtValidationConfig.class })
     static class TestConfig {
 
         @Bean

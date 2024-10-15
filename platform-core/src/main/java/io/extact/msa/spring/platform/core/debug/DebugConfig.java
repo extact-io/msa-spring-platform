@@ -8,13 +8,13 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 
-import io.extact.msa.spring.platform.core.CoreConfiguration;
+import io.extact.msa.spring.platform.core.CoreConfig;
 
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(ConfigDumpProperties.class)
 @EnableAspectJAutoProxy
-@Import(CoreConfiguration.class)
-public class DebugConfiguration {
+@Import(CoreConfig.class)
+public class DebugConfig {
 
     @Bean
     @ConditionalOnProperty(prefix = "rms.debug.configdump", name = "enable", havingValue = "true")

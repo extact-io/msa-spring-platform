@@ -16,8 +16,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
 
-import lombok.Data;
-
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class MethodValidationTest {
 
@@ -46,10 +44,7 @@ class MethodValidationTest {
     @Test
     void testGroupVariationValidation(@Autowired GroupVariationTestBean testBean) {
 
-        TestEntity entity = new TestEntity();
-        entity.setValue1(0);
-        entity.setValue2(0);
-        entity.setValue3(0);
+        TestEntity entity = new TestEntity(0, 0, 0);
 
         ConstraintViolationException actual = catchThrowableOfType(() ->
             testBean.noneGroupValidate(entity),
@@ -91,10 +86,7 @@ class MethodValidationTest {
     @Test
     void testAnnotateVariationGroupDefValidation(@Autowired AnnotateVariationGroupDefTestBean groupAnnoteTestBean) {
 
-        TestEntity entity = new TestEntity();
-        entity.setValue1(0);
-        entity.setValue2(0);
-        entity.setValue3(0);
+        TestEntity entity = new TestEntity(0, 0, 0);
 
         ConstraintViolationException actual = catchThrowableOfType(() ->
             groupAnnoteTestBean.applyTypeDefValidate(entity),
@@ -112,34 +104,14 @@ class MethodValidationTest {
 
     // ----------------------------------------------------- inner classes for test
 
-    @Data
-    public static class TestEntity {
-
-        @Min(value = 100)
-        private int value1;
-        @Min(value = 100, groups = Add.class)
-        private int value2;
-        @Min(value = 100, groups = { Default.class, Update.class })
-        private int value3;
-
-        public int getValue1() {
-            return value1;
-        }
-        public void setValue1(int value1) {
-            this.value1 = value1;
-        }
-        public int getValue2() {
-            return value2;
-        }
-        public void setValue2(int value2) {
-            this.value2 = value2;
-        }
-        public int getValue3() {
-            return value3;
-        }
-        public void setValue3(int value3) {
-            this.value3 = value3;
-        }
+    static record TestEntity(
+            @Min(value = 100) //
+            int value1,
+            @Min(value = 100, groups = Add.class) //
+            int value2,
+            @Min(value = 100, groups = {
+                    Default.class, Update.class }) //
+            int value3){
     }
 
     @Validated // Interceptorを掛けるためにクラスへのアノテートは必要

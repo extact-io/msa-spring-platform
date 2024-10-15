@@ -11,15 +11,16 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 
-import io.extact.msa.spring.platform.core.CoreConfiguration;
+import io.extact.msa.spring.platform.core.CoreConfig;
 
 @Configuration(proxyBeanMethods = false)
-@Import(CoreConfiguration.class)
-public class JwtValidationConfiguration {
+@Import(CoreConfig.class)
+public class JwtValidationConfig {
 
     @Bean
     @ConditionalOnMissingBean
-    JwtDecoder jwtDecoder(@Value("${rms.jwt-validator.public-key}") RSAPublicKey key,
+    JwtDecoder jwtDecoder(
+            @Value("${rms.jwt-validator.public-key}") RSAPublicKey key,
             @Value("${rms.jwt-validator.claim.issuer}") String issuer) {
 
         NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withPublicKey(key).build();

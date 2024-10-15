@@ -1,24 +1,19 @@
 package io.extact.msa.spring.platform.core.debug;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import lombok.Data;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 @ConfigurationProperties(prefix = "rms.debug.configdump")
-@Data
-public class ConfigDumpProperties {
+public record ConfigDumpProperties(
+        @DefaultValue("false") boolean enable,
+        @DefaultValue("false") boolean systemProperties,
+        @DefaultValue("false") boolean systemEnvironment,
+        @DefaultValue Filter filter) {
 
-    private boolean enable = false;
-    private boolean systemProperties = false;
-    private boolean systemEnvironment = false;
-    private Filter filter = new Filter();
-
-    @Data
-    static class Filter {
-        private boolean enable = true;
-        private List<String> patterns = new ArrayList<>();
+    record Filter(
+            @DefaultValue("true") boolean enable,
+            @DefaultValue List<String> patterns) {
     }
 }

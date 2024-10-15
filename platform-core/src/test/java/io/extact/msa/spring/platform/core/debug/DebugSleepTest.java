@@ -25,7 +25,7 @@ class DebugSleepTest {
     private Duration sleepTime;
 
     @Configuration
-    @Import(DebugConfiguration.class)
+    @Import(DebugConfig.class)
     static class TesConfig {
         @Bean
         TestTargetToClass testTargetToClass() {

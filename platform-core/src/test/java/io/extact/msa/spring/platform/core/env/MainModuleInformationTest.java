@@ -12,8 +12,7 @@ import org.springframework.test.context.TestPropertySource;
 
 class MainModuleInformationTest {
 
-
-    @Import(EnvConfiguration.class)
+    @Import(EnvConfig.class)
     static class TestConfig {
     }
 

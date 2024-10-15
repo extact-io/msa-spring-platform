@@ -40,7 +40,7 @@ class ReadinessProbeRestClientTest {
 
     @Configuration(proxyBeanMethods = false)
     @EnableAutoConfiguration
-    @Import(HealthConfiguration.class)
+    @Import(HealthConfig.class)
     static class TestConfig {
 
         @Bean

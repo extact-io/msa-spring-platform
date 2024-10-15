@@ -18,11 +18,11 @@ import org.springframework.security.web.authentication.AnonymousAuthenticationFi
 
 import io.extact.msa.spring.platform.core.jwt.validation.AuthorizeHttpRequestCustomizer;
 import io.extact.msa.spring.platform.core.jwt.validation.AuthorizeRequestConfigure;
-import io.extact.msa.spring.platform.core.jwt.validation.JwtValidationConfiguration;
+import io.extact.msa.spring.platform.core.jwt.validation.JwtValidationConfig;
 import io.extact.msa.spring.platform.fw.auth.anonymous.RmsAnonymousAuthConfig;
 
 @Configuration(proxyBeanMethods = false)
-@Import({ JwtValidationConfiguration.class, RmsAnonymousAuthConfig.class })
+@Import({ JwtValidationConfig.class, RmsAnonymousAuthConfig.class })
 public class RmsJwtAuthConfig {
 
     @Bean

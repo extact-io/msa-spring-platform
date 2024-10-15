@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.core.testlib;
+package io.extact.msa.spring.test.spring;
 
 import java.io.IOException;
 

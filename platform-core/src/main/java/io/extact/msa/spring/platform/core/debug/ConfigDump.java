@@ -8,12 +8,13 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import jakarta.annotation.PostConstruct;
+
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.StandardEnvironment;
 
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -46,15 +47,15 @@ public class ConfigDump {
     @PostConstruct
     void init() {
 
-        if (!log.isDebugEnabled() || !dumpProps.isEnable()) {
+        if (!log.isDebugEnabled() || !dumpProps.enable()) {
             return;
         }
 
         Set<String> allPropertyNames = getAllPropertyNames();
 
         List<String> filters = Collections.emptyList();
-        if (dumpProps.getFilter().isEnable()) {
-            filters = dumpProps.getFilter().getPatterns();
+        if (dumpProps.filter().enable()) {
+            filters = dumpProps.filter().patterns();
         }
 
         Predicate<String> containsKeyword = new ContainsKeyworkWithForwardMatch(filters);
@@ -74,10 +75,10 @@ public class ConfigDump {
                 .filter(source -> Map.class.isAssignableFrom(source.getSource().getClass()))
                 .filter(source -> {
                     if (StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME.equals(source.getName())) {
-                        return dumpProps.isSystemProperties();
+                        return dumpProps.systemProperties();
                     }
                     if (StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME.equals(source.getName())) {
-                        return dumpProps.isSystemEnvironment();
+                        return dumpProps.systemEnvironment();
                     }
                     return true;
                 })

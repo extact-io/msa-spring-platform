@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import io.extact.msa.spring.platform.core.CoreConfiguration;
+import io.extact.msa.spring.platform.core.CoreConfig;
 import io.extact.msa.spring.platform.core.jwt.provider.JsonWebTokenGenerator;
 import io.extact.msa.spring.platform.core.jwt.provider.JwtProvideResponseAdvice;
 import io.extact.msa.spring.platform.core.jwt.provider.impl.Auth0RsaJwtGenerator;
@@ -15,8 +15,8 @@ import io.extact.msa.spring.platform.core.jwt.provider.impl.Jose4jRsaJwtGenerato
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(JwtProviderProperties.class)
 @ConditionalOnEnabledJwtProvider
-@Import(CoreConfiguration.class)
-public class JwtProviderConfiguration {
+@Import(CoreConfig.class)
+public class JwtProviderConfig {
 
     @Bean
     @ConditionalOnProperty(prefix = "rms.jwt-provider", name = "generator", havingValue = "auth0", matchIfMissing = true)

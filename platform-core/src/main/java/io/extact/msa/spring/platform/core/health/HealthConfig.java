@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableAsync;
 
-import io.extact.msa.spring.platform.core.CoreConfiguration;
+import io.extact.msa.spring.platform.core.CoreConfig;
 import io.extact.msa.spring.platform.core.async.AsyncInvoker;
 import io.extact.msa.spring.platform.core.condition.ConditionalOnPropertyList;
 import io.extact.msa.spring.platform.core.health.client.ReadinessProbeRestClientFactory;
@@ -16,8 +16,8 @@ import io.extact.msa.spring.platform.core.health.client.ReadinessProbeRestClient
 @EnableConfigurationProperties(DependentServersHealthIndicator.Properties.class)
 @EnableAsync
 @ConditionalOnPropertyList(key = "rms.health.depend-services")
-@Import(CoreConfiguration.class)
-public class HealthConfiguration {
+@Import(CoreConfig.class)
+public class HealthConfig {
 
     @Bean
     AsyncInvoker asyncInvoker() {

@@ -22,7 +22,7 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
-import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderConfiguration;
+import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderConfig;
 import io.extact.msa.spring.platform.core.jwt.validation.AuthorizeRequestConfigure;
 import io.extact.msa.spring.platform.fw.auth.RmsAuthentication;
 import io.extact.msa.spring.platform.fw.auth.client.BearerTokenRequestInitializer;
@@ -68,7 +68,7 @@ public class AuthIntegratinTest {
     @EnableAutoConfigurationWithoutJpa
     @EnableWebSecurity(debug = true)
     @Import({
-        JwtProviderConfiguration.class,
+        JwtProviderConfig.class,
         RmsJwtAuthConfig.class,
         RmsHeaderAuthConfig.class,
         RestControllerConfig.class })

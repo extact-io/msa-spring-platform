@@ -28,7 +28,6 @@ class JwtProviderPropertiesTest {
 
     @Test
     void tesFull(@Autowired JwtProviderProperties properties) {
-        System.out.println(properties);
 
         assertThat(properties.enable()).isTrue();
         assertThat(properties.privateKey()).isNotNull();

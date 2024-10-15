@@ -10,16 +10,19 @@ import org.springframework.context.annotation.Configuration;
 import ch.qos.logback.access.tomcat.LogbackValve;
 
 @Configuration(proxyBeanMethods = false)
-public class CoreConfiguration {
+public class CoreConfig {
 
     @Bean
     @ConditionalOnClass(LogbackValve.class)
     @ConditionalOnWebApplication(type = Type.SERVLET)
     TomcatServletWebServerFactory servletContainer() {
-        TomcatServletWebServerFactory tomcatServletWebServerFactory = new TomcatServletWebServerFactory();
+
         LogbackValve valve = new LogbackValve();
         valve.setFilename(LogbackValve.DEFAULT_FILENAME);
+
+        TomcatServletWebServerFactory tomcatServletWebServerFactory = new TomcatServletWebServerFactory();
         tomcatServletWebServerFactory.addContextValves(valve);
+
         return tomcatServletWebServerFactory;
     }
 }

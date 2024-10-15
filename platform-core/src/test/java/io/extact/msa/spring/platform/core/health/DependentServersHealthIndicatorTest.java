@@ -24,9 +24,8 @@ import org.springframework.web.client.RestClient;
 import io.extact.msa.spring.platform.core.health.client.ProbeResult;
 import io.extact.msa.spring.platform.core.health.client.ReadinessProbeRestClient;
 import io.extact.msa.spring.platform.core.health.client.ReadinessProbeRestClientFactory;
-import io.extact.msa.spring.platform.core.testlib.NopResponseErrorHandler;
 import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
-import lombok.Data;
+import io.extact.msa.spring.test.spring.NopResponseErrorHandler;
 
 /**
  * DependentServersHealthIndicatorに対するテスト。
@@ -45,7 +44,7 @@ class DependentServersHealthIndicatorTest {
 
     @Configuration(proxyBeanMethods = false)
     @EnableAutoConfiguration
-    @Import(HealthConfiguration.class)
+    @Import(HealthConfig.class)
     private static class TestConfig {
 
         @Bean
@@ -76,13 +75,13 @@ class DependentServersHealthIndicatorTest {
         @Test
         void test() {
 
-            DependentServersHealthResponse expected = new DependentServersHealthResponse();
-            expected.setStatus(Status.UP.getCode());
-
             Map<String, String> expectedDetail = Map.of(
                     "http://localhost:8001/ok", Status.UP.getCode(),
                     "http://localhost:8002/ok", Status.UP.getCode());
-            expected.setDetails(expectedDetail);
+
+            DependentServersHealthResponse expected = new DependentServersHealthResponse(
+                    Status.UP.getCode(),
+                    expectedDetail);
 
             DependentServersHealthResponse actual = testClient
                     .get()
@@ -105,13 +104,13 @@ class DependentServersHealthIndicatorTest {
         @Test
         void test() {
 
-            DependentServersHealthResponse expected = new DependentServersHealthResponse();
-            expected.setStatus(Status.DOWN.getCode());
-
             Map<String, String> expectedDetail = Map.of(
                     "http://localhost:8001/ok", Status.UP.getCode(),
                     "http://localhost:8002/ng", Status.DOWN.getCode());
-            expected.setDetails(expectedDetail);
+
+            DependentServersHealthResponse expected = new DependentServersHealthResponse(
+                    Status.DOWN.getCode(),
+                    expectedDetail);
 
             DependentServersHealthResponse actual = testClient
                     .get()
@@ -134,13 +133,13 @@ class DependentServersHealthIndicatorTest {
         @Test
         void test() {
 
-            DependentServersHealthResponse expected = new DependentServersHealthResponse();
-            expected.setStatus(Status.DOWN.getCode());
-
             Map<String, String> expectedDetail = Map.of(
                     "http://localhost:8001/ok", Status.UP.getCode(),
                     "http://localhost:8002/error", Status.DOWN.getCode());
-            expected.setDetails(expectedDetail);
+
+            DependentServersHealthResponse expected = new DependentServersHealthResponse(
+                    Status.DOWN.getCode(),
+                    expectedDetail);
 
             DependentServersHealthResponse actual = testClient
                     .get()
@@ -151,10 +150,9 @@ class DependentServersHealthIndicatorTest {
         }
     }
 
-    @Data
-    static class DependentServersHealthResponse {
-        private String status;
-        private Map<String, String> details;
+    static record DependentServersHealthResponse(
+            String status,
+            Map<String, String> details) {
     }
 
     static class ReadinessProbeRestClientFactoryStub implements ReadinessProbeRestClientFactory {
