@@ -1,6 +1,6 @@
 package io.extact.msa.spring.platform.core.jwt;
 
-import static io.extact.msa.spring.platform.core.jwt.JsonWebTokenIntegrationTest.LoginRestClient.*;
+import static io.extact.msa.spring.platform.core.jwt.JsonWebTokenIntegrationTest.LoginClient.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.lang.annotation.ElementType;
@@ -12,17 +12,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jakarta.validation.constraints.NotBlank;
+
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,19 +57,21 @@ import io.extact.msa.spring.platform.core.jwt.provider.GenerateToken;
 import io.extact.msa.spring.platform.core.jwt.provider.UserClaims;
 import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderConfiguration;
 import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderProperties;
-import io.extact.msa.spring.platform.core.jwt.validation.AuthorizeRequestCustomizer;
+import io.extact.msa.spring.platform.core.jwt.validation.AuthorizeHttpRequestCustomizer;
 import io.extact.msa.spring.platform.core.jwt.validation.JwtValidationConfiguration;
 import io.extact.msa.spring.platform.core.testlib.NopResponseErrorHandler;
-import jakarta.validation.constraints.NotBlank;
+import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
 import lombok.Data;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class JsonWebTokenIntegrationTest {
 
-    private LoginRestClient loginClient;
-    private TestRestClient resourceClient;
+    @Autowired
+    private LoginClient loginClient;
+    @Autowired
+    private TestClient testClient;
 
-    private static Authentication actualAuthenticationOnServerSide;
+    private static Authentication actualServerSideAuth;
 
     @Configuration(proxyBeanMethods = false)
     @EnableAutoConfiguration
@@ -77,7 +80,7 @@ public class JsonWebTokenIntegrationTest {
     static class TestConfig {
 
         @Bean
-        SecurityFilterChain securityFilterChain(HttpSecurity http, AuthorizeRequestCustomizer requestCustomizer)
+        SecurityFilterChain securityFilterChain(HttpSecurity http, AuthorizeHttpRequestCustomizer requestCustomizer)
                 throws Exception {
 
             return http
@@ -105,7 +108,7 @@ public class JsonWebTokenIntegrationTest {
 
 
         @Bean
-        AuthorizeRequestCustomizer authorizeRequestCustomizer() {
+        AuthorizeHttpRequestCustomizer authorizeRequestCustomizer() {
 
             // TODO Improve when https://github.com/microsoft/vscode-java-pack/issues/530 is fixed
             return (AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry configurer) -> configurer
@@ -117,42 +120,51 @@ public class JsonWebTokenIntegrationTest {
         }
 
         @Bean
-        LoginResource testLoginResource() {
-            return new LoginResource();
+        LoginController loginController() {
+            return new LoginController();
         }
 
         @Bean
-        TestResource helloResource() {
-            return new TestResource();
+        TestController testController() {
+            return new TestController();
         }
 
         @Bean
-        ResourceExceptionMapper resourceExceptionMapper() {
-            return new ResourceExceptionMapper();
+        ControllerExceptionMapper resourceExceptionMapper() {
+            return new ControllerExceptionMapper();
+        }
+
+        @Bean
+        RestClient restClient(Environment env) {
+            return RestClient.builder()
+                    .uriBuilderFactory(new LocalHostUriBuilderFactory(env))
+                    .defaultStatusHandler(new NopResponseErrorHandler())
+                    .build();
+        }
+
+        @Bean
+        LoginClient loginRestClient(RestClient restClient) {
+            RestClientAdapter adapter = RestClientAdapter.create(restClient);
+            HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
+            return factory.createClient(LoginClient.class);
+        }
+
+        @Bean
+        TestClient testRestClient(RestClient restClient) {
+            RestClientAdapter adapter = RestClientAdapter.create(restClient);
+            HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
+            return factory.createClient(TestClient.class);
         }
     }
 
 
     // ----------------------------------------------------- lifecycle methods
 
-    @BeforeEach
-    void beforeEach(@Value("${local.server.port}") int port) throws Exception {
-
-        RestClient restClient = RestClient.builder()
-                .baseUrl("http://localhost:" + port)
-                .defaultStatusHandler(new NopResponseErrorHandler())
-                .build();
-        RestClientAdapter adapter = RestClientAdapter.create(restClient);
-        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
-
-        this.loginClient = factory.createClient(LoginRestClient.class);
-        this.resourceClient = factory.createClient(TestRestClient.class);
-    }
-
     @AfterEach
     void afterEach() {
-        actualAuthenticationOnServerSide = null;
+        actualServerSideAuth = null;
     }
+
 
     // ----------------------------------------------------- test methods
 
@@ -185,12 +197,12 @@ public class JsonWebTokenIntegrationTest {
         String tokenId = response.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         Map<String, String> header = Map.of(HttpHeaders.AUTHORIZATION, tokenId);
 
-        ResponseEntity<String> actual = resourceClient.hello(header);
+        ResponseEntity<String> actual = testClient.hello(header);
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(actual.getBody()).isEqualTo("Hello, " + TestUserClaims.DEFAULT_INSTANCE.getUserId() + "!");
 
         // authentication assertion
-        Authentication auth = actualAuthenticationOnServerSide;
+        Authentication auth = actualServerSideAuth;
         assertThat(auth.getName()).isEqualTo("test");
 
         List<String> roles = auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
@@ -202,7 +214,7 @@ public class JsonWebTokenIntegrationTest {
 
         assertThat(jwt.getClaimAsString("sub")).isEqualTo("test");
         assertThat(jwt.getClaimAsString("upn")).isEqualTo("test@test");
-        assertThat(jwt.getClaimAsString("iss")).isEqualTo(properties.getClaim().getIssuer());
+        assertThat(jwt.getClaimAsString("iss")).isEqualTo(properties.claim().issuer());
         assertThat(jwt.getClaimAsStringList("groups")).containsExactlyInAnyOrder("roleA", "roleB");
         assertThat(jwt.getClaimAsInstant("exp")).isNotNull();
         assertThat(jwt.getClaimAsInstant("iat")).isNotNull();
@@ -212,7 +224,7 @@ public class JsonWebTokenIntegrationTest {
     @Test
     void testAuthenticateOnError() {
 
-        ResponseEntity<String> actual = resourceClient.hello(Collections.emptyMap());
+        ResponseEntity<String> actual = testClient.hello(Collections.emptyMap());
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
@@ -227,16 +239,16 @@ public class JsonWebTokenIntegrationTest {
         Map<String, String> header = Map.of(HttpHeaders.AUTHORIZATION, tokenId);
 
         // check roles
-        ResponseEntity<String> actual = resourceClient.roleA(header);
+        ResponseEntity<String> actual = testClient.roleA(header);
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        actual = resourceClient.roleC(header);
+        actual = testClient.roleC(header);
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 
-        actual = resourceClient.roleCc(header);
+        actual = testClient.roleCc(header);
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 
-        actual = resourceClient.everyone(header);
+        actual = testClient.everyone(header);
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -248,19 +260,19 @@ public class JsonWebTokenIntegrationTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         // BAD_REQUEST(バリデーションエラー)ではなく認証エラーが返ってくること
-        ResponseEntity<String> actual = resourceClient.check(Collections.emptyMap(), "");
+        ResponseEntity<String> actual = testClient.check(Collections.emptyMap(), "");
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 
         // BAD_REQUEST(バリデーションエラー)ではなく認可エラーが返ってくること
         String tokenId = response.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         Map<String, String> header = Map.of(HttpHeaders.AUTHORIZATION, tokenId);
-        actual = resourceClient.check(header, "");
+        actual = testClient.check(header, "");
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
     // ----------------------------------------------------- client side stub interface
 
-    public interface LoginRestClient {
+    public interface LoginClient {
 
         static final String SUCCESS = "success";
         static final String ERROR = "error";
@@ -269,7 +281,7 @@ public class JsonWebTokenIntegrationTest {
         ResponseEntity<TestUserClaims> login(@RequestParam("pttn") String pttn);
     }
 
-    public interface TestRestClient {
+    public interface TestClient {
 
         @GetExchange("/hello")
         ResponseEntity<String> hello(@RequestHeader Map<String, ?> headers);
@@ -295,7 +307,7 @@ public class JsonWebTokenIntegrationTest {
 
     @RestController
     @ExceptionMapping
-    static class LoginResource {
+    static class LoginController {
 
         @GetMapping("/login")
         @GenerateToken
@@ -309,11 +321,11 @@ public class JsonWebTokenIntegrationTest {
 
     @RestController
     @ExceptionMapping
-    static class TestResource {
+    static class TestController {
 
         @GetMapping("/hello")
         public String hello(Authentication authentication) {
-            actualAuthenticationOnServerSide = authentication;
+            actualServerSideAuth = authentication;
             return "Hello, " + authentication.getName() + "!";
         }
 
@@ -349,7 +361,7 @@ public class JsonWebTokenIntegrationTest {
     }
 
     @RestControllerAdvice(annotations = ExceptionMapping.class)
-    static class ResourceExceptionMapper extends ResponseEntityExceptionHandler {
+    static class ControllerExceptionMapper extends ResponseEntityExceptionHandler {
 
         @ExceptionHandler(AccessDeniedException.class)
         public ResponseEntity<Void> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {

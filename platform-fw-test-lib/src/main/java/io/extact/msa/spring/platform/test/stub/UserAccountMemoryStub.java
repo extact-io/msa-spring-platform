@@ -39,7 +39,7 @@ public class UserAccountMemoryStub {
 
     public UserAccountStubDto add(AddUserAccountStubDto addDto) {
         if (dtoMap.values().stream().anyMatch(u -> u.getLoginId().equals(addDto.getLoginId()))) {
-            throw new BusinessFlowException("Stub Error", CauseType.DUPRICATE);
+            throw new BusinessFlowException("Stub Error", CauseType.DUPLICATE);
         }
         int max = dtoMap.keySet().stream().max(Comparator.naturalOrder()).get();
         var newValue = UserAccountStubDto.of(max + 1, addDto.getLoginId(), addDto.getPassword(), addDto.getUserName(), addDto.getPhoneNumber(),

@@ -1,26 +1,40 @@
 package io.extact.msa.spring.platform.fw.stub.application.server.persistence.jpa;
 
-import io.extact.msa.spring.platform.fw.persistence.jpa.JpaCrudRepository;
+import java.util.Optional;
+
+import io.extact.msa.spring.platform.fw.persistence.jpa.AbstractJpaRepository;
+import io.extact.msa.spring.platform.fw.persistence.jpa.SpringDataJpaInnerRepository;
 import io.extact.msa.spring.platform.fw.stub.application.server.domain.Person;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import io.extact.msa.spring.platform.fw.stub.application.server.persistence.PersonRepository;
+import lombok.RequiredArgsConstructor;
 
-@ApplicationScoped
-//@EnabledIfRuntimeConfig(propertyName = ApiType.PROP_NAME, value = ApiType.JPA)
-public class PersonJpaRepository extends JpaCrudRepository<Person> {
+@RequiredArgsConstructor
+public class PersonJpaRepository extends AbstractJpaRepository<Person> implements PersonRepository {
 
-    @PersistenceContext
-    private EntityManager em;
+    private final PersonJpaInnerRepository innerRepository;
 
     @Override
-    public EntityManager getEntityManage() {
-        return this.em;
+    public SpringDataJpaInnerRepository<Person> innerRepository() {
+        return innerRepository;
     }
 
     @Override
-    public Class<Person> getTargetClass() {
-        return Person.class;
+    public void add(Person entity) {
+        if (isErrorPattern(entity)) {
+            entity.setName("1234567890"); // 桁数オーバーを起こさせる
+        }
+        super.add(entity);
     }
 
+    @Override
+    public Optional<Person> update(Person entity) {
+        if (isErrorPattern(entity)) {
+            entity.setName("1234567890"); // 桁数オーバーを起こさせる
+        }
+        return super.update(entity);
+    }
+
+    private boolean isErrorPattern(Person entity) {
+        return entity.getName().equals("error");
+    }
 }

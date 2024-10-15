@@ -18,8 +18,8 @@ import org.apache.commons.csv.CSVParser;
 
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
-import io.extact.msa.spring.platform.fw.exception.webapi.GenericErrorInfo;
-import io.extact.msa.spring.platform.fw.exception.webapi.ValidationErrorInfoImpl;
+import io.extact.msa.spring.platform.fw.exception.response.ErrorMessage;
+import io.extact.msa.spring.platform.fw.exception.response.ValidationErrorMessage;
 
 /**
  * Platformモジュール関連のテストユーティルクラス。
@@ -52,7 +52,7 @@ public class PlatformTestUtils {
         assertThat(actual.getResponse().getStatus()).isEqualTo(expectedStatus.getStatusCode());
         assertThat(actual.getResponse().getHeaderString("Rms-Exception")).isEqualTo(expectedCauseClass.getSimpleName());
 
-        GenericErrorInfo errorInfo = actual.getResponse().readEntity(GenericErrorInfo.class);
+        ErrorMessage errorInfo = actual.getResponse().readEntity(ErrorMessage.class);
         assertThat(errorInfo.getErrorMessage()).isNotEmpty();
         assertThat(errorInfo.getErrorReason()).isEqualTo(causeType.name());
     }
@@ -63,7 +63,7 @@ public class PlatformTestUtils {
         assertThat(actual.getResponse().getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
         assertThat(actual.getResponse().getHeaderString("Rms-Exception")).isEqualTo(ConstraintViolationException.class.getSimpleName());
 
-        ValidationErrorInfoImpl errorInfo = actual.getResponse().readEntity(ValidationErrorInfoImpl.class);
+        ValidationErrorMessage errorInfo = actual.getResponse().readEntity(ValidationErrorMessage.class);
         assertThat(errorInfo.getErrorMessage()).isNotEmpty();
         assertThat(errorInfo.getErrorReason()).isEqualTo(ConstraintViolationException.class.getSimpleName());
         assertThat(errorInfo.getErrorItems()).hasSize(expectedErrorSize);

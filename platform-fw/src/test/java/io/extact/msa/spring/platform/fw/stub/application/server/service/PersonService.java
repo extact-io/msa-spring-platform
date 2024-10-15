@@ -2,11 +2,6 @@ package io.extact.msa.spring.platform.fw.stub.application.server.service;
 
 import java.util.function.Consumer;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
-import jakarta.transaction.Transactional.TxType;
-
 import org.apache.commons.lang3.StringUtils;
 
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
@@ -14,17 +9,13 @@ import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseTyp
 import io.extact.msa.spring.platform.fw.persistence.GenericRepository;
 import io.extact.msa.spring.platform.fw.service.GenericService;
 import io.extact.msa.spring.platform.fw.stub.application.server.domain.Person;
+import io.extact.msa.spring.platform.fw.stub.application.server.persistence.PersonRepository;
+import lombok.RequiredArgsConstructor;
 
-@Transactional(TxType.REQUIRED)
-@ApplicationScoped
+@RequiredArgsConstructor
 public class PersonService implements GenericService<Person> {
 
-    private GenericRepository<Person> repository;
-
-    @Inject
-    public PersonService(GenericRepository<Person> repository) {
-        this.repository = repository;
-    }
+    private final PersonRepository repository;
 
     @Override
     public GenericRepository<Person> getRepository() {
@@ -48,6 +39,6 @@ public class PersonService implements GenericService<Person> {
         if (!target.getName().equals(saved.getName())) {
             return;
         }
-        throw new BusinessFlowException("The serialNo is already registered.", CauseType.DUPRICATE);
+        throw new BusinessFlowException("The serialNo is already registered.", CauseType.DUPLICATE);
     }
 }

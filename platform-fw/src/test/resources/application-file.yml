@@ -1,0 +1,8 @@
+rms:
+  persistence:
+    person:
+      api-type: file
+      csv:
+        type: temporary
+        temporary:
+          resource: temporary/personTemp.csv

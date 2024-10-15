@@ -22,18 +22,18 @@ public class Auth0RsaJwtGenerator implements JsonWebTokenGenerator {
 
     @Override
     public String generateToken(UserClaims userClaims) {
-        Algorithm alg = Algorithm.RSA256(properties.getPrivateKey());
+        Algorithm alg = Algorithm.RSA256(properties.privateKey());
         return buildClaims(userClaims).sign(alg);
     }
 
     private Builder buildClaims(UserClaims userClaims) {
         // MicroProfile-JWTで必須とされている項目のみ設定
-        Instant now = properties.getClock().getClock().instant();
+        Instant now = properties.clock().clock().instant();
         return JWT.create()
                 .withSubject(userClaims.getUserId())
-                .withIssuer(properties.getClaim().getIssuer())
+                .withIssuer(properties.claim().issuer())
                 .withIssuedAt(now)
-                .withExpiresAt(properties.getClaim().getExpirationTime(now))
+                .withExpiresAt(properties.claim().expirationTime(now))
                 .withJWTId(UUID.randomUUID().toString())
                 .withClaim("upn", userClaims.getUserPrincipalName())
                 .withClaim("groups", new ArrayList<>(userClaims.getGroups()));

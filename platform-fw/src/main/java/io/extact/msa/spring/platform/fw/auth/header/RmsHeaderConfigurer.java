@@ -48,7 +48,7 @@ public class RmsHeaderConfigurer<H extends HttpSecurityBuilder<H>>
 
     @Override
     public void init(H http) throws Exception {
-        http.authenticationProvider(new RmsHeaderAuthenticationProvider());
+        http.authenticationProvider(new RmsHeaderAuthProvider());
     }
 
     @Override
@@ -56,7 +56,7 @@ public class RmsHeaderConfigurer<H extends HttpSecurityBuilder<H>>
 
         AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
 
-        RmsHeaderAuthenticationFilter filter = new RmsHeaderAuthenticationFilter(authenticationManager);
+        RmsHeaderAuthFilter filter = new RmsHeaderAuthFilter(authenticationManager);
 
         securityContextHolderStrategy.ifPresent(filter::setSecurityContextHolderStrategy);
         authenticationEntryPoint.ifPresent(filter::setAuthenticationEntryPoint);

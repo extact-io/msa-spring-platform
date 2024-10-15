@@ -30,7 +30,7 @@ public class Jose4jRsaJwtGenerator implements JsonWebTokenGenerator {
         JwtClaims claims = createClaims(userClaims);
         jws.setPayload(claims.toJson());
         jws.setAlgorithmHeaderValue(RSA_USING_SHA256);
-        jws.setKey(properties.getPrivateKey()); // RSA秘密鍵(p8フォーマット)
+        jws.setKey(properties.privateKey()); // RSA秘密鍵(p8フォーマット)
         jws.setDoKeyValidation(false);
 
         try {
@@ -47,14 +47,14 @@ public class Jose4jRsaJwtGenerator implements JsonWebTokenGenerator {
         JwtClaims claims = new JwtClaims();
 
         // 発行者
-        claims.setIssuer(properties.getClaim().getIssuer());
+        claims.setIssuer(properties.claim().issuer());
         // ユーザ識別子
         claims.setSubject(userClaims.getUserId());
         // 発行日時(iat)
-        Instant now = properties.getClock().getClock().instant();
+        Instant now = properties.clock().clock().instant();
         claims.setIssuedAt(NumericDate.fromMilliseconds(now.toEpochMilli()));
         // 有効期限(exp)
-        Instant expirationTime = properties.getClaim().getExpirationTime(now);
+        Instant expirationTime = properties.claim().expirationTime(now);
         claims.setExpirationTime(NumericDate.fromMilliseconds(expirationTime.toEpochMilli()));
         // tokenId(jti)
         claims.setGeneratedJwtId();

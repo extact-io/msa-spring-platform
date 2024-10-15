@@ -44,8 +44,8 @@ class ReadinessProbeRestClientTest {
     static class TestConfig {
 
         @Bean
-        TestStubResource testStubResource() {
-            return new TestStubResource();
+        TestStubController testStubController() {
+            return new TestStubController();
         }
 
         @Bean
@@ -112,7 +112,7 @@ class ReadinessProbeRestClientTest {
     }
 
     @RestController
-    static class TestStubResource {
+    static class TestStubController {
 
         @GetMapping("/{param}")
         public ResponseEntity<String> ok(@PathVariable("param") String param) {

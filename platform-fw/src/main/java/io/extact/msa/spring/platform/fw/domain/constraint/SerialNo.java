@@ -29,7 +29,7 @@ import jakarta.validation.constraints.Size;
 @Size(max = 15)
 @Pattern(regexp = "[0-9a-zA-Z\\-]*", message = "{message.io.extact.msa.spring.item.domain.constraint.SerialNoCharacter}")
 public @interface SerialNo {
-    String message() default "{message.io.extact.msa.spring.platform.fw.domain.constraint.Generic}";
+    String message() default "{bv.Generic.message}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 

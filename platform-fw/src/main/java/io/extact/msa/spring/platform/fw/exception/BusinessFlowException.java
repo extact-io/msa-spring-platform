@@ -26,7 +26,7 @@ public class BusinessFlowException extends RentalReservationServiceException {
 
     public enum CauseType  {
         NOT_FOUND,
-        DUPRICATE,
+        DUPLICATE,
         FORBIDDEN,
         REFERED
     }

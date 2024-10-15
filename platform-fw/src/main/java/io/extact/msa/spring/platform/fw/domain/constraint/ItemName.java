@@ -24,7 +24,7 @@ import jakarta.validation.constraints.Size;
 @Size(max = 15)
 public @interface ItemName {
 
-    String message() default "{message.io.extact.msa.spring.platform.fw.domain.constraint.Generic}";
+    String message() default "{bv.Generic.message}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 

@@ -28,7 +28,7 @@ public class Auth0TokenValidator implements JsonWebTokenValidator {
                 .acceptExpiresAt(30)        // 有効期限の時間ズレ許容秒数
                 .withClaimPresence("sub")   // サブジェクトは必須
                 .withClaimPresence("jti")   // JwtIdは必須
-                .withIssuer(properties.getClaim().getIssuer())  // 発行者は自分自身であること
+                .withIssuer(properties.claim().issuer())  // 発行者は自分自身であること
                 .build();
 
         return new Auth0JsonWebToken(verifier.verify(token));

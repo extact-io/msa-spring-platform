@@ -39,7 +39,7 @@ public class RentalItemMemoryStub {
 
     public RentalItemStubDto add(AddRentalItemStubDto addDto) {
         if (dtoMap.values().stream().anyMatch(i -> i.getSerialNo().equals(addDto.getSerialNo()))) {
-            throw new BusinessFlowException("Stub Error", CauseType.DUPRICATE);
+            throw new BusinessFlowException("Stub Error", CauseType.DUPLICATE);
         }
         int max = dtoMap.keySet().stream().max(Comparator.naturalOrder()).get();
         var newValue = RentalItemStubDto.of(max + 1, addDto.getSerialNo(), addDto.getItemName());

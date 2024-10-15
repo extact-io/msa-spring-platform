@@ -22,6 +22,7 @@ import org.springframework.core.io.ClassPathResource;
 import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderProperties;
 import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderProperties.Claim;
 import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderProperties.ClockProperties;
+import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderProperties.ClockProperties.Type;
 import io.extact.msa.spring.platform.core.jwt.provider.impl.Auth0RsaJwtGenerator;
 import io.extact.msa.spring.platform.core.jwt.provider.impl.Jose4jRsaJwtGenerator;
 import io.extact.msa.spring.platform.core.jwt.provider.validate.Auth0TokenValidator;
@@ -40,18 +41,12 @@ class JsonWebTokenGeneratorTest {
         SecretKeyFile keyFile = new SecretKeyFile(new ClassPathResource("/jwt.key"));
         RSAPrivateKey privateKey = keyFile.generateKey(SecretKeyFile.PRIVATE);
 
-        ClockProperties clock = new ClockProperties();
-        clock.enableFixedType();
-        clock.setFixedDatetime(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+        ClockProperties clock = new ClockProperties(
+                Type.FIXED,
+                LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+        Claim claim = new Claim("testApplication", 60);
 
-        Claim claim = new Claim();
-        claim.setIssuer("testApplication");
-        claim.setExp(60);
-
-        properties = new JwtProviderProperties();
-        properties.setPrivateKey(privateKey);
-        properties.setClock(clock);
-        properties.setClaim(claim);
+        properties = new JwtProviderProperties(false, privateKey, clock, claim);
     }
 
     @ParameterizedTest
@@ -70,14 +65,14 @@ class JsonWebTokenGeneratorTest {
         JsonWebToken jwt = validator.validate(token);
 
         // 復元したJSONが元通りか確認
-        Instant now = properties.getClock().getFixedInstant();
+        Instant now = properties.clock().getFixedInstant();
         assertThat(jwt.getName()).isEqualTo(userClaims.getUserPrincipalName());
-        assertThat(jwt.getIssuer()).isEqualTo(properties.getClaim().getIssuer());
+        assertThat(jwt.getIssuer()).isEqualTo(properties.claim().issuer());
         assertThat(jwt.getAudience()).isNull();
         assertThat(jwt.getSubject()).isEqualTo(userClaims.getUserId());
         assertThat(jwt.getTokenID()).isNotNull();
         assertThat(jwt.getIssuedAtTime()).isEqualTo(now.getEpochSecond());
-        long exp = properties.getClaim().getExpirationTime(now).getEpochSecond();
+        long exp = properties.claim().expirationTime(now).getEpochSecond();
         assertThat(jwt.getExpirationTime()).isBetween(exp, exp + 5L); // JwtClaims内部でnowをするため+5secまでは誤差として許容
         assertThat(jwt.getGroups()).hasSize(1);
         assertThat(jwt.getGroups()).containsAll(userClaims.getGroups());

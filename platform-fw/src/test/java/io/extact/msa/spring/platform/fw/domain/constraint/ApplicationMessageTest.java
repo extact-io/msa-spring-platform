@@ -5,21 +5,19 @@ import static org.assertj.core.api.Assertions.*;
 import java.time.LocalDateTime;
 import java.util.Locale;
 
+import jakarta.validation.constraints.Size;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import io.extact.msa.spring.platform.fw.domain.constraint.BeforeAfterDateTime.BeforeAfterDateTimeValidatable;
-import jakarta.validation.constraints.Size;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class ApplicationMessageTest {
@@ -27,15 +25,7 @@ class ApplicationMessageTest {
     @Configuration(proxyBeanMethods = false)
     @Import(ValidationConfiguration.class)
     static class TestConfig {
-
-        @Bean
-        @Primary
-        MessageSource testMessageSource() {
-            ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-            messageSource.setBasenames("classpath:application-messages", "classpath:test-application-messages");
-            messageSource.setDefaultEncoding("UTF-8");
-            return messageSource;
-        }
+        // NOP
     }
 
     @Test
@@ -61,6 +51,7 @@ class ApplicationMessageTest {
         String defaultMessage = errors.getFieldError().getDefaultMessage();
         assertThat(defaultMessage).isEqualTo("override default message, parameter=1,3");
 
+        // MessageSourceでメッセージを上書き
         String resolvedMessage = messageSource.getMessage(errors.getFieldError(), Locale.getDefault());
         assertThat(resolvedMessage).isEqualTo("名前は1から3のサイズにしてください");
     }

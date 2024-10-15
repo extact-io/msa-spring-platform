@@ -60,7 +60,7 @@ public class ReservationMemoryStub {
         var conditionOfPeriod = new DateTimePeriod(dto.getStartDateTime(), dto.getEndDateTime());
         if (dtoMap.values().stream().anyMatch(
                 r -> new DateTimePeriod(r.getStartDateTime(), r.getEndDateTime()).isOverlappedBy(conditionOfPeriod))) {
-            throw new BusinessFlowException("Stub Error", CauseType.DUPRICATE);
+            throw new BusinessFlowException("Stub Error", CauseType.DUPLICATE);
         }
         int max = dtoMap.keySet().stream().max(Comparator.naturalOrder()).get();
         var newValue = ReservationStubDto.of(max + 1, dto.getStartDateTime(), dto.getEndDateTime(), dto.getNote(),

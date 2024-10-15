@@ -30,6 +30,10 @@ public interface LoginUser {
         return new LoginUserImpl(userId, roles);
     }
 
+    static LoginUser of(String userId, Set<String> roles) {
+        return of(Integer.parseInt(userId), roles);
+    }
+
     @RequiredArgsConstructor
     @Getter @ToString
     static class LoginUserImpl implements LoginUser {

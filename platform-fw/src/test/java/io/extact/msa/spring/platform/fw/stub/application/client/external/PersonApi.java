@@ -1,19 +1,34 @@
 package io.extact.msa.spring.platform.fw.stub.application.client.external;
 
 import java.util.List;
-import java.util.Optional;
 
-import io.extact.msa.spring.platform.fw.stub.application.common.dto.AddPersonEventDto;
-import io.extact.msa.spring.platform.fw.stub.application.common.dto.PersonResourceDto;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.service.annotation.DeleteExchange;
+import org.springframework.web.service.annotation.GetExchange;
+import org.springframework.web.service.annotation.HttpExchange;
+import org.springframework.web.service.annotation.PostExchange;
+import org.springframework.web.service.annotation.PutExchange;
 
+import io.extact.msa.spring.platform.fw.stub.application.client.external.dto.AddPersonClientRequest;
+import io.extact.msa.spring.platform.fw.stub.application.client.external.dto.PersonClientResponse;
+import io.extact.msa.spring.platform.fw.stub.application.client.external.dto.UpdatePersonClientRequest;
+
+@HttpExchange("/persons")
 public interface PersonApi {
-    List<PersonResourceDto> getAll();
 
-    Optional<PersonResourceDto> get(int id);
+    @GetExchange
+    List<PersonClientResponse> getAll();
 
-    PersonResourceDto add(AddPersonEventDto dto);
+    @GetExchange("/{id}")
+    PersonClientResponse get(@PathVariable("id") Integer id);
 
-    PersonResourceDto update(PersonResourceDto dto);
+    @PostExchange
+    PersonClientResponse add(@RequestBody AddPersonClientRequest req);
 
-    void delete(int id);
+    @PutExchange
+    PersonClientResponse update(@RequestBody UpdatePersonClientRequest req);
+
+    @DeleteExchange("/{id}")
+    void delete(@PathVariable("id") Integer itemId);
 }

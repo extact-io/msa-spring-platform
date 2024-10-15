@@ -46,7 +46,7 @@ rms:
     enable: true
     private-key: classpath:/jwt.key
     clock:
-      type: system
+      type: SYSTEM
       fixed-datetime: 2024-01-01T12:30 # typeがsystemの場合は無視される
     claim:
       issuer: JsonWebTokenIntegrationTest

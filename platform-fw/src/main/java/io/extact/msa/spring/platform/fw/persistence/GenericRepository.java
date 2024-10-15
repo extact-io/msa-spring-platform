@@ -1,19 +1,22 @@
 package io.extact.msa.spring.platform.fw.persistence;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.validation.annotation.Validated;
 
 import io.extact.msa.spring.platform.fw.domain.constraint.ValidationGroups.Add;
+import io.extact.msa.spring.platform.fw.domain.constraint.ValidationGroups.Delete;
 import io.extact.msa.spring.platform.fw.domain.constraint.ValidationGroups.Update;
 import jakarta.validation.Valid;
+import jakarta.validation.groups.Default;
 
 /**
  * 永続先に依らないリポジトリの共通操作
  *
  * @param <T> エンティティの型
  */
-@Validated
+@Validated // メソッドバリデーションを有効にするための@Validated
 public interface GenericRepository<T> {
 
     /**
@@ -22,7 +25,7 @@ public interface GenericRepository<T> {
      * @param id ID
      * @return エンティティ。該当なしはnull
      */
-    T get(int id);
+    Optional<T> get(int id);
 
     /**
      * 永続化されているエンティティを全件取得する
@@ -37,8 +40,8 @@ public interface GenericRepository<T> {
      *
      * @param entity エンティティ
      */
-    @Validated(Add.class)
-    void add(@Valid T entity);
+    @Validated({ Default.class, Add.class }) // グループを指定するための@Validated
+    void add(@Valid T entity); // 引数にバリデーションを掛けるための@Valid(この@Validがないとバリデーションは実行されない)
 
     /**
      * エンティティを更新する。
@@ -47,21 +50,22 @@ public interface GenericRepository<T> {
      * @param entity 更新内容
      * @return 更新後エンティティ。更新対象が存在しない場合はnull
      */
-    @Validated(Update.class)
-    T update(@Valid T entity);
+    @Validated({ Default.class, Update.class })
+    Optional<T> update(@Valid T entity);
 
     /**
      * エンティティを削除する。
      *
      * @param entity 削除エンティティ
      */
-    void delete(T entity);
+    @Validated(Delete.class)
+    void delete(@Valid T entity);
 
     /**
      * コンフィグ定数
      */
     static class ApiType {
-        public static final String PROP_NAME ="rms.persistence.apiType";
+        public static final String PROP_NAME = "rms.persistence.%s.api-type";
         public static final String FILE = "file";
         public static final String JPA = "jpa";
     }

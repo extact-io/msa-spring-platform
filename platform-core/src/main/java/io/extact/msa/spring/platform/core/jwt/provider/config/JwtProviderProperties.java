@@ -7,37 +7,32 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import lombok.Data;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 @ConfigurationProperties(prefix = "rms.jwt-provider")
-@Data
-public class JwtProviderProperties {
+public record JwtProviderProperties(
 
-    private boolean enable = false;
-    private RSAPrivateKey privateKey;
-    private ClockProperties clock;
-    private Claim claim;
+        @DefaultValue("false") //
+        boolean enable,
+        RSAPrivateKey privateKey,
+        @DefaultValue //
+        ClockProperties clock,
+        @DefaultValue //
+        Claim claim) {
 
-    @Data
-    public static class ClockProperties {
+    public static record ClockProperties(
+            @DefaultValue("SYSTEM") //
+            Type type,
+            LocalDateTime fixedDatetime) {
 
-        enum Type {
-            system,
-            fixed
+        public enum Type {
+            SYSTEM, FIXED
         }
 
-        private Type type = Type.system;
-        private LocalDateTime fixedDatetime;
-
-        public void enableFixedType() {
-            this.type = Type.fixed;
-        }
-
-        public Clock getClock() {
+        public Clock clock() {
             return switch (type) {
-                case system -> Clock.systemDefaultZone();
-                case fixed -> Clock.fixed(getFixedInstant(), ZoneId.systemDefault());
+                case SYSTEM -> Clock.systemDefaultZone();
+                case FIXED -> Clock.fixed(getFixedInstant(), ZoneId.systemDefault());
             };
         }
 
@@ -46,13 +41,12 @@ public class JwtProviderProperties {
         }
     }
 
-    @Data
-    public static class Claim {
+    public static record Claim(
+            String issuer,
+            @DefaultValue("60") //
+            int exp) {
 
-        private String issuer;
-        private int exp = 60;
-
-        public Instant getExpirationTime(Instant creationTime) {
+        public Instant expirationTime(Instant creationTime) {
             return creationTime.plusSeconds(exp * 60);
         }
     }

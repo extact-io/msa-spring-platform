@@ -5,17 +5,16 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,9 +33,10 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import io.extact.msa.spring.platform.core.jwt.provider.JsonWebTokenGenerator;
 import io.extact.msa.spring.platform.core.jwt.provider.UserClaims;
 import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderConfiguration;
-import io.extact.msa.spring.platform.core.jwt.validation.AuthorizeRequestCustomizer;
+import io.extact.msa.spring.platform.core.jwt.validation.AuthorizeHttpRequestCustomizer;
 import io.extact.msa.spring.platform.core.jwt.validation.JwtValidationConfiguration;
 import io.extact.msa.spring.platform.core.testlib.NopResponseErrorHandler;
+import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
 
 public class JsonWebTokenValidationTest {
 
@@ -44,12 +44,8 @@ public class JsonWebTokenValidationTest {
     @Nested
     class ValidTokenTest {
 
-        private TestRestClient resourceClient;
-
-        @BeforeEach
-        void beforeEach(@Value("${local.server.port}") int port) throws Exception {
-            this.resourceClient = JsonWebTokenValidationTest.this.createRestClient(port);
-        }
+        @Autowired
+        private TestClient testClient;
 
         @Test
         void tesValidToken(@Autowired JsonWebTokenGenerator generator) {
@@ -57,7 +53,7 @@ public class JsonWebTokenValidationTest {
             String tokenId = generator.generateToken(TEST_USER);
             Map<String, String> header = Map.of(HttpHeaders.AUTHORIZATION, "Bearer " + tokenId);
 
-            ResponseEntity<String> actual = resourceClient.hello(header);
+            ResponseEntity<String> actual = testClient.hello(header);
 
             assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.OK);
             assertThat(actual.getBody()).isEqualTo("ok");
@@ -69,12 +65,8 @@ public class JsonWebTokenValidationTest {
     @Nested
     class InvalidPublicKeyTokenTest {
 
-        private TestRestClient resourceClient;
-
-        @BeforeEach
-        void beforeEach(@Value("${local.server.port}") int port) throws Exception {
-            this.resourceClient = JsonWebTokenValidationTest.this.createRestClient(port);
-        }
+        @Autowired
+        private TestClient testClient;
 
         @Test
         void tesValidToken(@Autowired JsonWebTokenGenerator generator) {
@@ -82,7 +74,7 @@ public class JsonWebTokenValidationTest {
             String tokenId = generator.generateToken(TEST_USER);
             Map<String, String> header = Map.of(HttpHeaders.AUTHORIZATION, "Bearer " + tokenId);
 
-            ResponseEntity<String> actual = resourceClient.hello(header);
+            ResponseEntity<String> actual = testClient.hello(header);
 
             assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
             assertThat(actual.getHeaders().getFirst(HttpHeaders.WWW_AUTHENTICATE)).contains("Signed JWT rejected");
@@ -95,12 +87,8 @@ public class JsonWebTokenValidationTest {
     @Nested
     class InvalidExpTokenTest {
 
-        private TestRestClient resourceClient;
-
-        @BeforeEach
-        void beforeEach(@Value("${local.server.port}") int port) throws Exception {
-            this.resourceClient = JsonWebTokenValidationTest.this.createRestClient(port);
-        }
+        @Autowired
+        private TestClient testClient;
 
         @Test
         void tesValidToken(@Autowired JsonWebTokenGenerator generator) {
@@ -108,7 +96,7 @@ public class JsonWebTokenValidationTest {
             String tokenId = generator.generateToken(TEST_USER);
             Map<String, String> header = Map.of(HttpHeaders.AUTHORIZATION, "Bearer " + tokenId);
 
-            ResponseEntity<String> actual = resourceClient.hello(header);
+            ResponseEntity<String> actual = testClient.hello(header);
 
             assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
             assertThat(actual.getHeaders().getFirst(HttpHeaders.WWW_AUTHENTICATE)).contains("Jwt expired");
@@ -120,12 +108,8 @@ public class JsonWebTokenValidationTest {
     @Nested
     class InvalidIssuerTokenTest {
 
-        private TestRestClient resourceClient;
-
-        @BeforeEach
-        void beforeEach(@Value("${local.server.port}") int port) throws Exception {
-            this.resourceClient = JsonWebTokenValidationTest.this.createRestClient(port);
-        }
+        @Autowired
+        private TestClient testClient;
 
         @Test
         void tesValidToken(@Autowired JsonWebTokenGenerator generator) {
@@ -133,7 +117,7 @@ public class JsonWebTokenValidationTest {
             String tokenId = generator.generateToken(TEST_USER);
             Map<String, String> header = Map.of(HttpHeaders.AUTHORIZATION, "Bearer " + tokenId);
 
-            ResponseEntity<String> actual = resourceClient.hello(header);
+            ResponseEntity<String> actual = testClient.hello(header);
 
             assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
             assertThat(actual.getHeaders().getFirst(HttpHeaders.WWW_AUTHENTICATE)).contains("iss claim is not valid");
@@ -168,37 +152,35 @@ public class JsonWebTokenValidationTest {
     static class TestConfig {
 
         @Bean
-        AuthorizeRequestCustomizer authorizeRequestCustomizer() {
+        AuthorizeHttpRequestCustomizer authorizeRequestCustomizer() {
             // TODO Improve when https://github.com/microsoft/vscode-java-pack/issues/530 is fixed
             return (AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry configurer) -> configurer
                     .anyRequest().authenticated();
         }
 
         @Bean
-        TestResource helloResource() {
-            return new TestResource();
+        TestController testController() {
+            return new TestController();
         }
-    }
 
+        @Bean
+        TestClient testClient(Environment env) throws Exception {
 
-    // ----------------------------------------------------- util methods
+            RestClient restClient = RestClient.builder()
+                    .uriBuilderFactory(new LocalHostUriBuilderFactory(env))
+                    .defaultStatusHandler(new NopResponseErrorHandler())
+                    .build();
+            RestClientAdapter adapter = RestClientAdapter.create(restClient);
+            HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
 
-    TestRestClient createRestClient(int port) throws Exception {
-
-        RestClient restClient = RestClient.builder()
-                .baseUrl("http://localhost:" + port)
-                .defaultStatusHandler(new NopResponseErrorHandler())
-                .build();
-        RestClientAdapter adapter = RestClientAdapter.create(restClient);
-        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
-
-        return factory.createClient(TestRestClient.class);
+            return factory.createClient(TestClient.class);
+        }
     }
 
 
     // ----------------------------------------------------- client side stub interface
 
-    public interface TestRestClient {
+    public interface TestClient {
 
         @GetExchange("/hello")
         ResponseEntity<String> hello(@RequestHeader Map<String, ?> headers);
@@ -208,7 +190,7 @@ public class JsonWebTokenValidationTest {
     // ----------------------------------------------------- server side stub classes
 
     @RestController
-    static class TestResource {
+    static class TestController {
 
         @GetMapping("/hello")
         public String hello() {

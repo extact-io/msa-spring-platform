@@ -4,16 +4,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import io.extact.msa.spring.platform.fw.domain.IdProperty;
+import org.springframework.transaction.annotation.Transactional;
+
+import io.extact.msa.spring.platform.fw.domain.Identifiable;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
 import io.extact.msa.spring.platform.fw.persistence.GenericRepository;
 
-
-public interface GenericService<T extends IdProperty> {
+@Transactional
+public interface GenericService<T extends Identifiable> {
 
     default Optional<T> get(int id) {
-        return Optional.ofNullable(getRepository().get(id));
+        return getRepository().get(id);
     }
 
     default List<T> findAll() {
@@ -28,10 +30,9 @@ public interface GenericService<T extends IdProperty> {
         return get(entity.getId()).get();
     }
 
-    default T update(T entity) {
-        if (getRepository().get(entity.getId()) == null) {
-            throw new BusinessFlowException("target does not exist for id", CauseType.NOT_FOUND);
-        }
+    default Optional<T> update(T entity) {
+        getRepository().get(entity.getId())
+                .orElseThrow(() -> new BusinessFlowException("target does not exist for id", CauseType.NOT_FOUND));
         if (getDuplicateChecker() != null) {
             getDuplicateChecker().accept(entity);
         }
@@ -39,10 +40,8 @@ public interface GenericService<T extends IdProperty> {
     }
 
     default void delete(int id) {
-        var target = getRepository().get(id);
-        if (target == null) {
-            throw new BusinessFlowException("target does not exist for id", CauseType.NOT_FOUND);
-        }
+        T target = getRepository().get(id)
+                .orElseThrow(() -> new BusinessFlowException("target does not exist for id", CauseType.NOT_FOUND));
         getRepository().delete(target);
     }
 

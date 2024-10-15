@@ -3,115 +3,136 @@ package io.extact.msa.spring.platform.fw.it;
 import static io.extact.msa.spring.test.assertj.ToStringAssert.*;
 import static org.assertj.core.api.Assertions.*;
 
-import jakarta.inject.Inject;
+import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.core.env.Environment;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.support.RestClientAdapter;
+import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
+import io.extact.msa.spring.platform.fw.controller.RestControllerConfig;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
 import io.extact.msa.spring.platform.fw.exception.RmsValidationException;
+import io.extact.msa.spring.platform.fw.external.ErrorMessageDeserializer;
+import io.extact.msa.spring.platform.fw.external.RestClientErrorHandler;
 import io.extact.msa.spring.platform.fw.stub.application.client.external.PersonApi;
-import io.extact.msa.spring.platform.fw.stub.application.client.external.proxy.PersaonApiProxy;
-import io.extact.msa.spring.platform.fw.stub.application.client.external.restclient.PersonApiRestClient;
-import io.extact.msa.spring.platform.fw.stub.application.common.dto.AddPersonEventDto;
-import io.extact.msa.spring.platform.fw.stub.application.common.dto.PersonResourceDto;
-import io.extact.msa.spring.platform.fw.stub.application.server.persistence.file.PersonFileRepository;
-import io.extact.msa.spring.platform.fw.stub.application.server.persistence.file.PersonFileRepositoryProducers;
-import io.extact.msa.spring.platform.fw.stub.application.server.persistence.jpa.PersonJpaRepository;
+import io.extact.msa.spring.platform.fw.stub.application.client.external.PersonClient;
+import io.extact.msa.spring.platform.fw.stub.application.client.external.PersonClientAdapter;
+import io.extact.msa.spring.platform.fw.stub.application.client.external.dto.AddPersonClientRequest;
+import io.extact.msa.spring.platform.fw.stub.application.client.external.dto.PersonClientResponse;
+import io.extact.msa.spring.platform.fw.stub.application.client.external.dto.UpdatePersonClientRequest;
+import io.extact.msa.spring.platform.fw.stub.application.server.controller.PersonController;
+import io.extact.msa.spring.platform.fw.stub.application.server.persistence.PersonRepository;
 import io.extact.msa.spring.platform.fw.stub.application.server.service.PersonService;
-import io.extact.msa.spring.platform.fw.stub.application.server.webapi.PersonApplication;
-import io.extact.msa.spring.platform.fw.stub.application.server.webapi.PersonResource;
-import io.extact.msa.spring.test.junit5.JulToSLF4DelegateExtension;
-import io.helidon.microprofile.tests.junit5.AddBean;
-import io.helidon.microprofile.tests.junit5.AddConfig;
-import io.helidon.microprofile.tests.junit5.HelidonTest;
+import io.extact.msa.spring.test.spring.EnableAutoConfigurationWithoutSecurity;
+import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
 
 /**
  * スタブのPersonアプリを使ってplatform.fwクラスをテストする。
  * <pre>
- * ・スタブアプリ：CID Bean(PersonApi)
- * ・スタブアプリ：CID Bean(PersaonApiProxy)
- * ・スタブアプリ：RestClient(PersonApiRestClient)
+ * ・スタブアプリ：Component(PersonClient)
+ * ・スタブアプリ：Component(PersonClientAdapter)
+ * ・スタブアプリ：HTTPインターフェース(PersonApi)
  *     ↓ HTTP
- * ・スタブアプリ：RestResource(PersonApplication)
- * ・スタブアプリ：CID Bean(PersonService)
- * ・スタブアプリ：CID Bean(PersonJpaRepository) or (PersonFileRepository)
+ * ・スタブアプリ：RestController(PersonController)
+ * ・スタブアプリ：Component(PersonService)
+ * ・スタブアプリ：Component(PersonJpaRepository) or (PersonFileRepository)
  * ※ JPAかFileかどちらの実装を使うかはこのクラスのサブクラスで決定
  * </pre>
  */
-@HelidonTest
-// for RESTResrouce Beans
-@AddBean(PersonResource.class)
-@AddBean(PersonApplication.class)
-@AddBean(PersonService.class)
-@AddBean(PersonJpaRepository.class)
-@AddBean(PersonFileRepository.class)
-@AddBean(PersonFileRepositoryProducers.class)
-@AddConfig(key = "security.jersey.enabled", value = "true") // 認証認可OFF
-@AddConfig(key = "server.port", value = "7001") // for PersonResource Server port
-//for RESTClient Beans
-@AddBean(PersaonApiProxy.class)
-@AddBean(PersonApiRestClient.class)
-@AddConfig(key = "rms.cdi.configuredCdi.register.0.class", value = "io.extact.msa.spring.platform.fw.external.PropagateJwtClientHeadersFactory")
-@AddConfig(key = "web-api/mp-rest/url", value = "http://localhost:7001") // for REST Client
-//for common
-@ExtendWith(JulToSLF4DelegateExtension.class)
 @TestMethodOrder(OrderAnnotation.class)
 abstract class AbstractApplicationIntegrationTest {
 
-    @Inject
-    private PersonApi api;
+    @Autowired
+    protected PersonClient client;
+
+    @Configuration(proxyBeanMethods = false)
+    @EnableAutoConfigurationWithoutSecurity
+    @Import({ RestControllerConfig.class })
+    static class TestConfig {
+
+        @Bean
+        PersonService personService(PersonRepository repository) {
+            return new PersonService(repository);
+        }
+
+        @Bean
+        PersonController personResource(PersonService service) {
+            return new PersonController(service);
+        }
+
+        @Bean
+        PersonClient personClient(Environment env) {
+
+            RestClient restClient = RestClient.builder()
+                    .uriBuilderFactory(new LocalHostUriBuilderFactory(env))
+                    .defaultStatusHandler(new RestClientErrorHandler(new ErrorMessageDeserializer()))
+                    .build();
+
+            RestClientAdapter adapter = RestClientAdapter.create(restClient);
+            HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
+            PersonApi personApi = factory.createClient(PersonApi.class);
+
+            return new PersonClientAdapter(personApi);
+        }
+    }
 
     @Test
     @Order(1)
     void testGet() {
-        var expected = PersonResourceDto.of(1, "name1");
-        var actual = api.get(1);
+        PersonClientResponse expected = new PersonClientResponse(1, "name1");
+        Optional<PersonClientResponse> actual = client.get(1);
         assertThat(actual).isPresent();
         assertThatToString(actual.get()).isEqualTo(expected);
 
-        actual = api.get(999);
+        actual = client.get(999);
         assertThat(actual).isNotPresent();
     }
 
     @Test
     @Order(2)
     void testGetAll() {
-        var actual = api.getAll();
+        List<PersonClientResponse> actual = client.getAll();
         assertThat(actual).hasSize(4);
     }
 
     @Test
     @Order(3)
     void testUpdate() {
-        var expected = PersonResourceDto.of(4, "UP");
-        var actual = api.update(PersonResourceDto.of(4, "UP"));
+        PersonClientResponse expected = new PersonClientResponse(4, "UP");
+        PersonClientResponse actual = client.update(new UpdatePersonClientRequest(4, "UP"));
         assertThatToString(actual).isEqualTo(expected);
     }
 
     @Test
     @Order(4)
     void testUpdateOnValidationError() {
-        var thrown = catchThrowable(() -> api.update(PersonResourceDto.of(4, "123456"))); // 5文字より大きい
+        Throwable thrown = catchThrowable(() -> client.update(new UpdatePersonClientRequest(4, "123456"))); // 5文字より大きい
         assertThat(thrown).isInstanceOf(RmsValidationException.class);
     }
 
     @Test
     @Order(5)
     void testUpdateOnDuplicateError() {
-        var thrown = catchThrowable(() -> api.update(PersonResourceDto.of(2, "name3")));
+        Throwable thrown = catchThrowable(() -> client.update(new UpdatePersonClientRequest(2, "name3")));
         assertThat(thrown).isInstanceOf(BusinessFlowException.class);
-        assertThat(((BusinessFlowException) thrown).getCauseType()).isEqualTo(CauseType.DUPRICATE);
+        assertThat(((BusinessFlowException) thrown).getCauseType()).isEqualTo(CauseType.DUPLICATE);
     }
 
     @Test
     @Order(6)
     void testUpdateOnNotFound() {
-        var thrown = catchThrowable(() -> api.update(PersonResourceDto.of(999, "UP")));
+        Throwable thrown = catchThrowable(() -> client.update(new UpdatePersonClientRequest(999, "UP")));
         assertThat(thrown).isInstanceOf(BusinessFlowException.class);
         assertThat(((BusinessFlowException) thrown).getCauseType()).isEqualTo(CauseType.NOT_FOUND);
     }
@@ -119,40 +140,41 @@ abstract class AbstractApplicationIntegrationTest {
     @Test
     @Order(7)
     void testAdd() {
-        var expected = PersonResourceDto.of(5, "ADD");
-        var actual = api.add(AddPersonEventDto.of("ADD"));
+        PersonClientResponse expected = new PersonClientResponse(newDataId(), "ADD");
+        PersonClientResponse actual = client.add(new AddPersonClientRequest("ADD"));
         assertThatToString(actual).isEqualTo(expected);
     }
 
     @Test
     @Order(8)
     void testAddOnValidationError() {
-        var thrown = catchThrowable(() -> api.add(AddPersonEventDto.of("123456"))); // 5文字より大きい
+        Throwable thrown = catchThrowable(() -> client.add(new AddPersonClientRequest("123456"))); // 5文字より大きい
         assertThat(thrown).isInstanceOf(RmsValidationException.class);
     }
 
     @Test
     @Order(9)
     void testAddOnDuplicateError() {
-        var thrown = catchThrowable(() -> api.add(AddPersonEventDto.of("name3")));
+        Throwable thrown = catchThrowable(() -> client.add(new AddPersonClientRequest("name3")));
         assertThat(thrown).isInstanceOf(BusinessFlowException.class);
-        assertThat(((BusinessFlowException) thrown).getCauseType()).isEqualTo(CauseType.DUPRICATE);
+        assertThat(((BusinessFlowException) thrown).getCauseType()).isEqualTo(CauseType.DUPLICATE);
     }
 
     @Test
     @Order(10)
     void testDelete() {
-        var expected = api.getAll().size() - 1;
-        api.delete(1);
-        var actual = api.getAll().size();
-        assertThat(actual).isEqualTo(expected);
+        client.delete(newDataId());
+        int actual = client.getAll().size();
+        assertThat(actual).isEqualTo(4);
     }
 
     @Test
     @Order(11)
     void testDeleteOnNotFound() {
-        var thrown = catchThrowable(() -> api.delete(999));
+        Throwable thrown = catchThrowable(() -> client.delete(999));
         assertThat(thrown).isInstanceOf(BusinessFlowException.class);
         assertThat(((BusinessFlowException) thrown).getCauseType()).isEqualTo(CauseType.NOT_FOUND);
     }
+
+    protected abstract int newDataId();
 }

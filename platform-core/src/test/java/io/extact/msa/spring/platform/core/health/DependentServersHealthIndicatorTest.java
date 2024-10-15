@@ -6,10 +6,9 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestClient;
 
@@ -25,6 +25,7 @@ import io.extact.msa.spring.platform.core.health.client.ProbeResult;
 import io.extact.msa.spring.platform.core.health.client.ReadinessProbeRestClient;
 import io.extact.msa.spring.platform.core.health.client.ReadinessProbeRestClientFactory;
 import io.extact.msa.spring.platform.core.testlib.NopResponseErrorHandler;
+import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
 import lombok.Data;
 
 /**
@@ -40,7 +41,7 @@ import lombok.Data;
  */
 class DependentServersHealthIndicatorTest {
 
-    private static final String TEST_ENDPOINT = "http://localhost:%s/actuator/health/dependentServers";
+    private static final String TEST_ENDPOINT = "/actuator/health/dependentServers";
 
     @Configuration(proxyBeanMethods = false)
     @EnableAutoConfiguration
@@ -52,6 +53,14 @@ class DependentServersHealthIndicatorTest {
         ReadinessProbeRestClientFactory readinessProbeRestClientFactoryStub() {
             return new ReadinessProbeRestClientFactoryStub();
         }
+
+        @Bean
+        RestClient restClient(Environment env) {
+            return RestClient.builder()
+                    .uriBuilderFactory(new LocalHostUriBuilderFactory(env, TEST_ENDPOINT))
+                    .defaultStatusHandler(new NopResponseErrorHandler())
+                    .build();
+        }
     }
 
 
@@ -61,14 +70,8 @@ class DependentServersHealthIndicatorTest {
     @Nested
     class UpResultTest {
 
+        @Autowired
         private RestClient testClient;
-
-        @BeforeEach
-        void beforeEach(@Value("${local.server.port}") int port) {
-            testClient = RestClient.builder()
-                    .baseUrl(TEST_ENDPOINT.formatted(port))
-                    .build();
-        }
 
         @Test
         void test() {
@@ -96,15 +99,8 @@ class DependentServersHealthIndicatorTest {
     @Nested
     class NgResultTest {
 
+        @Autowired
         private RestClient testClient;
-
-        @BeforeEach
-        void beforeEach(@Value("${local.server.port}") int port) {
-            testClient = RestClient.builder()
-                    .baseUrl(TEST_ENDPOINT.formatted(port))
-                    .defaultStatusHandler(new NopResponseErrorHandler())
-                    .build();
-        }
 
         @Test
         void test() {
@@ -132,15 +128,8 @@ class DependentServersHealthIndicatorTest {
     @Nested
     class ErrorResultTest {
 
+        @Autowired
         private RestClient testClient;
-
-        @BeforeEach
-        void beforeEach(@Value("${local.server.port}") int port) {
-            testClient = RestClient.builder()
-                    .baseUrl(TEST_ENDPOINT.formatted(port))
-                    .defaultStatusHandler(new NopResponseErrorHandler())
-                    .build();
-        }
 
         @Test
         void test() {

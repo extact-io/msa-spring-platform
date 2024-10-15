@@ -20,15 +20,15 @@ import jakarta.validation.Payload;
 @Retention(RUNTIME)
 public @interface BeforeAfterDateTime {
 
-    String message() default "{message.io.extact.msa.spring.platform.fw.domain.constraint.BeforeAfterDateTime}";
+    String message() default "{bv.BeforeAfterDateTime.message}";
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
 
-    String from() default "label.use.from.datetime";
+    String from() default "label.from.datetime";
 
-    String to() default "label.use.to.datetime";
+    String to() default "label.to.datetime";
 
     @Target({ TYPE, ANNOTATION_TYPE })
     @Retention(RUNTIME)

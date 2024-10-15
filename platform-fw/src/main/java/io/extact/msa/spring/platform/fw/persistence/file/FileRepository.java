@@ -10,6 +10,13 @@ import java.nio.file.Path;
 public interface FileRepository {
 
     /**
+     * ファイルに永続化するエンティティ名。
+     *
+     * @return エンティティ名
+     */
+    String getEntityName();
+
+    /**
      * 永続化ファイルのパスを取得する
      *
      * @return 永続化ファイルのパス

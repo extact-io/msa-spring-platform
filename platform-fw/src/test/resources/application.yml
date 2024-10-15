@@ -1,7 +1,8 @@
+debug: true
 logging.level:
   org.springframework:
-    boot.autoconfigure: info
-    security: debug
+    transaction: trace
+    #security: trace
   ConfigDump: debug
 
 spring:
@@ -23,8 +24,20 @@ spring:
         readiness:
           include: "readinessState,db,dependentServers"
       validate-group-membership: false # groupにindicatorが存在しない場合もエラーにしない設定
+  messages:
+    basename: application-messages,test-application-messages
+    encoding: UTF-8
+
+#rms.persistence.entity: person
+#rms.persistence.person.apiType.: jpa
+#rms.persistence.person.csv.type: temporary
+#rms.persistence.person.csv.permanent.directory: ./data
+#rms.persistence.person.csv.permanent.filename: person.csv
+#rms.persistence.person.csv.temporary.resource: temporary/personTemp.csv
 
 rms:
+  persistence:
+    entity: person
   debug:
     configdump:
       enable: false # change to true in the test class
@@ -42,8 +55,8 @@ rms:
     enable: true
     private-key: classpath:/jwt.key
     clock:
-      type: system
-      fixed-datetime: 2024-01-01T12:30 # typeがsystemの場合は無視される
+      type: SYSTEM
+      fixed-datetime: 2024-01-01T12:30 # typeがSYSTEMの場合は無視される
     claim:
       issuer: JsonWebTokenIntegrationTest
       exp: 60                 # 有効期限（分単位）
@@ -51,4 +64,3 @@ rms:
     public-key: classpath:/jwt.pub.key
     claim:
       issuer: ${rms.jwt-provider.claim.issuer}
-

@@ -26,7 +26,7 @@ public class Jose4jTokenValidator implements JsonWebTokenValidator {
                 .setAllowedClockSkewInSeconds(30)           // 有効期限の時間ズレ許容秒数
                 .setRequireSubject()                        // サブジェクトは必須
                 .setRequireJwtId()                          // JwtIdは必須
-                .setExpectedIssuer(properties.getClaim().getIssuer()) // 発行者は自分自身であること
+                .setExpectedIssuer(properties.claim().issuer()) // 発行者は自分自身であること
                 .setSkipDefaultAudienceValidation()         // 受信者のチェックはしない
                 .setVerificationKey(createPublicKey())      // トークンの署名を検査するキー（＝署名に使ったキー）
                 .setRelaxVerificationKeyValidation()        // 復号キーの形式チェックはしない

@@ -1,29 +1,22 @@
 package io.extact.msa.spring.platform.fw.exception;
 
-import java.util.List;
+import io.extact.msa.spring.platform.fw.exception.response.ValidationErrorMessage;
 
 public class RmsValidationException extends RentalReservationServiceException {
 
-    private ValidationErrorInfo errorInfo;
+    private ValidationErrorMessage validationError;
 
-    public RmsValidationException(String message, ValidationErrorInfo errorInfo) {
+    public RmsValidationException(String message, ValidationErrorMessage validationError) {
         super(message);
-        this.errorInfo = errorInfo;
-    }
-    public ValidationErrorInfo getErrorInfo() {
-        return errorInfo;
+        this.validationError = validationError;
     }
 
-    public interface ValidationErrorInfo {
-
-        String getErrorReason();
-        String getErrorMessage();
-        List<ValidationErrorItem> getErrorItems();
+    public ValidationErrorMessage getErrorMessage() {
+        return validationError;
     }
 
-    public interface ValidationErrorItem {
-
-        String getFieldName();
-        String getMessage();
+    @Override
+    public String getMessage() {
+        return super.getMessage() + ":" + validationError.toString();
     }
 }

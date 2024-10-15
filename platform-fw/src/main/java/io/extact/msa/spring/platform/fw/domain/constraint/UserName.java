@@ -23,7 +23,7 @@ import jakarta.validation.constraints.NotBlank;
 @Retention(RUNTIME)
 @NotBlank
 public @interface UserName {
-    String message() default "{message.io.extact.msa.spring.platform.fw.domain.constraint.Generic}";
+    String message() default "{bv.Generic.message}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 
