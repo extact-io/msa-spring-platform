@@ -10,9 +10,9 @@ import java.util.Set;
  */
 public interface UserClaims {
 
-    String getUserId();
+    String userId();
 
-    String getUserPrincipalName();
+    String principalName();
 
-    Set<String> getGroups();
+    Set<String> groups();
 }

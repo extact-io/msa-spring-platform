@@ -195,8 +195,8 @@ public class AuthIntegratinTest {
     void testMemberLogin() {
 
         ClientAuthData authData = testClient.authenticate("1", "member");
-        assertThat(authData.getUserId()).isEqualTo("1");
-        assertThat(authData.getGroups()).isEqualTo(Set.of("member"));
+        assertThat(authData.userId()).isEqualTo("1");
+        assertThat(authData.groups()).isEqualTo(Set.of("member"));
 
         boolean result = testClient.guestApiWithLogin();
         assertThat(result).isTrue();
@@ -215,8 +215,8 @@ public class AuthIntegratinTest {
     void testAdminLogin() {
 
         ClientAuthData authData = testClient.authenticate("2", "admin");
-        assertThat(authData.getUserId()).isEqualTo("2");
-        assertThat(authData.getGroups()).isEqualTo(Set.of("admin"));
+        assertThat(authData.userId()).isEqualTo("2");
+        assertThat(authData.groups()).isEqualTo(Set.of("admin"));
 
         boolean result = testClient.guestApiWithLogin();
         assertThat(result).isTrue();

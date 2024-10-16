@@ -9,11 +9,9 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.validation.method.MethodValidationException;
 
-import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
-import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
 import io.extact.msa.spring.platform.fw.stub.application.client.external.dto.AddPersonClientRequest;
-import io.extact.msa.spring.platform.fw.stub.application.client.external.dto.PersonClientResponse;
 import io.extact.msa.spring.platform.fw.stub.application.client.external.dto.UpdatePersonClientRequest;
 import io.extact.msa.spring.platform.fw.stub.application.server.persistence.jpa.PersonJpaRepositoryConfig;
 
@@ -34,19 +32,14 @@ class JpaApplicationIntegrationTest extends AbstractApplicationIntegrationTest {
     @Test
     @Order(99)
     void testValidateResponseErrorWithAdd() {
-        Throwable thrown = catchThrowable(() -> {
-            PersonClientResponse res = client.add(new AddPersonClientRequest("error"));
-            System.out.println(res);
-        });
-        assertThat(thrown).isInstanceOf(BusinessFlowException.class);
-        assertThat(((BusinessFlowException) thrown).getCauseType()).isEqualTo(CauseType.NOT_FOUND);
+        Throwable thrown = catchThrowable(() -> client.add(new AddPersonClientRequest("error")));
+        assertThat(thrown).isInstanceOf(MethodValidationException.class);
     }
 
     @Test
     @Order(99)
     void testValidateResponseErrorWithUpdate() {
         Throwable thrown = catchThrowable(() -> client.update(new UpdatePersonClientRequest(1, "error")));
-        assertThat(thrown).isInstanceOf(BusinessFlowException.class);
-        assertThat(((BusinessFlowException) thrown).getCauseType()).isEqualTo(CauseType.NOT_FOUND);
+        assertThat(thrown).isInstanceOf(MethodValidationException.class);
     }
 }

@@ -67,7 +67,7 @@ abstract class AbstractApplicationIntegrationTest {
         }
 
         @Bean
-        PersonController personResource(PersonService service) {
+        PersonController personController(PersonService service) {
             return new PersonController(service);
         }
 

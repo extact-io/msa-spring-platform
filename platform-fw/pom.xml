@@ -12,7 +12,6 @@
 	<description>framework of the application</description>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>io.extact</groupId>
 			<artifactId>msa-spring-platform-core</artifactId>
@@ -49,11 +48,11 @@
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-access</artifactId>
+        <dependency>
+            <groupId>ch.qos.logback.access</groupId>
+            <artifactId>logback-access-tomcat</artifactId>
 			<scope>provided</scope>
-		</dependency>
+        </dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-csv</artifactId>

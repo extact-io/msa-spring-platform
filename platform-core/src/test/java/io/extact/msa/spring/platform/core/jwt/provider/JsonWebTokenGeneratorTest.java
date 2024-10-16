@@ -66,16 +66,16 @@ class JsonWebTokenGeneratorTest {
 
         // 復元したJSONが元通りか確認
         Instant now = properties.clock().getFixedInstant();
-        assertThat(jwt.getName()).isEqualTo(userClaims.getUserPrincipalName());
+        assertThat(jwt.getName()).isEqualTo(userClaims.principalName());
         assertThat(jwt.getIssuer()).isEqualTo(properties.claim().issuer());
         assertThat(jwt.getAudience()).isNull();
-        assertThat(jwt.getSubject()).isEqualTo(userClaims.getUserId());
+        assertThat(jwt.getSubject()).isEqualTo(userClaims.userId());
         assertThat(jwt.getTokenID()).isNotNull();
         assertThat(jwt.getIssuedAtTime()).isEqualTo(now.getEpochSecond());
         long exp = properties.claim().expirationTime(now).getEpochSecond();
         assertThat(jwt.getExpirationTime()).isBetween(exp, exp + 5L); // JwtClaims内部でnowをするため+5secまでは誤差として許容
         assertThat(jwt.getGroups()).hasSize(1);
-        assertThat(jwt.getGroups()).containsAll(userClaims.getGroups());
+        assertThat(jwt.getGroups()).containsAll(userClaims.groups());
     }
 
     static Stream<Arguments> generatorAndValidatorFactoryProvider() {
@@ -87,17 +87,17 @@ class JsonWebTokenGeneratorTest {
         );
     }
 
-    static class SimpleUserClaims implements UserClaims {
+    static record SimpleUserClaims() implements UserClaims {
         @Override
-        public String getUserId() {
+        public String userId() {
             return "soramame";
         }
         @Override
-        public String getUserPrincipalName() {
+        public String principalName() {
             return "soramame@rms.com";
         }
         @Override
-        public Set<String> getGroups() {
+        public Set<String> groups() {
             return Set.of("1");
         }
     }

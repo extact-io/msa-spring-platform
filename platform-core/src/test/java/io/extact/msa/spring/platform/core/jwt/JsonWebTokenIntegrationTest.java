@@ -61,7 +61,6 @@ import io.extact.msa.spring.platform.core.jwt.validation.AuthorizeHttpRequestCus
 import io.extact.msa.spring.platform.core.jwt.validation.JwtValidationConfig;
 import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
 import io.extact.msa.spring.test.spring.NopResponseErrorHandler;
-import lombok.Data;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class JsonWebTokenIntegrationTest {
@@ -199,7 +198,7 @@ public class JsonWebTokenIntegrationTest {
 
         ResponseEntity<String> actual = testClient.hello(header);
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(actual.getBody()).isEqualTo("Hello, " + TestUserClaims.DEFAULT_INSTANCE.getUserId() + "!");
+        assertThat(actual.getBody()).isEqualTo("Hello, " + TestUserClaims.DEFAULT_INSTANCE.userId() + "!");
 
         // authentication assertion
         Authentication auth = actualServerSideAuth;
@@ -374,19 +373,14 @@ public class JsonWebTokenIntegrationTest {
         }
     }
 
-    @Data
-    public static class TestUserClaims implements UserClaims {
+    static record TestUserClaims(
+            String userId,
+            String principalName,
+            Set<String> groups) implements UserClaims {
 
-        static final TestUserClaims DEFAULT_INSTANCE;
-        static {
-            DEFAULT_INSTANCE = new TestUserClaims();
-            DEFAULT_INSTANCE.setUserId("test");
-            DEFAULT_INSTANCE.setUserPrincipalName("test@test");
-            DEFAULT_INSTANCE.setGroups(Set.of("roleA", "roleB"));
-        }
-
-        private String userId;
-        private String userPrincipalName;
-        private Set<String> groups;
+        static final TestUserClaims DEFAULT_INSTANCE = new TestUserClaims(
+                "test",
+                "test@test",
+                Set.of("roleA", "roleB"));
     }
 }

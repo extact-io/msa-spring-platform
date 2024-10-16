@@ -49,7 +49,7 @@ public class Jose4jRsaJwtGenerator implements JsonWebTokenGenerator {
         // 発行者
         claims.setIssuer(properties.claim().issuer());
         // ユーザ識別子
-        claims.setSubject(userClaims.getUserId());
+        claims.setSubject(userClaims.userId());
         // 発行日時(iat)
         Instant now = properties.clock().clock().instant();
         claims.setIssuedAt(NumericDate.fromMilliseconds(now.toEpochMilli()));
@@ -59,9 +59,9 @@ public class Jose4jRsaJwtGenerator implements JsonWebTokenGenerator {
         // tokenId(jti)
         claims.setGeneratedJwtId();
         // ユーザ名(MicroProfile-JWTのカスタムClaim)
-        claims.setStringClaim("upn", userClaims.getUserPrincipalName());
+        claims.setStringClaim("upn", userClaims.principalName());
         // グループ名(MicroProfile-JWTのカスタムClaim)
-        claims.setStringListClaim("groups", new ArrayList<>(userClaims.getGroups()));
+        claims.setStringListClaim("groups", new ArrayList<>(userClaims.groups()));
 
         return claims;
     }

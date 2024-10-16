@@ -2,17 +2,13 @@ package io.extact.msa.spring.platform.fw.stub.auth.testclient;
 
 import java.util.Set;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import io.extact.msa.spring.platform.core.jwt.provider.UserClaims;
 
-@Data
-@NoArgsConstructor
-public class ClientAuthData {
+public record ClientAuthData(
+        String userId,
+        Set<String> groups) implements UserClaims {
 
-    private String userId;
-    private Set<String> groups;
-
-    public String getUserPrincipalName() {
-        return userId + "@msa-rms";
+    public String principalName() {
+        return this.userId + "@msa-rms";
     }
 }

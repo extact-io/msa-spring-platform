@@ -30,12 +30,12 @@ public class Auth0RsaJwtGenerator implements JsonWebTokenGenerator {
         // MicroProfile-JWTで必須とされている項目のみ設定
         Instant now = properties.clock().clock().instant();
         return JWT.create()
-                .withSubject(userClaims.getUserId())
+                .withSubject(userClaims.userId())
                 .withIssuer(properties.claim().issuer())
                 .withIssuedAt(now)
                 .withExpiresAt(properties.claim().expirationTime(now))
                 .withJWTId(UUID.randomUUID().toString())
-                .withClaim("upn", userClaims.getUserPrincipalName())
-                .withClaim("groups", new ArrayList<>(userClaims.getGroups()));
+                .withClaim("upn", userClaims.principalName())
+                .withClaim("groups", new ArrayList<>(userClaims.groups()));
     }
 }

@@ -22,9 +22,9 @@ public class TestClientAdapter implements TestClient {
         String bearerToken = BearerTokenExtractor.extract(response.getHeaders());
 
         RmsClientAuthenticationToken token = RmsClientAuthenticationToken.builder()
-                .userId(authData.getUserId())
+                .userId(authData.userId())
                 .bearerToken(bearerToken)
-                .groups(authData.getGroups())
+                .groups(authData.groups())
                 .build();
 
         SecurityContextHolder.setContext(new SecurityContextImpl(token));

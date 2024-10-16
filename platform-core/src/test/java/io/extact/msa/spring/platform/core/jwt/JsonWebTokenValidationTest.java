@@ -130,17 +130,17 @@ public class JsonWebTokenValidationTest {
     private static final UserClaims TEST_USER = new UserClaims() {
 
         @Override
-        public String getUserId() {
+        public String userId() {
             return "test";
         }
 
         @Override
-        public String getUserPrincipalName() {
+        public String principalName() {
             return "test";
         }
 
         @Override
-        public Set<String> getGroups() {
+        public Set<String> groups() {
             return Set.of("roleA");
         }
     };

@@ -77,9 +77,9 @@ class DebugSleepTest {
 
     static class TestTargetToMethod {
         @DebugSleep
-       void execute() {
-           System.out.println("called TestTargetAtMethod#execute");
-       }
+        void execute() {
+            System.out.println("called TestTargetAtMethod#execute");
+        }
     }
 
 }
