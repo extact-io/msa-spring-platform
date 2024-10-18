@@ -32,10 +32,9 @@ class BeforeAfterDateTimeTest {
                 .hasMessageEndingWith("bv.BeforeAfterDateTime.message");
     }
 
-    @lombok.Data
     @BeforeAfterDateTime
-    static class Data implements BeforeAfterDateTimeValidatable {
-        private final LocalDateTime startDateTime;
-        private final LocalDateTime endDateTime;
+    static record Data(
+            LocalDateTime fromDateTime,
+            LocalDateTime toDateTime) implements BeforeAfterDateTimeValidatable {
     }
 }

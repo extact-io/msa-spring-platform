@@ -22,7 +22,7 @@ import jakarta.validation.constraints.NotNull;
 @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
 @Retention(RUNTIME)
 @NotNull
-public @interface ReserveStartDateTime {
+public @interface ReserveFromDateTime {
     String message() default "{bv.Generic.message}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
@@ -31,6 +31,6 @@ public @interface ReserveStartDateTime {
     @Retention(RUNTIME)
     @Documented
     public @interface List {
-        ReserveStartDateTime[] value();
+        ReserveFromDateTime[] value();
     }
 }

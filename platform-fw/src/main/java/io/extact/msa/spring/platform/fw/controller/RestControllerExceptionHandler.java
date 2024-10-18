@@ -24,7 +24,7 @@ import io.extact.msa.spring.platform.core.condition.SkipRegistration;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.RmsServiceUnavailableException;
 import io.extact.msa.spring.platform.fw.exception.RmsSystemException;
-import io.extact.msa.spring.platform.fw.exception.response.ErrorMessage;
+import io.extact.msa.spring.platform.fw.exception.response.SimpleErrorMessage;
 import io.extact.msa.spring.platform.fw.exception.response.ValidationErrorItem;
 import io.extact.msa.spring.platform.fw.exception.response.ValidationErrorMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -39,11 +39,11 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
     private static final String PARAMETER_ERROR_MESSAGE = "ex.ParameterErrorException.message";
 
     @ExceptionHandler(BusinessFlowException.class)
-    public ResponseEntity<ErrorMessage> handleBusinessFlowException(BusinessFlowException e, WebRequest req) {
+    public ResponseEntity<SimpleErrorMessage> handleBusinessFlowException(BusinessFlowException e, WebRequest req) {
 
         log.warn("exception occured. message={}", e.getMessage());
 
-        ErrorMessage errorMessage = new ErrorMessage(e.getCauseType().name(), e.getMessage());
+        SimpleErrorMessage errorMessage = new SimpleErrorMessage(e.getCauseType().name(), e.getMessage());
         HttpStatus status = switch (e.getCauseType()) {
             case NOT_FOUND          -> HttpStatus.NOT_FOUND;
             case DUPLICATE, REFERED -> HttpStatus.CONFLICT;
@@ -57,12 +57,12 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
     }
 
     @ExceptionHandler(RmsServiceUnavailableException.class)
-    public ResponseEntity<ErrorMessage> handleServiceUnavailableException(RmsServiceUnavailableException e,
+    public ResponseEntity<SimpleErrorMessage> handleServiceUnavailableException(RmsServiceUnavailableException e,
             WebRequest req) {
 
         log.warn("exception occured. message={}", e.getMessage());
 
-        ErrorMessage errorMessage = new ErrorMessage(e.getClass().getSimpleName(), e.getMessage());
+        SimpleErrorMessage errorMessage = new SimpleErrorMessage(e.getClass().getSimpleName(), e.getMessage());
 
         return ResponseEntity
                 .status(HttpStatus.SERVICE_UNAVAILABLE)
@@ -71,11 +71,11 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
     }
 
     @ExceptionHandler(RmsSystemException.class)
-    public ResponseEntity<ErrorMessage> handleRmsSystemException(RmsSystemException e, WebRequest req) {
+    public ResponseEntity<SimpleErrorMessage> handleRmsSystemException(RmsSystemException e, WebRequest req) {
 
         log.warn("exception occured. message={}", e.getMessage());
 
-        ErrorMessage errorMessage = new ErrorMessage(e.getClass().getSimpleName(), e.getMessage());
+        SimpleErrorMessage errorMessage = new SimpleErrorMessage(e.getClass().getSimpleName(), e.getMessage());
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -101,8 +101,7 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
         ValidationErrorItem errorItem = new ValidationErrorItem(fieldName, errorMessage);
 
         ValidationErrorMessage validationMessage = new ValidationErrorMessage(
-                e.getClass().getSimpleName(),
-                resolveParameterErrorMessage(req),
+                new SimpleErrorMessage(e.getClass().getSimpleName(), resolveParameterErrorMessage(req)),
                 List.of(errorItem));
 
         return ResponseEntity
@@ -132,8 +131,7 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
         });
 
         ValidationErrorMessage validationMessage = new ValidationErrorMessage(
-                e.getClass().getSimpleName(),
-                resolveParameterErrorMessage(req),
+                new SimpleErrorMessage(e.getClass().getSimpleName(), resolveParameterErrorMessage(req)),
                 Stream.concat(fieldErrors, globalErrors).toList());
 
         return ResponseEntity
@@ -161,8 +159,7 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
         }).toList();
 
         ValidationErrorMessage validationMessage = new ValidationErrorMessage(
-                e.getClass().getSimpleName(),
-                resolveParameterErrorMessage(req),
+                new SimpleErrorMessage(e.getClass().getSimpleName(), resolveParameterErrorMessage(req)) ,
                 parameterErrors);
 
         return ResponseEntity

@@ -18,7 +18,7 @@ import org.apache.commons.csv.CSVParser;
 
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
-import io.extact.msa.spring.platform.fw.exception.response.ErrorMessage;
+import io.extact.msa.spring.platform.fw.exception.response.SimpleErrorMessage;
 import io.extact.msa.spring.platform.fw.exception.response.ValidationErrorMessage;
 
 /**
@@ -52,9 +52,9 @@ public class PlatformTestUtils {
         assertThat(actual.getResponse().getStatus()).isEqualTo(expectedStatus.getStatusCode());
         assertThat(actual.getResponse().getHeaderString("Rms-Exception")).isEqualTo(expectedCauseClass.getSimpleName());
 
-        ErrorMessage errorInfo = actual.getResponse().readEntity(ErrorMessage.class);
-        assertThat(errorInfo.getErrorMessage()).isNotEmpty();
-        assertThat(errorInfo.getErrorReason()).isEqualTo(causeType.name());
+        SimpleErrorMessage error = actual.getResponse().readEntity(SimpleErrorMessage.class);
+        assertThat(error.errorMessage()).isNotEmpty();
+        assertThat(error.errorReason()).isEqualTo(causeType.name());
     }
 
     public static void assertValidationErrorInfo(Throwable thrown, int expectedErrorSize) {
@@ -63,9 +63,9 @@ public class PlatformTestUtils {
         assertThat(actual.getResponse().getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
         assertThat(actual.getResponse().getHeaderString("Rms-Exception")).isEqualTo(ConstraintViolationException.class.getSimpleName());
 
-        ValidationErrorMessage errorInfo = actual.getResponse().readEntity(ValidationErrorMessage.class);
-        assertThat(errorInfo.getErrorMessage()).isNotEmpty();
-        assertThat(errorInfo.getErrorReason()).isEqualTo(ConstraintViolationException.class.getSimpleName());
-        assertThat(errorInfo.getErrorItems()).hasSize(expectedErrorSize);
+        ValidationErrorMessage error = actual.getResponse().readEntity(ValidationErrorMessage.class);
+        assertThat(error.errorMessage()).isNotEmpty();
+        assertThat(error.errorReason()).isEqualTo(ConstraintViolationException.class.getSimpleName());
+        assertThat(error.validationErrorItems()).hasSize(expectedErrorSize);
     }
 }

@@ -8,11 +8,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.time.LocalDateTime;
 
-import io.extact.msa.spring.platform.fw.domain.constraint.BeforeAfterDateTime.BeforeAfterDateTimeValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.Payload;
+
+import io.extact.msa.spring.platform.fw.domain.constraint.BeforeAfterDateTime.BeforeAfterDateTimeValidator;
 
 @Documented
 @Constraint(validatedBy = { BeforeAfterDateTimeValidator.class })
@@ -39,15 +40,15 @@ public @interface BeforeAfterDateTime {
 
     public static class BeforeAfterDateTimeValidator implements ConstraintValidator<BeforeAfterDateTime, BeforeAfterDateTimeValidatable> {
         public boolean isValid(BeforeAfterDateTimeValidatable bean, ConstraintValidatorContext context) {
-            if (bean.getStartDateTime() == null || bean.getEndDateTime() == null) {
+            if (bean.fromDateTime() == null || bean.toDateTime() == null) {
                 return true; // チェックしない
             }
-            return bean.getStartDateTime().isBefore(bean.getEndDateTime());
+            return bean.fromDateTime().isBefore(bean.toDateTime());
         }
     }
 
     public interface BeforeAfterDateTimeValidatable {
-        public LocalDateTime getStartDateTime();
-        public LocalDateTime getEndDateTime();
+        public LocalDateTime fromDateTime();
+        public LocalDateTime toDateTime();
     }
 }

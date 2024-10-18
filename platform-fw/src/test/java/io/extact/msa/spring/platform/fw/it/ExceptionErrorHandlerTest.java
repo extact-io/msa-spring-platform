@@ -63,7 +63,6 @@ import io.extact.msa.spring.platform.fw.it.ExceptionErrorHandlerTest.PairFieldsE
 import io.extact.msa.spring.platform.fw.it.ExceptionErrorHandlerTest.PairFieldsEquals.PairFieldsEqualsValidator;
 import io.extact.msa.spring.test.spring.EnableAutoConfigurationWithoutSecurity;
 import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
-import lombok.Data;
 
 /**
  * {@link RestControllerExceptionHandler}と{@link RestClientErrorHandler}の両方を使った
@@ -154,17 +153,16 @@ class ExceptionErrorHandlerTest {
                 .isInstanceOfSatisfying(
                         RmsValidationException.class,
                         e -> {
-
                             String message = messageSource.getMessage(PARAMETER_ERROR_MESSAGE, null, Locale.getDefault());
                             assertThat(e.getMessage()).startsWith(message);
 
                             ValidationErrorMessage error = e.getErrorMessage();
                             assertThat(error).isNotNull();
-                            assertThat(error.getErrorReason()).isEqualTo(HandlerMethodValidationException.class.getSimpleName());
-                            assertThat(error.getErrorMessage()).isEqualTo(message);
-                            assertThat(error.getErrorItems()).hasSize(1);
-                            assertThat(error.getErrorItems().get(0).getFieldName()).isEqualTo("val1");
-                            assertThat(error.getErrorItems().get(0).getMessage()).contains("サイズにしてください");
+                            assertThat(error.errorReason()).isEqualTo(HandlerMethodValidationException.class.getSimpleName());
+                            assertThat(error.errorMessage()).isEqualTo(message);
+                            assertThat(error.validationErrorItems()).hasSize(1);
+                            assertThat(error.validationErrorItems().get(0).fieldName()).isEqualTo("val1");
+                            assertThat(error.validationErrorItems().get(0).message()).contains("サイズにしてください");
                         });
     }
 
@@ -174,17 +172,16 @@ class ExceptionErrorHandlerTest {
                 .isInstanceOfSatisfying(
                         RmsValidationException.class,
                         e -> {
-
                             String message = messageSource.getMessage(PARAMETER_ERROR_MESSAGE, null,
                                     Locale.getDefault());
                             assertThat(e.getMessage()).startsWith(message);
 
                             ValidationErrorMessage error = e.getErrorMessage();
                             assertThat(error).isNotNull();
-                            assertThat(error.getErrorReason())
+                            assertThat(error.errorReason())
                                     .isEqualTo(HandlerMethodValidationException.class.getSimpleName());
-                            assertThat(error.getErrorMessage()).isEqualTo(message);
-                            assertThat(error.getErrorItems()).hasSize(2);
+                            assertThat(error.errorMessage()).isEqualTo(message);
+                            assertThat(error.validationErrorItems()).hasSize(2);
                         });
     }
 
@@ -201,10 +198,10 @@ class ExceptionErrorHandlerTest {
 
                             ValidationErrorMessage error = e.getErrorMessage();
                             assertThat(error).isNotNull();
-                            assertThat(error.getErrorReason())
+                            assertThat(error.errorReason())
                                     .isEqualTo(HandlerMethodValidationException.class.getSimpleName());
-                            assertThat(error.getErrorMessage()).isEqualTo(message);
-                            assertThat(error.getErrorItems()).hasSize(1);
+                            assertThat(error.errorMessage()).isEqualTo(message);
+                            assertThat(error.validationErrorItems()).hasSize(1);
                         });
     }
 
@@ -221,10 +218,10 @@ class ExceptionErrorHandlerTest {
 
                             ValidationErrorMessage error = e.getErrorMessage();
                             assertThat(error).isNotNull();
-                            assertThat(error.getErrorReason())
+                            assertThat(error.errorReason())
                                     .isEqualTo(HandlerMethodValidationException.class.getSimpleName());
-                            assertThat(error.getErrorMessage()).isEqualTo(message);
-                            assertThat(error.getErrorItems()).hasSize(2);
+                            assertThat(error.errorMessage()).isEqualTo(message);
+                            assertThat(error.validationErrorItems()).hasSize(2);
                         });
     }
 
@@ -242,15 +239,15 @@ class ExceptionErrorHandlerTest {
 
                             ValidationErrorMessage error = e.getErrorMessage();
                             assertThat(error).isNotNull();
-                            assertThat(error.getErrorReason())
+                            assertThat(error.errorReason())
                                     .isEqualTo(MethodArgumentNotValidException.class.getSimpleName());
-                            assertThat(error.getErrorMessage()).isEqualTo(message);
-                            assertThat(error.getErrorItems()).hasSize(3);
+                            assertThat(error.errorMessage()).isEqualTo(message);
+                            assertThat(error.validationErrorItems()).hasSize(3);
 
-                            Map<String, String> itemMap = error.getErrorItems().stream()
+                            Map<String, String> itemMap = error.validationErrorItems().stream()
                                     .collect(Collectors.toMap(
-                                            ValidationErrorItem::getFieldName,
-                                            ValidationErrorItem::getMessage));
+                                            ValidationErrorItem::fieldName,
+                                            ValidationErrorItem::message));
                             assertThat(itemMap).containsKey("値1");
                             assertThat(itemMap.get("値1")).contains("サイズにしてください");
                             assertThat(itemMap).containsKey("値2");
@@ -275,10 +272,10 @@ class ExceptionErrorHandlerTest {
 
                             ValidationErrorMessage error = e.getErrorMessage();
                             assertThat(error).isNotNull();
-                            assertThat(error.getErrorReason())
+                            assertThat(error.errorReason())
                                     .isEqualTo(MethodArgumentNotValidException.class.getSimpleName());
-                            assertThat(error.getErrorMessage()).isEqualTo(message);
-                            assertThat(error.getErrorItems()).hasSize(3);
+                            assertThat(error.errorMessage()).isEqualTo(message);
+                            assertThat(error.validationErrorItems()).hasSize(3);
                         });
     }
 
@@ -304,12 +301,12 @@ class ExceptionErrorHandlerTest {
                             ValidationErrorMessage error = e.getErrorMessage();
 
                             assertThat(error).isNotNull();
-                            assertThat(error.getErrorReason())
+                            assertThat(error.errorReason())
                                     .isEqualTo(MethodArgumentTypeMismatchException.class.getSimpleName());
-                            assertThat(error.getErrorMessage()).isEqualTo(errorMessage);
-                            assertThat(error.getErrorItems()).hasSize(1);
-                            assertThat(error.getErrorItems().get(0).getFieldName()).isEqualTo("val1");
-                            assertThat(error.getErrorItems().get(0).getMessage()).contains(fieldErrorMessage);
+                            assertThat(error.errorMessage()).isEqualTo(errorMessage);
+                            assertThat(error.validationErrorItems()).hasSize(1);
+                            assertThat(error.validationErrorItems().get(0).fieldName()).isEqualTo("val1");
+                            assertThat(error.validationErrorItems().get(0).message()).contains(fieldErrorMessage);
                         });
     }
 
@@ -329,10 +326,10 @@ class ExceptionErrorHandlerTest {
                             ValidationErrorMessage error = e.getErrorMessage();
 
                             assertThat(error).isNotNull();
-                            assertThat(error.getErrorReason())
+                            assertThat(error.errorReason())
                                     .isEqualTo(MethodArgumentTypeMismatchException.class.getSimpleName());
-                            assertThat(error.getErrorMessage()).isEqualTo(errorMessage);
-                            assertThat(error.getErrorItems()).hasSize(1);
+                            assertThat(error.errorMessage()).isEqualTo(errorMessage);
+                            assertThat(error.validationErrorItems()).hasSize(1);
                         });
     }
 
@@ -353,10 +350,10 @@ class ExceptionErrorHandlerTest {
                             ValidationErrorMessage error = e.getErrorMessage();
 
                             assertThat(error).isNotNull();
-                            assertThat(error.getErrorReason())
+                            assertThat(error.errorReason())
                                     .isEqualTo(MethodArgumentNotValidException.class.getSimpleName());
-                            assertThat(error.getErrorMessage()).isEqualTo(message);
-                            assertThat(error.getErrorItems()).hasSize(3);
+                            assertThat(error.errorMessage()).isEqualTo(message);
+                            assertThat(error.validationErrorItems()).hasSize(3);
                         });
     }
 
@@ -377,10 +374,10 @@ class ExceptionErrorHandlerTest {
                             ValidationErrorMessage error = e.getErrorMessage();
 
                             assertThat(error).isNotNull();
-                            assertThat(error.getErrorReason())
+                            assertThat(error.errorReason())
                                     .isEqualTo(MethodArgumentTypeMismatchException.class.getSimpleName());
-                            assertThat(error.getErrorMessage()).isEqualTo(errorMessage);
-                            assertThat(error.getErrorItems()).hasSize(1);
+                            assertThat(error.errorMessage()).isEqualTo(errorMessage);
+                            assertThat(error.validationErrorItems()).hasSize(1);
                         });
     }
 
@@ -452,13 +449,10 @@ class ExceptionErrorHandlerTest {
         void occurUnknowException();
     }
 
-    @Data
     @PairFieldsEquals
-    static class ParamDto implements PairFieldsEqualsValidatable {
-        @Size(min = 2)
-        private final String val1;
-        @Size(min = 2)
-        private final String val2;
+    static record ParamDto(
+            @Size(min = 2) String val1,
+            @Size(min = 2) String val2) implements PairFieldsEqualsValidatable {
     }
 
     @RestController
@@ -571,16 +565,16 @@ class ExceptionErrorHandlerTest {
         public static class PairFieldsEqualsValidator implements ConstraintValidator<PairFieldsEquals, PairFieldsEqualsValidatable> {
 
             public boolean isValid(PairFieldsEqualsValidatable bean, ConstraintValidatorContext context) {
-                if (bean.getVal1() == null || bean.getVal2() == null) {
+                if (bean.val1() == null || bean.val2() == null) {
                     return true; // チェックしない
                 }
-                return bean.getVal1().equals(bean.getVal2());
+                return bean.val1().equals(bean.val2());
             }
         }
 
         public interface PairFieldsEqualsValidatable {
-            String getVal1();
-            String getVal2();
+            String val1();
+            String val2();
         }
     }
 

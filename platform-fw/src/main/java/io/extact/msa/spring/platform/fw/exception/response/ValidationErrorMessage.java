@@ -3,26 +3,22 @@ package io.extact.msa.spring.platform.fw.exception.response;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+public record ValidationErrorMessage(
+        SimpleErrorMessage validationErrorMessage,
+        List<ValidationErrorItem> validationErrorItems) implements ErrorMessage {
 
-@NoArgsConstructor // for JSON Deserialize
-@ToString
-public class ValidationErrorMessage extends ErrorMessage {
-
-    private List<ValidationErrorItem> errorItems;
-
-    public ValidationErrorMessage(String errorReason, String errorMessage, List<ValidationErrorItem> errorItems) {
-        super(errorReason, errorMessage);
-        this.errorItems = errorItems;
+    @Override
+    public List<ValidationErrorItem> validationErrorItems() {
+        return new ArrayList<>(validationErrorItems);
     }
 
-    public List<ValidationErrorItem> getErrorItems() {
-        return new ArrayList<>(errorItems);
+    @Override
+    public String errorMessage() {
+        return validationErrorMessage.errorMessage();
     }
 
-    public void setErrorItems(List<ValidationErrorItem> errorItems) {
-        this.errorItems = errorItems;
+    @Override
+    public String errorReason() {
+        return validationErrorMessage.errorReason();
     }
 }
-

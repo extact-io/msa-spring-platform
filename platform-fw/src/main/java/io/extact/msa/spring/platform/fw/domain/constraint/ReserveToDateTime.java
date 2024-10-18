@@ -9,15 +9,12 @@ import java.lang.annotation.Target;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
-import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 
 /**
- * 予約開始日時チェックアノテーション。
- * 登録時にのみ利用する
+ * 予約終了日時チェックアノテーション。
  * <pre>
  * ・nullでないこと
- * ・現在日時より未来であること
  * </pre>
  */
 @Documented
@@ -25,8 +22,7 @@ import jakarta.validation.constraints.NotNull;
 @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
 @Retention(RUNTIME)
 @NotNull
-@Future
-public @interface ReserveStartDateTimeFuture {
+public @interface ReserveToDateTime {
     String message() default "{bv.Generic.message}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
@@ -35,6 +31,6 @@ public @interface ReserveStartDateTimeFuture {
     @Retention(RUNTIME)
     @Documented
     public @interface List {
-        ReserveStartDateTimeFuture[] value();
+        ReserveToDateTime[] value();
     }
 }

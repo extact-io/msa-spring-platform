@@ -2,14 +2,15 @@ package io.extact.msa.spring.platform.fw.domain.constraint;
 
 import java.util.Set;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
 import io.extact.msa.spring.test.assertj.ConstraintViolationSetAssert;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validator;
 
 @SpringBootTest(classes = ValidationConfiguration.class, webEnvironment = WebEnvironment.NONE)
 class RmsIdTest {
@@ -39,9 +40,8 @@ class RmsIdTest {
             .hasMessageEndingWith("Min.message");
     }
 
-    @lombok.Data
-    static class Data {
-        @RmsId
-        private final Integer value;
+    static record Data(
+            @RmsId //
+            Integer value) {
     }
 }

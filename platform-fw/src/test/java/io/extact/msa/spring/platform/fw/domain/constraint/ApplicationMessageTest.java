@@ -56,16 +56,14 @@ class ApplicationMessageTest {
         assertThat(resolvedMessage).isEqualTo("名前は1から3のサイズにしてください");
     }
 
-    @lombok.Data
     @BeforeAfterDateTime
-    static class Data implements BeforeAfterDateTimeValidatable {
-        private final LocalDateTime startDateTime;
-        private final LocalDateTime endDateTime;
+    static record Data(
+            LocalDateTime fromDateTime,
+            LocalDateTime toDateTime) implements BeforeAfterDateTimeValidatable {
     }
 
-    @lombok.Data
-    static class Value {
-        @Size(min = 1, max = 3)
-        private final String name;
+    static record Value(
+            @Size(min = 1, max = 3) //
+            String name) {
     }
 }
