@@ -1,16 +1,16 @@
-package io.extact.msa.spring.platform.fw.stub.application.client.external.dto;
+package io.extact.msa.spring.platform.fw.stub.application.server.web;
 
 import io.extact.msa.spring.platform.fw.stub.application.server.model.Person;
 
-public record UpdatePersonClientRequest(
+public record PersonResponse(
         Integer id,
         String name) {
 
-    public static UpdatePersonClientRequest from(Person entity) {
+    public static PersonResponse from(Person entity) {
         if (entity == null) {
             return null;
         }
-        return new UpdatePersonClientRequest(entity.getId(), entity.getName());
+        return new PersonResponse(entity.getId(), entity.getName());
     }
 
     public Person toEntity() {

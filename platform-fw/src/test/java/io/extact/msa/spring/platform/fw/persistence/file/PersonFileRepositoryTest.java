@@ -17,9 +17,9 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
 import io.extact.msa.spring.platform.fw.persistence.AbstractPersonRepositoryTest;
-import io.extact.msa.spring.platform.fw.stub.application.server.domain.Person;
-import io.extact.msa.spring.platform.fw.stub.application.server.persistence.PersonRepository;
-import io.extact.msa.spring.platform.fw.stub.application.server.persistence.file.PersonFileRepositoryConfig;
+import io.extact.msa.spring.platform.fw.stub.application.server.infrastrucure.file.PersonFileRepositoryConfig;
+import io.extact.msa.spring.platform.fw.stub.application.server.model.Person;
+import io.extact.msa.spring.platform.fw.stub.application.server.model.PersonRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 @TestExecutionListeners(listeners = { // 親クラスで定義したトランザクションが開始されないように必要なListenerだけ定義
@@ -52,7 +52,7 @@ class PersonFileRepositoryTest extends AbstractPersonRepositoryTest {
     protected void testAddToSpecificImplementation() {
         Person expected = Person.valueOf(5, "ADD");
         repository.add(Person.valueOf(null, "ADD"));
-        assertThatToString(repository().get(5).get()).isEqualTo(expected);
+        assertThatToString(repository().find(5).find()).isEqualTo(expected);
     }
 
     @Test
@@ -60,7 +60,7 @@ class PersonFileRepositoryTest extends AbstractPersonRepositoryTest {
     protected void testDeleteToSpecificImplementation() {
         Person deleted = Person.valueOf(1, "dummy");
         repository.delete(deleted);
-        assertThat(repository().get(1)).isNotPresent();
+        assertThat(repository().find(1)).isNotPresent();
     }
 
     @Test

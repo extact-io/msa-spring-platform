@@ -31,9 +31,9 @@ import io.extact.msa.spring.platform.fw.stub.application.client.external.PersonC
 import io.extact.msa.spring.platform.fw.stub.application.client.external.dto.AddPersonClientRequest;
 import io.extact.msa.spring.platform.fw.stub.application.client.external.dto.PersonClientResponse;
 import io.extact.msa.spring.platform.fw.stub.application.client.external.dto.UpdatePersonClientRequest;
-import io.extact.msa.spring.platform.fw.stub.application.server.controller.PersonController;
-import io.extact.msa.spring.platform.fw.stub.application.server.persistence.PersonRepository;
-import io.extact.msa.spring.platform.fw.stub.application.server.service.PersonService;
+import io.extact.msa.spring.platform.fw.stub.application.server.application.PersonApplicationService;
+import io.extact.msa.spring.platform.fw.stub.application.server.model.PersonRepository;
+import io.extact.msa.spring.platform.fw.stub.application.server.web.PersonController;
 import io.extact.msa.spring.test.spring.EnableAutoConfigurationWithoutSecurity;
 import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
 
@@ -62,12 +62,12 @@ abstract class AbstractApplicationIntegrationTest {
     static class TestConfig {
 
         @Bean
-        PersonService personService(PersonRepository repository) {
-            return new PersonService(repository);
+        PersonApplicationService personService(PersonRepository repository) {
+            return new PersonApplicationService(repository);
         }
 
         @Bean
-        PersonController personController(PersonService service) {
+        PersonController personController(PersonApplicationService service) {
             return new PersonController(service);
         }
 

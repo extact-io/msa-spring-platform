@@ -2,11 +2,11 @@ package io.extact.msa.spring.platform.fw.domain;
 
 public interface Identifiable {
 
-    Integer getId();
+    Identity getId();
 
-    void setId(Integer id);
+    //void setId(Integer id);
 
-    default boolean isSameId(Identifiable other) {
+    default boolean isEqualTo(Identifiable other) {
         if (other == null) {
             return false;
         }

@@ -13,28 +13,28 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 
-import io.extact.msa.spring.platform.fw.domain.Identifiable;
-import io.extact.msa.spring.platform.fw.domain.Transformable;
+import io.extact.msa.spring.platform.fw.domain.DomainModel;
+import io.extact.msa.spring.platform.fw.domain.Identity;
 import io.extact.msa.spring.platform.fw.persistence.GenericRepository;
 import io.extact.msa.spring.platform.fw.persistence.file.io.FileOperator;
 import io.extact.msa.spring.platform.fw.persistence.file.io.IoSystemException;
 
-public abstract class AbstractFileRepository<T extends Transformable & Identifiable>
-        implements EnvironmentAware, InitializingBean, GenericRepository<T>, FileRepository {
+public abstract class AbstractFileRepository<M extends DomainModel>
+        implements EnvironmentAware, InitializingBean, GenericRepository<M>, FileRepository {
 
     private final ReentrantLock lock = new ReentrantLock();
 
     private Environment env;
 
     private FileOperator fileOperator;
-    private EntityArrayMapper<T> entityMapper;
+    private ModelArrayMapper<M> modelArrayMapper;
 
 
     // ----------------------------------------------------- constructor methods
 
-    public AbstractFileRepository(FileOperator fileOperator, EntityArrayMapper<T> entityMapper) {
+    public AbstractFileRepository(FileOperator fileOperator, ModelArrayMapper<M> mapper) {
         this.fileOperator = fileOperator;
-        this.entityMapper = entityMapper;
+        this.modelArrayMapper = mapper;
     }
 
     @Override
@@ -63,34 +63,32 @@ public abstract class AbstractFileRepository<T extends Transformable & Identifia
     // ----------------------------------------------------- implement methods
 
     @Override
-    public Optional<T> get(int id) {
+    public Optional<M> find(Identity id) {
         return load().stream()
-                .filter(items -> Integer.parseInt(items[0]) == id) // numberはpos:0は共通
-                .map(entityMapper::toEntity)
+                .filter(items -> Integer.parseInt(items[0]) == id.id()) // numberはpos:0は共通
+                .map(modelArrayMapper::toModel)
                 .findFirst();
     }
 
     @Override
-    public List<T> findAll() {
+    public List<M> findAll() {
         return load().stream()
-                .map(entityMapper::toEntity)
+                .map(modelArrayMapper::toModel)
                 .toList();
     }
 
     @Override
-    public void add(T entity) {
-        int nextSeq = this.getNextSequence();
-        entity.setId(nextSeq);
-        save(entity.transform(entityMapper::toArray));
+    public void add(M model) {
+        save(model.transform(modelArrayMapper::toArray));
     }
 
-    public Optional<T> update(T entity) {
+    public Optional<M> update(M model) {
         AtomicBoolean replaced = new AtomicBoolean(false);
         List<String[]> lines = load().stream()
                 .map(items -> {
-                    if (items[0].equals(String.valueOf(entity.getId()))) {
+                    if (items[0].equals(String.valueOf(model.getId().id()))) {
                         replaced.set(true);
-                        return getConverter().toArray(entity);
+                        return modelArrayMapper.toArray(model);
                     }
                     return items;
                 })
@@ -99,11 +97,11 @@ public abstract class AbstractFileRepository<T extends Transformable & Identifia
             return Optional.empty();
         }
         this.saveAll(lines);
-        return Optional.of(entity);
+        return Optional.of(model);
     }
 
-    public void delete(T entity) {
-        this.delete(entity.getId());
+    public void delete(M model) {
+        this.delete(model.getId().id());
     }
 
     @Override
@@ -129,8 +127,8 @@ public abstract class AbstractFileRepository<T extends Transformable & Identifia
         saveAll(excludedData);
     }
 
-    protected EntityArrayMapper<T> getConverter() {
-        return entityMapper;
+    protected ModelArrayMapper<M> getMapper() {
+        return modelArrayMapper;
     }
 
     protected List<String[]> load() {

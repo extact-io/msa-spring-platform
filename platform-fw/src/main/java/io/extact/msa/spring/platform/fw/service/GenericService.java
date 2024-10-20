@@ -15,7 +15,7 @@ import io.extact.msa.spring.platform.fw.persistence.GenericRepository;
 public interface GenericService<T extends Identifiable> {
 
     default Optional<T> get(int id) {
-        return getRepository().get(id);
+        return getRepository().find(id);
     }
 
     default List<T> findAll() {
@@ -31,7 +31,7 @@ public interface GenericService<T extends Identifiable> {
     }
 
     default Optional<T> update(T entity) {
-        getRepository().get(entity.getId())
+        getRepository().find(entity.getId())
                 .orElseThrow(() -> new BusinessFlowException("target does not exist for id", CauseType.NOT_FOUND));
         if (getDuplicateChecker() != null) {
             getDuplicateChecker().accept(entity);
@@ -40,7 +40,7 @@ public interface GenericService<T extends Identifiable> {
     }
 
     default void delete(int id) {
-        T target = getRepository().get(id)
+        T target = getRepository().find(id)
                 .orElseThrow(() -> new BusinessFlowException("target does not exist for id", CauseType.NOT_FOUND));
         getRepository().delete(target);
     }

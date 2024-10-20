@@ -11,8 +11,8 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.method.MethodValidationException;
 
-import io.extact.msa.spring.platform.fw.stub.application.server.domain.Person;
-import io.extact.msa.spring.platform.fw.stub.application.server.persistence.PersonRepository;
+import io.extact.msa.spring.platform.fw.stub.application.server.model.Person;
+import io.extact.msa.spring.platform.fw.stub.application.server.model.PersonRepository;
 
 /**
  * PersonリポジトリのFileとJPA実装に共通なテストクラス。
@@ -32,12 +32,12 @@ public abstract class AbstractPersonRepositoryTest {
     void testGet() {
 
         Person expected = Person.valueOf(1, "name1");
-        Optional<Person> actual = repository().get(1);
+        Optional<Person> actual = repository().find(1);
 
         assertThat(actual).isPresent();
         assertThatToString(actual.get()).isEqualTo(expected);
 
-        actual = repository().get(999);
+        actual = repository().find(999);
         assertThat(actual).isNotPresent();
     }
 

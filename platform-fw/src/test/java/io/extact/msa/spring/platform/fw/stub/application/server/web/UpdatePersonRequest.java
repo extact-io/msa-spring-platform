@@ -1,20 +1,20 @@
-package io.extact.msa.spring.platform.fw.stub.application.client.external.dto;
+package io.extact.msa.spring.platform.fw.stub.application.server.web;
 
 import io.extact.msa.spring.platform.fw.domain.constraint.RmsId;
 import io.extact.msa.spring.platform.fw.stub.application.server.model.Person;
 import io.extact.msa.spring.platform.fw.stub.application.server.model.PersonName;
 
-public record PersonClientResponse(
+public record UpdatePersonRequest(
         @RmsId //
         Integer id,
         @PersonName //
         String name) {
 
-    public static PersonClientResponse from(Person entity) {
+    public static UpdatePersonRequest from(Person entity) {
         if (entity == null) {
             return null;
         }
-        return new PersonClientResponse(entity.getId(), entity.getName());
+        return new UpdatePersonRequest(entity.getId(), entity.getName());
     }
 
     public Person toEntity() {

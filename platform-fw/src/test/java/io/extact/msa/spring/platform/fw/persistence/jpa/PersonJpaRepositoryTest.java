@@ -12,10 +12,10 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
 import io.extact.msa.spring.platform.fw.persistence.AbstractPersonRepositoryTest;
-import io.extact.msa.spring.platform.fw.stub.application.server.domain.Person;
-import io.extact.msa.spring.platform.fw.stub.application.server.persistence.PersonRepository;
-import io.extact.msa.spring.platform.fw.stub.application.server.persistence.jpa.PersonJpaInnerRepository;
-import io.extact.msa.spring.platform.fw.stub.application.server.persistence.jpa.PersonJpaRepositoryConfig;
+import io.extact.msa.spring.platform.fw.stub.application.server.infrastrucure.jpa.PersonJpaInnerRepository;
+import io.extact.msa.spring.platform.fw.stub.application.server.infrastrucure.jpa.PersonJpaRepositoryConfig;
+import io.extact.msa.spring.platform.fw.stub.application.server.model.Person;
+import io.extact.msa.spring.platform.fw.stub.application.server.model.PersonRepository;
 
 @DataJpaTest
 @ActiveProfiles("jpa")
@@ -49,11 +49,11 @@ class PersonJpaRepositoryTest extends AbstractPersonRepositoryTest {
     @Override
     protected void testDeleteToSpecificImplementation() {
 
-        Optional<Person> delete = repository.get(1);
+        Optional<Person> delete = repository.find(1);
         assertThat(delete).isPresent();
 
         delete.ifPresent(person -> repository.delete(person));
-        Optional<Person> deleted = repository.get(1);
+        Optional<Person> deleted = repository.find(1);
         assertThat(deleted).isNotPresent();
     }
 

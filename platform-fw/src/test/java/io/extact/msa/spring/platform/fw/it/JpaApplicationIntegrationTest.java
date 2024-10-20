@@ -13,7 +13,7 @@ import org.springframework.validation.method.MethodValidationException;
 
 import io.extact.msa.spring.platform.fw.stub.application.client.external.dto.AddPersonClientRequest;
 import io.extact.msa.spring.platform.fw.stub.application.client.external.dto.UpdatePersonClientRequest;
-import io.extact.msa.spring.platform.fw.stub.application.server.persistence.jpa.PersonJpaRepositoryConfig;
+import io.extact.msa.spring.platform.fw.stub.application.server.infrastrucure.jpa.PersonJpaRepositoryConfig;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("jpa")

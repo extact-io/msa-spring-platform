@@ -15,14 +15,14 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.extact.msa.spring.platform.fw.stub.application.server.domain.Employee;
-import io.extact.msa.spring.platform.fw.stub.application.server.domain.Person;
-import io.extact.msa.spring.platform.fw.stub.application.server.persistence.EmployeeRepository;
-import io.extact.msa.spring.platform.fw.stub.application.server.persistence.PersonRepository;
-import io.extact.msa.spring.platform.fw.stub.application.server.persistence.file.EmployeeFileRepositoryConfig;
-import io.extact.msa.spring.platform.fw.stub.application.server.persistence.file.PersonFileRepositoryConfig;
-import io.extact.msa.spring.platform.fw.stub.application.server.persistence.jpa.EmployeeJpaRepositoryConfig;
-import io.extact.msa.spring.platform.fw.stub.application.server.persistence.jpa.PersonJpaRepositoryConfig;
+import io.extact.msa.spring.platform.fw.stub.application.server.infrastrucure.file.EmployeeFileRepositoryConfig;
+import io.extact.msa.spring.platform.fw.stub.application.server.infrastrucure.file.PersonFileRepositoryConfig;
+import io.extact.msa.spring.platform.fw.stub.application.server.infrastrucure.jpa.EmployeeJpaRepositoryConfig;
+import io.extact.msa.spring.platform.fw.stub.application.server.infrastrucure.jpa.PersonJpaRepositoryConfig;
+import io.extact.msa.spring.platform.fw.stub.application.server.model.Employee;
+import io.extact.msa.spring.platform.fw.stub.application.server.model.EmployeeRepository;
+import io.extact.msa.spring.platform.fw.stub.application.server.model.Person;
+import io.extact.msa.spring.platform.fw.stub.application.server.model.PersonRepository;
 
 /**
  * 複数エンティティを扱った永続化テスト。
@@ -38,22 +38,22 @@ abstract class AbstractMultiEntitySupportTest {
     void testMultiGet() {
 
         Employee employeeExpected = Employee.valueOf(1, "name1", "dept1");
-        Optional<Employee> employeeActual = employeeRepository().get(1);
+        Optional<Employee> employeeActual = employeeRepository().find(1);
 
         assertThat(employeeActual).isPresent();
         assertThatToString(employeeActual.get()).isEqualTo(employeeExpected);
 
-        employeeActual = employeeRepository().get(999);
+        employeeActual = employeeRepository().find(999);
         assertThat(employeeActual).isNotPresent();
 
 
         Person personExpected = Person.valueOf(1, "name1");
-        Optional<Person> personActual = personRepository().get(1);
+        Optional<Person> personActual = personRepository().find(1);
 
         assertThat(personActual).isPresent();
         assertThatToString(personActual.get()).isEqualTo(personExpected);
 
-        personActual = personRepository().get(999);
+        personActual = personRepository().find(999);
         assertThat(personActual).isNotPresent();
 
     }

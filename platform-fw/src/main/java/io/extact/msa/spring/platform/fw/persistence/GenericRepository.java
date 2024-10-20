@@ -3,21 +3,24 @@ package io.extact.msa.spring.platform.fw.persistence;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.validation.Valid;
+import jakarta.validation.groups.Default;
+
 import org.springframework.validation.annotation.Validated;
 
+import io.extact.msa.spring.platform.fw.domain.DomainModel;
+import io.extact.msa.spring.platform.fw.domain.Identity;
 import io.extact.msa.spring.platform.fw.domain.constraint.ValidationGroups.Add;
 import io.extact.msa.spring.platform.fw.domain.constraint.ValidationGroups.Delete;
 import io.extact.msa.spring.platform.fw.domain.constraint.ValidationGroups.Update;
-import jakarta.validation.Valid;
-import jakarta.validation.groups.Default;
 
 /**
  * 永続先に依らないリポジトリの共通操作
  *
- * @param <T> エンティティの型
+ * @param <M> ドメインモデルの型
  */
 @Validated // メソッドバリデーションを有効にするための@Validated
-public interface GenericRepository<T> {
+public interface GenericRepository<M extends DomainModel> {
 
     /**
      * IDのエンティティを取得する。
@@ -25,14 +28,14 @@ public interface GenericRepository<T> {
      * @param id ID
      * @return エンティティ。該当なしはnull
      */
-    Optional<T> get(int id);
+    Optional<M> find(Identity id);
 
     /**
      * 永続化されているエンティティを全件取得する
      *
      * @return エンティティの全件リスト。該当なしは空リスト
      */
-    List<T> findAll();
+    List<M> findAll();
 
     /**
      * エンティティを追加する。
@@ -41,7 +44,7 @@ public interface GenericRepository<T> {
      * @param entity エンティティ
      */
     @Validated({ Default.class, Add.class }) // グループを指定するための@Validated
-    void add(@Valid T entity); // 引数にバリデーションを掛けるための@Valid(この@Validがないとバリデーションは実行されない)
+    void add(@Valid M entity); // 引数にバリデーションを掛けるための@Valid(この@Validがないとバリデーションは実行されない)
 
     /**
      * エンティティを更新する。
@@ -51,7 +54,7 @@ public interface GenericRepository<T> {
      * @return 更新後エンティティ。更新対象が存在しない場合はnull
      */
     @Validated({ Default.class, Update.class })
-    Optional<T> update(@Valid T entity);
+    Optional<M> update(@Valid M entity);
 
     /**
      * エンティティを削除する。
@@ -59,7 +62,14 @@ public interface GenericRepository<T> {
      * @param entity 削除エンティティ
      */
     @Validated(Delete.class)
-    void delete(@Valid T entity);
+    void delete(@Valid M entity);
+
+    /**
+     * 次のIDを発番する。
+     *
+     * @return 次のID
+     */
+    int nextIdentity();
 
     /**
      * コンフィグ定数

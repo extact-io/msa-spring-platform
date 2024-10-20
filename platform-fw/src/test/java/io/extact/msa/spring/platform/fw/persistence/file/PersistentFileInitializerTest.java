@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 
 import io.extact.msa.spring.platform.fw.persistence.file.io.IoSystemException;
-import io.extact.msa.spring.platform.fw.stub.application.server.persistence.file.PersonFileRepositoryConfig;
+import io.extact.msa.spring.platform.fw.stub.application.server.infrastrucure.file.PersonFileRepositoryConfig;
 
 /**
  * Spring起動時にPersistentFileInitializerにより行われる以下を確認するテスト。
