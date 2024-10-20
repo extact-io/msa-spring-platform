@@ -18,4 +18,9 @@ public class EmployeeFileRepository extends AbstractFileRepository<Employee> imp
     public String getEntityName() {
         return FILE_ENTITY;
     }
+
+    @Override
+    public int nextIdentity() {
+        return this.getNextSequence();
+    }
 }

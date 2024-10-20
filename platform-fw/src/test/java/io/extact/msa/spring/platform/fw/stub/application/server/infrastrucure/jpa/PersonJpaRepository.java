@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import io.extact.msa.spring.platform.fw.persistence.jpa.AbstractJpaRepository;
 import io.extact.msa.spring.platform.fw.persistence.jpa.ModelEntityMapper;
-import io.extact.msa.spring.platform.fw.persistence.jpa.SpringDataJpaExecutor;
 import io.extact.msa.spring.platform.fw.stub.application.server.model.Person;
 import io.extact.msa.spring.platform.fw.stub.application.server.model.PersonRepository;
 import lombok.NonNull;
@@ -12,9 +11,8 @@ import lombok.NonNull;
 public class PersonJpaRepository extends AbstractJpaRepository<Person, PersonEntity>
         implements PersonRepository {
 
-    public PersonJpaRepository(ModelEntityMapper<Person, PersonEntity> modelEntityMapper,
-            SpringDataJpaExecutor<PersonEntity> executor) {
-        super(modelEntityMapper, executor);
+    public PersonJpaRepository(PersonJpaExecutor executor, ModelEntityMapper<Person, PersonEntity> entityMapper) {
+        super(executor, entityMapper);
     }
 
     @Override
@@ -35,12 +33,6 @@ public class PersonJpaRepository extends AbstractJpaRepository<Person, PersonEnt
 
     private boolean isErrorPattern(Person person) {
         return person.getName().equals("error");
-    }
-
-    @Override
-    public int nextIdentity() {
-        // TODO 自動生成されたメソッド・スタブ
-        return 0;
     }
 
     @Override

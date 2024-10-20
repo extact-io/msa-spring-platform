@@ -12,9 +12,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
 import io.extact.msa.spring.platform.fw.persistence.AbstractPersonRepositoryTest;
-import io.extact.msa.spring.platform.fw.stub.application.server.infrastrucure.jpa.PersonJpaInnerRepository;
 import io.extact.msa.spring.platform.fw.stub.application.server.infrastrucure.jpa.PersonJpaRepositoryConfig;
 import io.extact.msa.spring.platform.fw.stub.application.server.model.Person;
+import io.extact.msa.spring.platform.fw.stub.application.server.model.PersonId;
 import io.extact.msa.spring.platform.fw.stub.application.server.model.PersonRepository;
 
 @DataJpaTest
@@ -23,8 +23,6 @@ class PersonJpaRepositoryTest extends AbstractPersonRepositoryTest {
 
     @Autowired
     private PersonRepository repository;
-    @Autowired
-    private PersonJpaInnerRepository inner; // for eneityManager access.
 
     @Configuration(proxyBeanMethods = false)
     @Import(PersonJpaRepositoryConfig.class)
@@ -39,9 +37,8 @@ class PersonJpaRepositoryTest extends AbstractPersonRepositoryTest {
     @Test
     @Override
     protected void testAddToSpecificImplementation() {
-        Person addPerson = Person.valueOf(null, "ADD");
+        Person addPerson = Person.reconstruct(new PersonId(100), "ADD");
         repository.add(addPerson);
-        assertThat(inner.isManaged(addPerson)).isTrue(); // managed state check?
         assertThat(addPerson.getId()).isEqualTo(1001);
     }
 
@@ -49,11 +46,11 @@ class PersonJpaRepositoryTest extends AbstractPersonRepositoryTest {
     @Override
     protected void testDeleteToSpecificImplementation() {
 
-        Optional<Person> delete = repository.find(1);
+        Optional<Person> delete = repository.find(new PersonId(1));
         assertThat(delete).isPresent();
 
         delete.ifPresent(person -> repository.delete(person));
-        Optional<Person> deleted = repository.find(1);
+        Optional<Person> deleted = repository.find(new PersonId(1));
         assertThat(deleted).isNotPresent();
     }
 

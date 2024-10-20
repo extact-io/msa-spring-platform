@@ -20,8 +20,10 @@ import io.extact.msa.spring.platform.fw.stub.application.server.infrastrucure.fi
 import io.extact.msa.spring.platform.fw.stub.application.server.infrastrucure.jpa.EmployeeJpaRepositoryConfig;
 import io.extact.msa.spring.platform.fw.stub.application.server.infrastrucure.jpa.PersonJpaRepositoryConfig;
 import io.extact.msa.spring.platform.fw.stub.application.server.model.Employee;
+import io.extact.msa.spring.platform.fw.stub.application.server.model.EmployeeId;
 import io.extact.msa.spring.platform.fw.stub.application.server.model.EmployeeRepository;
 import io.extact.msa.spring.platform.fw.stub.application.server.model.Person;
+import io.extact.msa.spring.platform.fw.stub.application.server.model.PersonId;
 import io.extact.msa.spring.platform.fw.stub.application.server.model.PersonRepository;
 
 /**
@@ -37,25 +39,24 @@ abstract class AbstractMultiEntitySupportTest {
     @Test
     void testMultiGet() {
 
-        Employee employeeExpected = Employee.valueOf(1, "name1", "dept1");
-        Optional<Employee> employeeActual = employeeRepository().find(1);
+        Employee employeeExpected = Employee.reconstruct(new EmployeeId(1), "name1", "dept1");
+        Optional<Employee> employeeActual = employeeRepository().find(new EmployeeId(1));
 
         assertThat(employeeActual).isPresent();
         assertThatToString(employeeActual.get()).isEqualTo(employeeExpected);
 
-        employeeActual = employeeRepository().find(999);
+        employeeActual = employeeRepository().find(new EmployeeId(99));
         assertThat(employeeActual).isNotPresent();
 
 
-        Person personExpected = Person.valueOf(1, "name1");
-        Optional<Person> personActual = personRepository().find(1);
+        Person personExpected = Person.reconstruct(new PersonId(1), "name1");
+        Optional<Person> personActual = personRepository().find(new PersonId(1));
 
         assertThat(personActual).isPresent();
         assertThatToString(personActual.get()).isEqualTo(personExpected);
 
-        personActual = personRepository().find(999);
+        personActual = personRepository().find(new PersonId(99));
         assertThat(personActual).isNotPresent();
-
     }
 
     protected abstract EmployeeRepository employeeRepository();

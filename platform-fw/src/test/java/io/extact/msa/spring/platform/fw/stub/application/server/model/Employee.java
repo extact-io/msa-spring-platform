@@ -1,40 +1,28 @@
 package io.extact.msa.spring.platform.fw.stub.application.server.model;
 
-import static jakarta.persistence.AccessType.*;
-
-import jakarta.persistence.Access;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-
-import io.extact.msa.spring.platform.fw.domain.Identifiable;
-import io.extact.msa.spring.platform.fw.domain.Transformable;
-import io.extact.msa.spring.platform.fw.domain.constraint.RmsId;
-import io.extact.msa.spring.platform.fw.domain.constraint.ValidationGroups.Delete;
-import io.extact.msa.spring.platform.fw.domain.constraint.ValidationGroups.Update;
+import io.extact.msa.spring.platform.fw.domain.DomainModel;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import lombok.Value;
+import lombok.experimental.NonFinal;
 
-@Access(FIELD)
-@Entity
-@NoArgsConstructor
-@AllArgsConstructor(staticName = "valueOf")
-@Getter @Setter
-@ToString
-public class Employee implements Transformable, Identifiable {
+@Value
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
+@EqualsAndHashCode(of = "id")
+public class Employee implements DomainModel {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @RmsId(groups = { Update.class, Delete.class })
-    private Integer id;
-    private String name;
-    private String deptName;
+    private @NonNull EmployeeId id;
+    private @NonNull @NonFinal String name;
+    private @NonNull @NonFinal String deptName;
 
-    public static Employee ofTransient(String name, String deptName) {
-        return Employee.valueOf(null, name, deptName);
+    public static Employee reconstruct(EmployeeId id, String name, String deptName) {
+        return new Employee(id, name, deptName);
+    }
+
+    public void changeEditableFields(String name, String deptName) {
+        this.name = name;
+        this.deptName = deptName;
     }
 }

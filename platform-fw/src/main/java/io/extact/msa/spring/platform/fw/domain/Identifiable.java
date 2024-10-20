@@ -4,8 +4,6 @@ public interface Identifiable {
 
     Identity getId();
 
-    //void setId(Integer id);
-
     default boolean isEqualTo(Identifiable other) {
         if (other == null) {
             return false;

@@ -12,9 +12,8 @@ import io.extact.msa.spring.platform.fw.domain.constraint.RmsId;
 import io.extact.msa.spring.platform.fw.domain.constraint.ValidationGroups.Delete;
 import io.extact.msa.spring.platform.fw.domain.constraint.ValidationGroups.Update;
 import io.extact.msa.spring.platform.fw.persistence.jpa.TableEntity;
-import io.extact.msa.spring.platform.fw.stub.application.server.model.Person;
-import io.extact.msa.spring.platform.fw.stub.application.server.model.PersonId;
-import io.extact.msa.spring.platform.fw.stub.application.server.model.PersonName;
+import io.extact.msa.spring.platform.fw.stub.application.server.model.Employee;
+import io.extact.msa.spring.platform.fw.stub.application.server.model.EmployeeId;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,21 +26,21 @@ import lombok.ToString;
 @AllArgsConstructor
 @Getter @Setter
 @ToString
-public class PersonEntity implements TableEntity<Person> {
+public class EmployeeEntity implements TableEntity<Employee> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @RmsId(groups = { Update.class, Delete.class })
     private Integer id;
-    @PersonName
     private String name;
+    private String deptName;
 
-    public static PersonEntity from(Person model) {
-        return new PersonEntity(model.getId().id(), model.getName());
+    public static EmployeeEntity from(Employee model) {
+        return new EmployeeEntity(model.getId().id(), model.getName(), model.getDeptName());
     }
 
     @Override
-    public Person toModel() {
-        return Person.reconstruct(new PersonId(this.id), this.name);
+    public Employee toModel() {
+        return Employee.reconstruct(new EmployeeId(id), name, deptName);
     }
 }

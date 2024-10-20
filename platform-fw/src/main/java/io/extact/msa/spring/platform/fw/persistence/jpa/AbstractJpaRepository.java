@@ -14,13 +14,20 @@ import io.extact.msa.spring.platform.fw.domain.Identity;
 import io.extact.msa.spring.platform.fw.persistence.GenericRepository;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 public abstract class AbstractJpaRepository<M extends DomainModel, E extends TableEntity<M>>
         implements GenericRepository<M> {
 
     private final ModelEntityMapper<M, E> modelEntityMapper;
     private final SpringDataJpaExecutor<E> executor;
+    private final SequenceGenerator<E> sequenceGenerator;
 
+
+    public AbstractJpaRepository(SpringDataJpaExecutor<E> executor,
+            ModelEntityMapper<M, E> modelEntityMapper) {
+        this.modelEntityMapper = modelEntityMapper;
+        this.executor = executor;
+        this.sequenceGenerator = new SequenceGenerator<E>(executor);
+    }
 
     @Override
     public Optional<M> find(Identity id) {
@@ -62,7 +69,7 @@ public abstract class AbstractJpaRepository<M extends DomainModel, E extends Tab
 
     @Override
     public int nextIdentity() {
-        return 0;
+        return sequenceGenerator.generate();
     }
 
     public EntityManager entityManager() {
@@ -82,19 +89,14 @@ public abstract class AbstractJpaRepository<M extends DomainModel, E extends Tab
         }
 
         String resolveSequenceName() {
-
-            ResolvableType resolvableType = ResolvableType.forClass(executor.getClass());
-            ResolvableType generic = resolvableType.as(SpringDataJpaExecutor.class).getGeneric(0);
-            String entityClassName = generic.resolve().getSimpleName();
-
-            if (entityClassName.toLowerCase().endsWith("entity")) {
-                return entityClassName.toLowerCase().substring(0, entityClassName.length() - "entity".length()) + "_seq";
+            String entityClassName = executor.entityClass().getSimpleName().toLowerCase();
+            if (entityClassName.endsWith("entity")) {
+                return entityClassName.substring(0, entityClassName.length() - "entity".length()) + "_seq";
             } else {
                 return entityClassName.toLowerCase() + "_seq";
             }
         }
     }
-
 
     static abstract class Foo<Param, Ret> {
 
