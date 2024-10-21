@@ -5,12 +5,11 @@ import io.extact.msa.spring.platform.fw.persistence.jpa.ModelEntityMapper;
 import io.extact.msa.spring.platform.fw.stub.application.server.model.Employee;
 import io.extact.msa.spring.platform.fw.stub.application.server.model.EmployeeRepository;
 
-//TODO:もしかしたら不要になるかも
 public class EmployeeJpaRepository extends AbstractJpaRepository<Employee, EmployeeEntity>
         implements EmployeeRepository {
 
     public EmployeeJpaRepository(EmployeeSpringDataJpa executor,
             ModelEntityMapper<Employee, EmployeeEntity> entityMapper) {
-        super(executor, entityMapper, executor);
+        super(executor, entityMapper);
     }
 }

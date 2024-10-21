@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import io.extact.msa.spring.platform.fw.controller.RmsRestController;
 import io.extact.msa.spring.platform.fw.domain.constraint.RmsId;
-import io.extact.msa.spring.platform.fw.stub.application.server.application.RegisterPersonCommand;
-import io.extact.msa.spring.platform.fw.stub.application.server.application.PersonApplicationService;
 import io.extact.msa.spring.platform.fw.stub.application.server.application.EditPersonCommand;
+import io.extact.msa.spring.platform.fw.stub.application.server.application.PersonApplicationService;
+import io.extact.msa.spring.platform.fw.stub.application.server.application.RegisterPersonCommand;
 import io.extact.msa.spring.platform.fw.stub.application.server.model.PersonId;
 import lombok.RequiredArgsConstructor;
 

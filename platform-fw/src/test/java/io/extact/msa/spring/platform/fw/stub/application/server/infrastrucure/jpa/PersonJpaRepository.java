@@ -15,7 +15,7 @@ public class PersonJpaRepository extends AbstractJpaRepository<Person, PersonEnt
     private ModelEntityMapper<Person, PersonEntity> entityMapper;
 
     public PersonJpaRepository(PersonSpringDataJpa jpa, ModelEntityMapper<Person, PersonEntity> entityMapper) {
-        super(jpa, entityMapper, jpa);
+        super(jpa, entityMapper);
         this.springJpa = jpa;
         this.entityMapper = entityMapper;
     }

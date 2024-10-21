@@ -1,15 +1,17 @@
 package io.extact.msa.spring.platform.fw.persistence.jpa;
 
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ResolvableType;
-import org.springframework.data.jpa.repository.support.JpaMetamodelEntityInformation;
 
 import io.extact.msa.spring.platform.fw.domain.DomainModel;
 import io.extact.msa.spring.platform.fw.domain.Identity;
@@ -19,22 +21,21 @@ import io.extact.msa.spring.platform.fw.persistence.GenericRepository;
 public abstract class AbstractJpaRepository<M extends DomainModel, E extends TableEntity<M>>
         implements GenericRepository<M> {
 
-    @Autowired
-    private EntityManager entityManager;
 
     private final ModelEntityMapper<M, E> modelEntityMapper;
     private final SpringDataJpaExecutor<E> executor;
-    private final EntityManagerHolder entityManagerHolder;
-    private final SequenceGenerator<E> sequenceGenerator;
+    private final Class<E> targetEntityClass;
 
-    private JpaMetamodelEntityInformation<E, Integer> entityInformation;
+    @Autowired
+    private EntityManager entityManager;
+    private SequenceGenerator sequenceGenerator;
 
-    public AbstractJpaRepository(SpringDataJpaExecutor<E> executor,
-            ModelEntityMapper<M, E> modelEntityMapper, EntityManagerHolder entityManagerHolder) {
+
+    public AbstractJpaRepository(SpringDataJpaExecutor<E> executor, ModelEntityMapper<M, E> modelEntityMapper) {
         this.modelEntityMapper = modelEntityMapper;
         this.executor = executor;
-        this.sequenceGenerator = new SequenceGenerator<E>();
-        this.entityManagerHolder = entityManagerHolder;
+        this.targetEntityClass = resolveTargetEntityClass();
+        this.sequenceGenerator = new SequenceGenerator(targetEntityClass);
     }
 
     @Override
@@ -60,7 +61,7 @@ public abstract class AbstractJpaRepository<M extends DomainModel, E extends Tab
     @Override
     public void update(M model) {
         E entity = model.transform(modelEntityMapper::toEntity);
-        if (!entityManagerHolder.entityManager().contains(entity)
+        if (!entityManager.contains(entity)
                 && executor.findById(model.getId().id()).isEmpty()) {
             new RmsPersistenceException("target does not exist for pk:" + entity.getPk());
         }
@@ -71,29 +72,33 @@ public abstract class AbstractJpaRepository<M extends DomainModel, E extends Tab
     public void delete(M model) {
         E entity = model.transform(modelEntityMapper::toEntity);
         executor.delete(entity);
-        entityManagerHolder.entityManager().flush();
+        entityManager.flush();
     }
 
     @Override
     public int nextIdentity() {
-        return (int) sequenceGenerator.generate();
+        return (int) sequenceGenerator.generate(entityManager);
     }
 
-    class SequenceGenerator<E> {
+    @SuppressWarnings("unchecked")
+    protected Class<E> resolveTargetEntityClass() {
+        ResolvableType resolvableType = ResolvableType.forClass(AbstractJpaRepository.this.getClass());
+        ResolvableType generic = resolvableType.as(AbstractJpaRepository.class).getGeneric(0);
+        return (Class<E>) generic.resolve();
+    }
 
-        long generate() {
-            String template = "SELECT NEXT VALUE FOR %s;"; // for H2
-            String seqName = resolveSequenceName();
-            Query query = entityManagerHolder.entityManager().createNativeQuery(template.formatted(seqName));
-            return (Long) query.getSingleResult();
+    static class SequenceGenerator {
+
+        final String sequenceName;
+        String databaseName;
+
+        SequenceGenerator(Class<?> entityClass) {
+            sequenceName = resolveSequenceName(entityClass);
         }
 
-        String resolveSequenceName() {
+        String resolveSequenceName(Class<?> entityClass) {
 
-            ResolvableType resolvableType = ResolvableType.forClass(AbstractJpaRepository.this.getClass());
-            ResolvableType generic = resolvableType.as(AbstractJpaRepository.class).getGeneric(0);
-
-            String entityClassName = generic.resolve().getSimpleName().toLowerCase();
+            String entityClassName = entityClass.getSimpleName().toLowerCase();
 
             if (entityClassName.endsWith("entity")) {
                 return entityClassName.substring(0, entityClassName.length() - "entity".length()) + "_seq";
@@ -101,41 +106,37 @@ public abstract class AbstractJpaRepository<M extends DomainModel, E extends Tab
                 return entityClassName.toLowerCase() + "_seq";
             }
         }
-    }
 
-
-
-    static abstract class Foo<Param, Ret> {
-
-        abstract Ret execute(Param parame);
-
-        String type() {
-            ResolvableType resolvableType = ResolvableType.forClass(this.getClass());
-            ResolvableType generic = resolvableType.as(Foo.class).getGeneric(0);
-            return generic.resolve().getSimpleName();
+        long generate(EntityManager entityManager) {
+            preperDatabaseName(entityManager);
+            String sql = resolveSql();
+            Query query = entityManager.createNativeQuery(sql);
+            return (Long) query.getSingleResult();
         }
-    }
 
-    static class FooImpl extends Foo<Integer, String> {
-        @Override
-        String execute(Integer parame) {
-            return null;
+        void preperDatabaseName(EntityManager entityManager) {
+            if (databaseName == null) {
+                try {
+                    Session session = entityManager.unwrap(Session.class);
+                    Connection connection = session.doReturningWork(conn -> conn);
+                    databaseName = connection.getMetaData().getDatabaseProductName();
+                } catch (SQLException e) {
+                    throw new RmsPersistenceException(e);
+                }
+            }
         }
-    }
 
-    static abstract class Bar<Param extends List<?>, Ret extends Object> extends Foo<Param, Ret> {
-    }
-
-    static class BarImpl extends Bar<List<String>, DomainModel> {
-        @Override
-        DomainModel execute(List<String> parame) {
-            // TODO 自動生成されたメソッド・スタブ
-            return null;
+        private String resolveSql() {
+            return switch (databaseName) {
+                case "H2" -> {
+                    String template = "SELECT NEXT VALUE FOR %s;"; // for H2
+                    yield template.formatted(sequenceName);
+                }
+                default -> {
+                    String template = "SELECT NEXT VALUE FOR %s;"; // for H2
+                    yield template.formatted(sequenceName);
+                }
+            };
         }
-    }
-
-    public static void main(String[] args) {
-        System.out.println("FooImpl:" + new FooImpl().type());
-        System.out.println("BarImpl:" + new BarImpl().type());
     }
 }
