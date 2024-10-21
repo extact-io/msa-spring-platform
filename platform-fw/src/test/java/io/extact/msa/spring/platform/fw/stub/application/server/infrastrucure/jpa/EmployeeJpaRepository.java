@@ -9,8 +9,8 @@ import io.extact.msa.spring.platform.fw.stub.application.server.model.EmployeeRe
 public class EmployeeJpaRepository extends AbstractJpaRepository<Employee, EmployeeEntity>
         implements EmployeeRepository {
 
-    public EmployeeJpaRepository(EmployeeJpaExecutor executor,
+    public EmployeeJpaRepository(EmployeeSpringDataJpa executor,
             ModelEntityMapper<Employee, EmployeeEntity> entityMapper) {
-        super(executor, entityMapper);
+        super(executor, entityMapper, executor);
     }
 }

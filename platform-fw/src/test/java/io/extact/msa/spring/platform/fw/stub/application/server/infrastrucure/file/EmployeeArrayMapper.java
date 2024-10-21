@@ -3,7 +3,6 @@ package io.extact.msa.spring.platform.fw.stub.application.server.infrastrucure.f
 import io.extact.msa.spring.platform.fw.exception.RmsSystemException;
 import io.extact.msa.spring.platform.fw.persistence.file.ModelArrayMapper;
 import io.extact.msa.spring.platform.fw.stub.application.server.model.Employee;
-import io.extact.msa.spring.platform.fw.stub.application.server.model.EmployeeId;
 
 public class EmployeeArrayMapper implements ModelArrayMapper<Employee> {
 
@@ -14,7 +13,7 @@ public class EmployeeArrayMapper implements ModelArrayMapper<Employee> {
         Integer id = Integer.parseInt(attributes[0]);
         String name = attributes[1];
         String deptName = attributes[2];
-        return Employee.reconstruct(new EmployeeId(id), name, deptName);
+        return Employee.reconstruct(id, name, deptName);
     }
 
     @Override

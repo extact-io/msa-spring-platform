@@ -9,13 +9,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PersonDuplicateChecker {
 
-    private PersonRepository repository;
+    private final PersonRepository repository;
 
     public void check(Person person) {
         repository.findName(person.getName())
                 .filter(Predicate.not(person::equals))
                 .ifPresent(match -> {
-                    throw new BusinessFlowException("target does not exist for id", CauseType.NOT_FOUND);
+                    throw new BusinessFlowException("The name is already registered.", CauseType.DUPLICATE);
                 });
     }
 }

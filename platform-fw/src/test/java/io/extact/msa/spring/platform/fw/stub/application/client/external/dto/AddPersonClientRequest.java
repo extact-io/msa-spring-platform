@@ -1,11 +1,7 @@
 package io.extact.msa.spring.platform.fw.stub.application.client.external.dto;
 
-import io.extact.msa.spring.platform.fw.stub.application.server.model.Person;
+import lombok.NonNull;
 
 public record AddPersonClientRequest(
-        String name) {
-
-    public Person toEntity() {
-        return Person.ofTransient(name);
-    }
+        @NonNull String name) {
 }

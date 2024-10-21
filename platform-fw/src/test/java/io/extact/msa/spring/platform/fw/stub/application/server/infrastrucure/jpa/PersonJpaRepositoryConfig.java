@@ -8,19 +8,18 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import io.extact.msa.spring.platform.fw.domain.constraint.ValidationConfiguration;
 import io.extact.msa.spring.platform.fw.persistence.jpa.DefaultModelEntityMapper;
-import io.extact.msa.spring.platform.fw.persistence.jpa.EntityContext;
-import io.extact.msa.spring.platform.fw.stub.application.server.model.Person;
+import io.extact.msa.spring.platform.fw.persistence.jpa.EntityManagerHolder;
 
 @TestConfiguration(proxyBeanMethods = false)
-@EntityScan(basePackageClasses = Person.class)
-@EnableJpaRepositories(basePackageClasses = { PersonJpaExecutor.class, EntityContext.class })
+@EntityScan(basePackageClasses = PersonEntity.class)
+@EnableJpaRepositories(basePackageClasses = { PersonSpringDataJpa.class, EntityManagerHolder.class })
 @Import(ValidationConfiguration.class)
 public class PersonJpaRepositoryConfig {
 
     @Bean
-    PersonJpaRepository personJpaRepository(PersonJpaExecutor executor) {
+    PersonJpaRepository personJpaRepository(PersonSpringDataJpa springData) {
         return new PersonJpaRepository(
-                executor,
+                springData,
                 new DefaultModelEntityMapper<>(PersonEntity::from));
     }
 }

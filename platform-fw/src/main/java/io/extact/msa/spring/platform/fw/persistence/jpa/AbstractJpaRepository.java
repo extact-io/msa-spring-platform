@@ -7,26 +7,34 @@ import java.util.Optional;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ResolvableType;
+import org.springframework.data.jpa.repository.support.JpaMetamodelEntityInformation;
 
 import io.extact.msa.spring.platform.fw.domain.DomainModel;
 import io.extact.msa.spring.platform.fw.domain.Identity;
+import io.extact.msa.spring.platform.fw.exception.RmsPersistenceException;
 import io.extact.msa.spring.platform.fw.persistence.GenericRepository;
-import lombok.RequiredArgsConstructor;
 
 public abstract class AbstractJpaRepository<M extends DomainModel, E extends TableEntity<M>>
         implements GenericRepository<M> {
 
+    @Autowired
+    private EntityManager entityManager;
+
     private final ModelEntityMapper<M, E> modelEntityMapper;
     private final SpringDataJpaExecutor<E> executor;
+    private final EntityManagerHolder entityManagerHolder;
     private final SequenceGenerator<E> sequenceGenerator;
 
+    private JpaMetamodelEntityInformation<E, Integer> entityInformation;
 
     public AbstractJpaRepository(SpringDataJpaExecutor<E> executor,
-            ModelEntityMapper<M, E> modelEntityMapper) {
+            ModelEntityMapper<M, E> modelEntityMapper, EntityManagerHolder entityManagerHolder) {
         this.modelEntityMapper = modelEntityMapper;
         this.executor = executor;
-        this.sequenceGenerator = new SequenceGenerator<E>(executor);
+        this.sequenceGenerator = new SequenceGenerator<E>();
+        this.entityManagerHolder = entityManagerHolder;
     }
 
     @Override
@@ -50,46 +58,43 @@ public abstract class AbstractJpaRepository<M extends DomainModel, E extends Tab
     }
 
     @Override
-    public Optional<M> update(M model) {
+    public void update(M model) {
         E entity = model.transform(modelEntityMapper::toEntity);
-        if (!executor.entityManager().contains(entity)
+        if (!entityManagerHolder.entityManager().contains(entity)
                 && executor.findById(model.getId().id()).isEmpty()) {
-            return Optional.empty();
+            new RmsPersistenceException("target does not exist for pk:" + entity.getPk());
         }
-        E updated = executor.saveAndFlush(entity);
-        return Optional.of(updated.toModel());
+        executor.saveAndFlush(entity);
     }
 
     @Override
     public void delete(M model) {
         E entity = model.transform(modelEntityMapper::toEntity);
         executor.delete(entity);
-        entityManager().flush();
+        entityManagerHolder.entityManager().flush();
     }
 
     @Override
     public int nextIdentity() {
-        return sequenceGenerator.generate();
+        return (int) sequenceGenerator.generate();
     }
 
-    public EntityManager entityManager() {
-        return executor.entityManager();
-    }
+    class SequenceGenerator<E> {
 
-    @RequiredArgsConstructor
-    static class SequenceGenerator<E> {
-
-        final SpringDataJpaExecutor<E> executor;
-
-        int generate() {
+        long generate() {
             String template = "SELECT NEXT VALUE FOR %s;"; // for H2
             String seqName = resolveSequenceName();
-            Query query = executor.entityManager().createNativeQuery(template.formatted(seqName));
-            return (Integer) query.getSingleResult();
+            Query query = entityManagerHolder.entityManager().createNativeQuery(template.formatted(seqName));
+            return (Long) query.getSingleResult();
         }
 
         String resolveSequenceName() {
-            String entityClassName = executor.entityClass().getSimpleName().toLowerCase();
+
+            ResolvableType resolvableType = ResolvableType.forClass(AbstractJpaRepository.this.getClass());
+            ResolvableType generic = resolvableType.as(AbstractJpaRepository.class).getGeneric(0);
+
+            String entityClassName = generic.resolve().getSimpleName().toLowerCase();
+
             if (entityClassName.endsWith("entity")) {
                 return entityClassName.substring(0, entityClassName.length() - "entity".length()) + "_seq";
             } else {
@@ -97,6 +102,8 @@ public abstract class AbstractJpaRepository<M extends DomainModel, E extends Tab
             }
         }
     }
+
+
 
     static abstract class Foo<Param, Ret> {
 

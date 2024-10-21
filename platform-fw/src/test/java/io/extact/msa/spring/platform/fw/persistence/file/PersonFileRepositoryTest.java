@@ -1,10 +1,6 @@
 package io.extact.msa.spring.platform.fw.persistence.file;
 
-import static io.extact.msa.spring.test.assertj.ToStringAssert.*;
-import static org.assertj.core.api.Assertions.*;
-
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,7 +14,6 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 
 import io.extact.msa.spring.platform.fw.persistence.AbstractPersonRepositoryTest;
 import io.extact.msa.spring.platform.fw.stub.application.server.infrastrucure.file.PersonFileRepositoryConfig;
-import io.extact.msa.spring.platform.fw.stub.application.server.model.Person;
 import io.extact.msa.spring.platform.fw.stub.application.server.model.PersonRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
@@ -45,27 +40,5 @@ class PersonFileRepositoryTest extends AbstractPersonRepositoryTest {
     @Override
     protected PersonRepository repository() {
         return repository;
-    }
-
-    @Test
-    @Override
-    protected void testAddToSpecificImplementation() {
-        Person expected = Person.valueOf(5, "ADD");
-        repository.add(Person.valueOf(null, "ADD"));
-        assertThatToString(repository().find(5).find()).isEqualTo(expected);
-    }
-
-    @Test
-    @Override
-    protected void testDeleteToSpecificImplementation() {
-        Person deleted = Person.valueOf(1, "dummy");
-        repository.delete(deleted);
-        assertThat(repository().find(1)).isNotPresent();
-    }
-
-    @Test
-    @Override
-    protected void testDeleteOnNotFoundToSpecificImplementation() {
-        repository().delete(Person.valueOf(5, "dummy"));
     }
 }

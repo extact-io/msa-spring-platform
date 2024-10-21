@@ -12,13 +12,13 @@ public class PersonalArrayMapper implements ModelArrayMapper<Person> {
     public Person toModel(String[] attributes) throws RmsSystemException {
         Integer id = Integer.parseInt(attributes[0]);
         String name = attributes[1];
-        return Person.valueOf(id, name);
+        return Person.reconstruct(id, name);
     }
 
     @Override
     public String[] toArray(Person person) {
         String[] attributes = new String[2];
-        attributes[0] = String.valueOf(person.getId());
+        attributes[0] = String.valueOf(person.getId().id());
         attributes[1] = person.getName();
         return attributes;
     }

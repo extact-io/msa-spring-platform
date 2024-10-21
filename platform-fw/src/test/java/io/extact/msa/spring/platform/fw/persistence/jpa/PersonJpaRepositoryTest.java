@@ -1,10 +1,5 @@
 package io.extact.msa.spring.platform.fw.persistence.jpa;
 
-import static org.assertj.core.api.Assertions.*;
-
-import java.util.Optional;
-
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Configuration;
@@ -13,8 +8,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import io.extact.msa.spring.platform.fw.persistence.AbstractPersonRepositoryTest;
 import io.extact.msa.spring.platform.fw.stub.application.server.infrastrucure.jpa.PersonJpaRepositoryConfig;
-import io.extact.msa.spring.platform.fw.stub.application.server.model.Person;
-import io.extact.msa.spring.platform.fw.stub.application.server.model.PersonId;
 import io.extact.msa.spring.platform.fw.stub.application.server.model.PersonRepository;
 
 @DataJpaTest
@@ -32,31 +25,5 @@ class PersonJpaRepositoryTest extends AbstractPersonRepositoryTest {
     @Override
     protected PersonRepository repository() {
         return repository;
-    }
-
-    @Test
-    @Override
-    protected void testAddToSpecificImplementation() {
-        Person addPerson = Person.reconstruct(new PersonId(100), "ADD");
-        repository.add(addPerson);
-        assertThat(addPerson.getId()).isEqualTo(1001);
-    }
-
-    @Test
-    @Override
-    protected void testDeleteToSpecificImplementation() {
-
-        Optional<Person> delete = repository.find(new PersonId(1));
-        assertThat(delete).isPresent();
-
-        delete.ifPresent(person -> repository.delete(person));
-        Optional<Person> deleted = repository.find(new PersonId(1));
-        assertThat(deleted).isNotPresent();
-    }
-
-    @Test
-    @Override
-    protected void testDeleteOnNotFoundToSpecificImplementation() {
-        // JPA実装では発生し得ないためテストはなし
     }
 }

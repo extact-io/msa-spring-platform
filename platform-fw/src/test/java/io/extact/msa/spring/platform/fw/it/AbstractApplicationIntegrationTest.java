@@ -32,6 +32,8 @@ import io.extact.msa.spring.platform.fw.stub.application.client.external.dto.Add
 import io.extact.msa.spring.platform.fw.stub.application.client.external.dto.PersonClientResponse;
 import io.extact.msa.spring.platform.fw.stub.application.client.external.dto.UpdatePersonClientRequest;
 import io.extact.msa.spring.platform.fw.stub.application.server.application.PersonApplicationService;
+import io.extact.msa.spring.platform.fw.stub.application.server.model.PersonDuplicateChecker;
+import io.extact.msa.spring.platform.fw.stub.application.server.model.PersonFactory;
 import io.extact.msa.spring.platform.fw.stub.application.server.model.PersonRepository;
 import io.extact.msa.spring.platform.fw.stub.application.server.web.PersonController;
 import io.extact.msa.spring.test.spring.EnableAutoConfigurationWithoutSecurity;
@@ -63,7 +65,10 @@ abstract class AbstractApplicationIntegrationTest {
 
         @Bean
         PersonApplicationService personService(PersonRepository repository) {
-            return new PersonApplicationService(repository);
+            return new PersonApplicationService(
+                    new PersonFactory(repository),
+                    new PersonDuplicateChecker(repository),
+                    repository);
         }
 
         @Bean

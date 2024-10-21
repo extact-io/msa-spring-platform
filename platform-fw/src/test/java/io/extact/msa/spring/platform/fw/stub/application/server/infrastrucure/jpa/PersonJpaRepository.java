@@ -11,9 +11,22 @@ import lombok.NonNull;
 public class PersonJpaRepository extends AbstractJpaRepository<Person, PersonEntity>
         implements PersonRepository {
 
-    public PersonJpaRepository(PersonJpaExecutor executor, ModelEntityMapper<Person, PersonEntity> entityMapper) {
-        super(executor, entityMapper);
+    private PersonSpringDataJpa springJpa;
+    private ModelEntityMapper<Person, PersonEntity> entityMapper;
+
+    public PersonJpaRepository(PersonSpringDataJpa jpa, ModelEntityMapper<Person, PersonEntity> entityMapper) {
+        super(jpa, entityMapper, jpa);
+        this.springJpa = jpa;
+        this.entityMapper = entityMapper;
     }
+
+    @Override
+    public Optional<Person> findName(@NonNull String name) {
+        return springJpa.findByName(name)
+                .map(entityMapper::toModel);
+    }
+
+    // ------ for test
 
     @Override
     public void add(Person person) {
@@ -24,20 +37,15 @@ public class PersonJpaRepository extends AbstractJpaRepository<Person, PersonEnt
     }
 
     @Override
-    public Optional<Person> update(Person person) {
+    public void update(Person person) {
         if (isErrorPattern(person)) {
             person.changeName("1234567890"); // 桁数オーバーを起こさせる
         }
-        return super.update(person);
+        super.update(person);
     }
 
     private boolean isErrorPattern(Person person) {
         return person.getName().equals("error");
     }
 
-    @Override
-    public Optional<Person> findName(@NonNull String name) {
-        // TODO 自動生成されたメソッド・スタブ
-        return Optional.empty();
-    }
 }

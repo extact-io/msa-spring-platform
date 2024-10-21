@@ -13,7 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import io.extact.msa.spring.platform.fw.controller.RmsRestController;
 import io.extact.msa.spring.platform.fw.domain.constraint.RmsId;
+import io.extact.msa.spring.platform.fw.stub.application.server.application.RegisterPersonCommand;
 import io.extact.msa.spring.platform.fw.stub.application.server.application.PersonApplicationService;
+import io.extact.msa.spring.platform.fw.stub.application.server.application.EditPersonCommand;
+import io.extact.msa.spring.platform.fw.stub.application.server.model.PersonId;
 import lombok.RequiredArgsConstructor;
 
 @RmsRestController("/persons")
@@ -24,33 +27,43 @@ public class PersonController {
 
     @GetMapping
     public List<PersonResponse> getAll() {
-        return service.findAll().stream()
+        return service.getAll().stream()
                 .map(PersonResponse::from)
                 .toList();
     }
 
     @GetMapping("/{id}")
-    public PersonResponse get(@RmsId @PathVariable("id") Integer itemId) {
-        return service.find(itemId)
+    public PersonResponse get(@RmsId @PathVariable("id") Integer personId) {
+        return service.getById(new PersonId(personId))
                 .map(PersonResponse::from)
                 .orElse(null);
     }
 
     @PostMapping
     public PersonResponse add(@Valid @RequestBody AddPersonRequest request) {
-        return service.add(request.toEntity())
+        RegisterPersonCommand command = request.transform(this::toRegisterCommand);
+        return service.register(command)
                 .transform(PersonResponse::from);
     }
 
     @PutMapping
     public PersonResponse update(@Valid @RequestBody UpdatePersonRequest request) {
-        return service.update(request.toEntity())
-                .map(PersonResponse::from)
-                .orElse(null);
+        EditPersonCommand command = request.transform(this::toEditCommand);
+        return service.edit(command)
+                .transform(PersonResponse::from);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@RmsId @PathVariable("id") Integer itemId) {
-        service.delete(itemId);
+    public void delete(@RmsId @PathVariable("id") Integer personId) {
+        service.delete(new PersonId(personId));
+    }
+
+
+    private RegisterPersonCommand toRegisterCommand(AddPersonRequest req) {
+        return new RegisterPersonCommand(req.name());
+    }
+
+    private EditPersonCommand toEditCommand(UpdatePersonRequest req) {
+        return new EditPersonCommand(req.personId(), req.name());
     }
 }

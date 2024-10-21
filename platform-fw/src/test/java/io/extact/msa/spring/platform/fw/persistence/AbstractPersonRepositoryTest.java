@@ -1,6 +1,5 @@
 package io.extact.msa.spring.platform.fw.persistence;
 
-import static io.extact.msa.spring.test.assertj.ToStringAssert.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
@@ -12,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.method.MethodValidationException;
 
 import io.extact.msa.spring.platform.fw.stub.application.server.model.Person;
+import io.extact.msa.spring.platform.fw.stub.application.server.model.PersonId;
 import io.extact.msa.spring.platform.fw.stub.application.server.model.PersonRepository;
 
 /**
@@ -31,13 +31,13 @@ public abstract class AbstractPersonRepositoryTest {
     @Test
     void testGet() {
 
-        Person expected = Person.valueOf(1, "name1");
-        Optional<Person> actual = repository().find(1);
+        Person expected = Person.reconstruct(1, "name1");
+        Optional<Person> actual = repository().find(new PersonId(1));
 
         assertThat(actual).isPresent();
-        assertThatToString(actual.get()).isEqualTo(expected);
+        assertThat(actual.get()).isEqualTo(expected);
 
-        actual = repository().find(999);
+        actual = repository().find(new PersonId(999));
         assertThat(actual).isNotPresent();
     }
 
@@ -49,53 +49,66 @@ public abstract class AbstractPersonRepositoryTest {
 
     @Test
     void testUpdate() {
-        Person expected = Person.valueOf(4, "UP");
-        Optional<Person> actual = repository().update(Person.valueOf(4, "UP"));
-        assertThatToString(actual.get()).isEqualTo(expected);
+        Person expected = Person.reconstruct(4, "UP");
+        repository().update(Person.reconstruct(4, "UP"));
+        assertThat(repository().find(new PersonId(4)).get()).isEqualTo(expected);
     }
 
     @Test
     void testUpdateOnValidationError() {
-        Throwable thrown = catchThrowable(() -> repository().update(Person.valueOf(4, "123456"))); // 5文字より大きい
-        thrown.printStackTrace();
+        Throwable thrown = catchThrowable(() -> repository().update(Person.reconstruct(4, "123456"))); // 5文字より大きい
         assertThat(thrown).isInstanceOf(MethodValidationException.class);
     }
 
     @Test
     void testUpdateOnDuplicate() {
-        // 重複チェックは上位で行うのでノーチェックであることを確認
-        Optional<Person> actual = repository().update(Person.valueOf(2, "name3"));
-        assertThat(actual).isPresent();
+        // 重複チェックは上位で行うので正常に処理できることを確認
+        assertThatCode(() -> repository().update(Person.reconstruct(2, "name3")))
+                .doesNotThrowAnyException();
     }
 
     @Test
     void testUpdateOnNotFound() {
-        Optional<Person> actual = repository().update(Person.valueOf(999, "UP"));
-        assertThat(actual).isNotPresent();
+        repository().update(Person.reconstruct(999, "UP"));
     }
 
-    protected abstract void testAddToSpecificImplementation();
+    @Test
+    void testAdd() {
+        Person expected = Person.reconstruct(5, "ADD");
+        repository().add(Person.reconstruct(5, "ADD"));
+        assertThat(repository().find(new PersonId(5)).get()).isEqualTo(expected);
+    }
 
     @Test
     void testAddOnValidationError() {
-        Throwable thrown = catchThrowable(() -> repository().add(Person.valueOf(null, "123456"))); // 5文字より大きい
+        Throwable thrown = catchThrowable(() -> repository().add(Person.reconstruct(5, "123456"))); // 5文字より大きい
         assertThat(thrown).isInstanceOf(MethodValidationException.class);
     }
 
     @Test
     void testAddOnDuplicateError() {
         // 重複チェックは上位で行うので正常に処理できることを確認
-        assertThatCode(() -> repository().add(Person.valueOf(null, "name3")))
+        assertThatCode(() -> repository().add(Person.reconstruct(5, "name3")))
                 .doesNotThrowAnyException();
     }
 
-    protected abstract void testDeleteToSpecificImplementation();
+    @Test
+    void testDelete() {
+        Person deleted = Person.reconstruct(1, "dummy");
+        repository().delete(deleted);
+        assertThat(repository().find(new PersonId(1))).isNotPresent();
+    }
+
 
     @Test
     void testDeleteOnValidationError() {
-        Throwable thrown = catchThrowable(() -> repository().delete(Person.valueOf(null, "123456"))); // 5文字より大きい
+        Throwable thrown = catchThrowable(() -> repository().delete(Person.reconstruct(1, "123456"))); // 5文字より大きい
         assertThat(thrown).isInstanceOf(MethodValidationException.class);
     }
 
-    protected abstract void testDeleteOnNotFoundToSpecificImplementation();
+    @Test
+    void testDeleteOnNotFound() {
+        repository().delete(Person.reconstruct(5, "dummy"));
+    }
+
 }

@@ -6,15 +6,16 @@ import java.util.function.Consumer;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import io.extact.msa.spring.platform.fw.domain.Identifiable;
+import io.extact.msa.spring.platform.fw.domain.DomainModel;
+import io.extact.msa.spring.platform.fw.domain.Identity;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
 import io.extact.msa.spring.platform.fw.persistence.GenericRepository;
 
 @Transactional
-public interface GenericService<T extends Identifiable> {
+public interface GenericService<T extends DomainModel> {
 
-    default Optional<T> get(int id) {
+    default Optional<T> get(Identity id) {
         return getRepository().find(id);
     }
 
@@ -22,24 +23,37 @@ public interface GenericService<T extends Identifiable> {
         return getRepository().findAll();
     }
 
-    default T add(T entity) {
+    /**
+     * 追加
+     * @param command
+     * @return モデル（発番された番号を返す必要がある）
+     */
+    default T add(T command) {
         if (getDuplicateChecker() != null) {
-            getDuplicateChecker().accept(entity);
+            getDuplicateChecker().accept(command);
         }
-        getRepository().add(entity);
-        return get(entity.getId()).get();
+        getRepository().add(command);
+        return get(command.getId()).get();
     }
 
-    default Optional<T> update(T entity) {
+    // 更新対象がなかったら例外なので、常に更新後の結果は変える
+    /**
+     * 更新
+     * @param entity
+     * @return 更新結果。更新対象がない場合は例外となるので結果は常に変える
+     * @throws BusinessFlowException 更新対象が存在しない場合。
+     */
+    default T update(T entity) {
         getRepository().find(entity.getId())
                 .orElseThrow(() -> new BusinessFlowException("target does not exist for id", CauseType.NOT_FOUND));
         if (getDuplicateChecker() != null) {
             getDuplicateChecker().accept(entity);
         }
-        return getRepository().update(entity);
+        getRepository().update(entity);
+        return entity;
     }
 
-    default void delete(int id) {
+    default void delete(Identity id) {
         T target = getRepository().find(id)
                 .orElseThrow(() -> new BusinessFlowException("target does not exist for id", CauseType.NOT_FOUND));
         getRepository().delete(target);

@@ -39,7 +39,7 @@ abstract class AbstractMultiEntitySupportTest {
     @Test
     void testMultiGet() {
 
-        Employee employeeExpected = Employee.reconstruct(new EmployeeId(1), "name1", "dept1");
+        Employee employeeExpected = Employee.reconstruct(1, "name1", "dept1");
         Optional<Employee> employeeActual = employeeRepository().find(new EmployeeId(1));
 
         assertThat(employeeActual).isPresent();
@@ -49,7 +49,7 @@ abstract class AbstractMultiEntitySupportTest {
         assertThat(employeeActual).isNotPresent();
 
 
-        Person personExpected = Person.reconstruct(new PersonId(1), "name1");
+        Person personExpected = Person.reconstruct(1, "name1");
         Optional<Person> personActual = personRepository().find(new PersonId(1));
 
         assertThat(personActual).isPresent();

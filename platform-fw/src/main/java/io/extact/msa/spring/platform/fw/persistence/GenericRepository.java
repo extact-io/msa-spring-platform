@@ -41,28 +41,28 @@ public interface GenericRepository<M extends DomainModel> {
      * エンティティを追加する。
      * {@link Valid}によりオブジェクトのValidationが実行される。
      *
-     * @param entity エンティティ
+     * @param model エンティティ
      */
     @Validated({ Default.class, Add.class }) // グループを指定するための@Validated
-    void add(@Valid M entity); // 引数にバリデーションを掛けるための@Valid(この@Validがないとバリデーションは実行されない)
+    void add(@Valid M model); // 引数にバリデーションを掛けるための@Valid(この@Validがないとバリデーションは実行されない)
 
     /**
      * エンティティを更新する。
      * {@link Valid}によりオブジェクトのValidationが実行される。
      *
-     * @param entity 更新内容
+     * @param model 更新内容
      * @return 更新後エンティティ。更新対象が存在しない場合はnull
      */
     @Validated({ Default.class, Update.class })
-    Optional<M> update(@Valid M entity);
+    void update(@Valid M model);
 
     /**
      * エンティティを削除する。
      *
-     * @param entity 削除エンティティ
+     * @param model 削除エンティティ
      */
-    @Validated(Delete.class)
-    void delete(@Valid M entity);
+    @Validated({ Default.class, Delete.class })
+    void delete(@Valid M model);
 
     /**
      * 次のIDを発番する。

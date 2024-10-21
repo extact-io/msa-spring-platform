@@ -14,10 +14,10 @@ import lombok.experimental.NonFinal;
 public class Person implements DomainModel {
 
     private @NonNull PersonId id;
-    private @NonNull @NonFinal String name;
+    private @NonNull @NonFinal @PersonName String name; // TODO: これexperimentalだった
 
-    public static Person reconstruct(PersonId id, String name) {
-        return new Person(id, name);
+    public static Person reconstruct(int id, String name) {
+        return new Person(new PersonId(id), name);
     }
 
     public void changeName(String name) {

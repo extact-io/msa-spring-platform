@@ -15,6 +15,7 @@ import org.springframework.core.env.Environment;
 
 import io.extact.msa.spring.platform.fw.domain.DomainModel;
 import io.extact.msa.spring.platform.fw.domain.Identity;
+import io.extact.msa.spring.platform.fw.exception.RmsPersistenceException;
 import io.extact.msa.spring.platform.fw.persistence.GenericRepository;
 import io.extact.msa.spring.platform.fw.persistence.file.io.FileOperator;
 import io.extact.msa.spring.platform.fw.persistence.file.io.IoSystemException;
@@ -82,7 +83,7 @@ public abstract class AbstractFileRepository<M extends DomainModel>
         save(model.transform(modelArrayMapper::toArray));
     }
 
-    public Optional<M> update(M model) {
+    public void update(M model) {
         AtomicBoolean replaced = new AtomicBoolean(false);
         List<String[]> lines = load().stream()
                 .map(items -> {
@@ -94,10 +95,9 @@ public abstract class AbstractFileRepository<M extends DomainModel>
                 })
                 .toList();
         if (!replaced.get()) {
-            return Optional.empty();
+            new RmsPersistenceException("target does not exist for id:" + model.getId().id());
         }
         this.saveAll(lines);
-        return Optional.of(model);
     }
 
     public void delete(M model) {

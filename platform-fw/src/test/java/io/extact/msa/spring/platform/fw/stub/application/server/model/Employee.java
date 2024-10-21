@@ -14,11 +14,11 @@ import lombok.experimental.NonFinal;
 public class Employee implements DomainModel {
 
     private @NonNull EmployeeId id;
-    private @NonNull @NonFinal String name;
-    private @NonNull @NonFinal String deptName;
+    private @NonNull @NonFinal String name;     // TODO: これexperimentalだった
+    private @NonNull @NonFinal String deptName; // TODO: これexperimentalだった
 
-    public static Employee reconstruct(EmployeeId id, String name, String deptName) {
-        return new Employee(id, name, deptName);
+    public static Employee reconstruct(int id, String name, String deptName) {
+        return new Employee(new EmployeeId(id), name, deptName);
     }
 
     public void changeEditableFields(String name, String deptName) {

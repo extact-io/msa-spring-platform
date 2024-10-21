@@ -6,14 +6,10 @@ public record PersonResponse(
         Integer id,
         String name) {
 
-    public static PersonResponse from(Person entity) {
-        if (entity == null) {
+    public static PersonResponse from(Person model) {
+        if (model == null) {
             return null;
         }
-        return new PersonResponse(entity.getId(), entity.getName());
-    }
-
-    public Person toEntity() {
-        return Person.valueOf(id, name);
+        return new PersonResponse(model.getId().id(), model.getName());
     }
 }

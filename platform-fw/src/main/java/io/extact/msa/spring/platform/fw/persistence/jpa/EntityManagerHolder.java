@@ -2,9 +2,9 @@ package io.extact.msa.spring.platform.fw.persistence.jpa;
 
 import jakarta.persistence.EntityManager;
 
-public interface EntityContext<E, ID> {
+public interface EntityManagerHolder<E> {
 
     EntityManager entityManager();
 
-    Class<?> entityClass();
+    boolean isManaged(E entity);
 }
