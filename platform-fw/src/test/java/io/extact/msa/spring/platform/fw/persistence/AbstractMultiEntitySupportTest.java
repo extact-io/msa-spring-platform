@@ -59,7 +59,7 @@ abstract class AbstractMultiEntitySupportTest {
         assertThat(personActual).isNotPresent();
     }
 
-    protected abstract EmployeeRepository employeeRepository();
+    protected abstract GenericRepository<Employee> employeeRepository();
     protected abstract PersonRepository personRepository();
 
     @Nested
@@ -112,7 +112,7 @@ abstract class AbstractMultiEntitySupportTest {
     static class EmployeeJpaAndPersonFileTest extends AbstractMultiEntitySupportTest {
 
         @Autowired
-        private EmployeeRepository employeeRepository;
+        private GenericRepository<Employee> employeeRepository;
         @Autowired
         private PersonRepository personRepository;
 
@@ -122,7 +122,7 @@ abstract class AbstractMultiEntitySupportTest {
         }
 
         @Override
-        protected EmployeeRepository employeeRepository() {
+        protected GenericRepository<Employee> employeeRepository() {
             return employeeRepository;
         }
 

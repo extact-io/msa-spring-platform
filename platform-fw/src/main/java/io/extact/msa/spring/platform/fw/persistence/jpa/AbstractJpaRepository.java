@@ -1,17 +1,14 @@
 package io.extact.msa.spring.platform.fw.persistence.jpa;
 
-
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
 
-import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.env.Environment;
 
 import io.extact.msa.spring.platform.fw.domain.DomainModel;
 import io.extact.msa.spring.platform.fw.domain.Identity;
@@ -19,23 +16,32 @@ import io.extact.msa.spring.platform.fw.exception.RmsPersistenceException;
 import io.extact.msa.spring.platform.fw.persistence.GenericRepository;
 
 public abstract class AbstractJpaRepository<M extends DomainModel, E extends TableEntity<M>>
-        implements GenericRepository<M> {
+        implements GenericRepository<M>, EnvironmentAware {
 
 
     private final ModelEntityMapper<M, E> modelEntityMapper;
     private final SpringDataJpaExecutor<E> executor;
     private final Class<E> targetEntityClass;
+    private final SequenceGenerator sequenceGenerator;
 
     @Autowired
     private EntityManager entityManager;
-    private SequenceGenerator sequenceGenerator;
 
-
-    public AbstractJpaRepository(SpringDataJpaExecutor<E> executor, ModelEntityMapper<M, E> modelEntityMapper) {
+    public AbstractJpaRepository(SpringDataJpaExecutor<E> executor, ModelEntityMapper<M, E> modelEntityMapper,
+            SequenceGeneratorFactory sequencefactory) {
         this.modelEntityMapper = modelEntityMapper;
         this.executor = executor;
         this.targetEntityClass = resolveTargetEntityClass();
-        this.sequenceGenerator = new SequenceGenerator(targetEntityClass);
+        this.sequenceGenerator = sequencefactory.create(targetEntityClass);
+    }
+
+    public AbstractJpaRepository(SpringDataJpaExecutor<E> executor, ModelEntityMapper<M, E> modelEntityMapper) {
+        this(executor, modelEntityMapper, entityClass -> new DefaultSequenceGenerator(entityClass));
+    }
+
+    @Override
+    public void setEnvironment(Environment env) {
+        sequenceGenerator.configure(env);
     }
 
     @Override
@@ -85,58 +91,5 @@ public abstract class AbstractJpaRepository<M extends DomainModel, E extends Tab
         ResolvableType resolvableType = ResolvableType.forClass(AbstractJpaRepository.this.getClass());
         ResolvableType generic = resolvableType.as(AbstractJpaRepository.class).getGeneric(0);
         return (Class<E>) generic.resolve();
-    }
-
-    static class SequenceGenerator {
-
-        final String sequenceName;
-        String databaseName;
-
-        SequenceGenerator(Class<?> entityClass) {
-            sequenceName = resolveSequenceName(entityClass);
-        }
-
-        String resolveSequenceName(Class<?> entityClass) {
-
-            String entityClassName = entityClass.getSimpleName().toLowerCase();
-
-            if (entityClassName.endsWith("entity")) {
-                return entityClassName.substring(0, entityClassName.length() - "entity".length()) + "_seq";
-            } else {
-                return entityClassName.toLowerCase() + "_seq";
-            }
-        }
-
-        long generate(EntityManager entityManager) {
-            preperDatabaseName(entityManager);
-            String sql = resolveSql();
-            Query query = entityManager.createNativeQuery(sql);
-            return (Long) query.getSingleResult();
-        }
-
-        void preperDatabaseName(EntityManager entityManager) {
-            if (databaseName == null) {
-                try {
-                    Session session = entityManager.unwrap(Session.class);
-                    Connection connection = session.doReturningWork(conn -> conn);
-                    databaseName = connection.getMetaData().getDatabaseProductName();
-                } catch (SQLException e) {
-                    throw new RmsPersistenceException(e);
-                }
-            }
-        }
-
-        private String resolveSql() {
-            return switch (databaseName) {
-                case "H2" -> {
-                    String template = "SELECT NEXT VALUE FOR %s;"; // for H2
-                    yield template.formatted(sequenceName);
-                }
-                default -> {
-                    String template = "SELECT NEXT VALUE FOR %s;"; // for H2
-                    yield template.formatted(sequenceName);
-                }
-            };
-        }
     }
 }

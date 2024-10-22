@@ -7,19 +7,27 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import io.extact.msa.spring.platform.fw.domain.constraint.ValidationConfiguration;
+import io.extact.msa.spring.platform.fw.persistence.GenericRepository;
+import io.extact.msa.spring.platform.fw.persistence.jpa.DefaultJpaRepository;
 import io.extact.msa.spring.platform.fw.persistence.jpa.DefaultModelEntityMapper;
-import io.extact.msa.spring.platform.fw.persistence.jpa.EntityManagerHolder;
+import io.extact.msa.spring.platform.fw.stub.application.server.model.Employee;
 
 @TestConfiguration(proxyBeanMethods = false)
 @EntityScan(basePackageClasses = EmployeeEntity.class)
-@EnableJpaRepositories(basePackageClasses = { EmployeeSpringDataJpa.class, EntityManagerHolder.class })
+@EnableJpaRepositories(basePackageClasses = EmployeeSpringDataJpa.class)
 @Import(ValidationConfiguration.class)
 public class EmployeeJpaRepositoryConfig {
 
+//    @Bean
+//    EmployeeJpaRepository employeeJpaRepository(EmployeeSpringDataJpa executor) {
+//        return new EmployeeJpaRepository(
+//                executor,
+//                new DefaultModelEntityMapper<>(EmployeeEntity::from));
+//    }
 
     @Bean
-    EmployeeJpaRepository employeeJpaRepository(EmployeeSpringDataJpa executor) {
-        return new EmployeeJpaRepository(
+    GenericRepository<Employee> defaultJpaRepository(EmployeeSpringDataJpa executor) {
+        return new DefaultJpaRepository<Employee, EmployeeEntity>(
                 executor,
                 new DefaultModelEntityMapper<>(EmployeeEntity::from));
     }

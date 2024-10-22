@@ -8,11 +8,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import io.extact.msa.spring.platform.fw.domain.constraint.ValidationConfiguration;
 import io.extact.msa.spring.platform.fw.persistence.jpa.DefaultModelEntityMapper;
-import io.extact.msa.spring.platform.fw.persistence.jpa.EntityManagerHolder;
 
 @TestConfiguration(proxyBeanMethods = false)
 @EntityScan(basePackageClasses = PersonEntity.class)
-@EnableJpaRepositories(basePackageClasses = { PersonSpringDataJpa.class, EntityManagerHolder.class })
+@EnableJpaRepositories(basePackageClasses = PersonSpringDataJpa.class)
 @Import(ValidationConfiguration.class)
 public class PersonJpaRepositoryConfig {
 
