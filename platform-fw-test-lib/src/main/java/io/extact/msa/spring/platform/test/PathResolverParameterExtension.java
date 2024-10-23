@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
-import io.extact.msa.spring.platform.fw.persistence.file.io.FilePathResolver;
+import io.extact.msa.spring.platform.fw.infrastructure.persistence.file.io.FilePathResolver;
 
 /**
  * テストクラスのメソッド引数で{@link FilePathResolver}を指定可能するJUnit5拡張クラス実装。

@@ -3,7 +3,7 @@ package io.extact.msa.spring.platform.test.stub.dto;
 import java.time.LocalDateTime;
 import java.util.function.Function;
 
-import io.extact.msa.spring.platform.fw.domain.Transformable;
+import io.extact.msa.spring.platform.fw.domain.model.Transformable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,6 +1,6 @@
 package io.extact.msa.spring.platform.test.stub.dto;
 
-import io.extact.msa.spring.platform.fw.domain.Transformable;
+import io.extact.msa.spring.platform.fw.domain.model.Transformable;
 import io.extact.msa.spring.platform.fw.domain.type.UserType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
