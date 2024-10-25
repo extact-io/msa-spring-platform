@@ -11,9 +11,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.validation.method.MethodValidationException;
 
-import io.extact.msa.spring.platform.fw.stub.client.person.infrastructure.UpdateTestPersonRequest;
+import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.TestPerson;
 import io.extact.msa.spring.platform.fw.stub.server.person.infrastrucure.jpa.PersonJpaRepositoryConfig;
-import io.extact.msa.spring.platform.fw.testapp.client.infrastructure.AddTestPersonRequest;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("jpa")
@@ -32,14 +31,14 @@ class JpaApplicationIntegrationTest extends AbstractApplicationIntegrationTest {
     @Test
     @Order(99)
     void testValidateResponseErrorWithAdd() {
-        Throwable thrown = catchThrowable(() -> client.add(new AddTestPersonRequest("error")));
+        Throwable thrown = catchThrowable(() -> client.add("error"));
         assertThat(thrown).isInstanceOf(MethodValidationException.class);
     }
 
     @Test
     @Order(99)
     void testValidateResponseErrorWithUpdate() {
-        Throwable thrown = catchThrowable(() -> client.update(new UpdateTestPersonRequest(1, "error")));
+        Throwable thrown = catchThrowable(() -> client.update(TestPerson.reconstruct(1, "error")));
         assertThat(thrown).isInstanceOf(MethodValidationException.class);
     }
 }

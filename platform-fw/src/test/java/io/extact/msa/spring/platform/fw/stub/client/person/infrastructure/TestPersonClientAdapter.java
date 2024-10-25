@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.TestPersonClient;
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.TestPerson;
+import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.TestPersonId;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -20,14 +21,14 @@ public class TestPersonClientAdapter implements TestPersonClient {
     }
 
     @Override
-    public Optional<TestPerson> get(int itemId) {
-        return Optional.ofNullable(api.get(itemId))
+    public Optional<TestPerson> get(TestPersonId personId) {
+        return Optional.ofNullable(api.get(personId.id()))
                 .map(TestPersonResponse::toModel);
     }
 
     @Override
     public TestPerson add(String name) {
-        return api.add(name).toModel();
+        return api.add(new AddTestPersonRequest(name)).toModel();
     }
 
     @Override
@@ -36,7 +37,7 @@ public class TestPersonClientAdapter implements TestPersonClient {
     }
 
     @Override
-    public void delete(int itemId) {
-        api.delete(itemId);
+    public void delete(TestPersonId testPersonId) {
+        api.delete(testPersonId.id());
     }
 }

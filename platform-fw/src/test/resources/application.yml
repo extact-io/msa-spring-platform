@@ -2,14 +2,17 @@ debug: false
 logging.level:
   org.springframework:
     transaction: info
-    #security: trace
+    security: trace
   ConfigDump: debug
 
 spring:
   main:
     banner-mode: off
+  messages:
+    basename: application-messages,test-application-messages
+    encoding: UTF-8
 
-    management:
+management:
   endpoints:
     web:
       exposure:
@@ -24,9 +27,6 @@ spring:
         readiness:
           include: "readinessState,db,dependentServers"
       validate-group-membership: false # groupにindicatorが存在しない場合もエラーにしない設定
-  messages:
-    basename: application-messages,test-application-messages
-    encoding: UTF-8
 
 #rms.persistence.entity: person
 #rms.persistence.person.apiType.: jpa
@@ -51,6 +51,8 @@ rms:
       - http://localhost:7002/actuator/health/readiness
       - http://localhost:7003/actuator/health/readiness
       - http://localhost:7004/actuator/health/readiness
+  auth:
+    multi: false
   jwt-provider:
     enable: true
     private-key: classpath:/jwt.key

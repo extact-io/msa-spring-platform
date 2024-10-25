@@ -1,6 +1,5 @@
 package io.extact.msa.spring.platform.fw.infrastructure.persistence;
 
-import static io.extact.msa.spring.test.assertj.ToStringAssert.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
@@ -25,10 +24,10 @@ import io.extact.msa.spring.platform.fw.exception.RmsValidationException;
 import io.extact.msa.spring.platform.fw.infrastructure.external.ErrorMessageDeserializer;
 import io.extact.msa.spring.platform.fw.infrastructure.external.RestClientErrorHandler;
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.TestPersonClient;
+import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.TestPerson;
+import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.TestPersonId;
 import io.extact.msa.spring.platform.fw.stub.client.person.infrastructure.TestPersonClientAdapter;
 import io.extact.msa.spring.platform.fw.stub.client.person.infrastructure.TestPersonClientApi;
-import io.extact.msa.spring.platform.fw.stub.client.person.infrastructure.TestPersonResponse;
-import io.extact.msa.spring.platform.fw.stub.client.person.infrastructure.UpdateTestPersonRequest;
 import io.extact.msa.spring.platform.fw.stub.server.person.application.PersonApplicationService;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonDuplicateChecker;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonFactory;
@@ -94,41 +93,41 @@ abstract class AbstractApplicationIntegrationTest {
     @Test
     @Order(1)
     void testGet() {
-        TestPersonResponse expected = new TestPersonResponse(1, "name1");
-        Optional<TestPersonResponse> actual = client.get(1);
+        TestPerson expected = TestPerson.reconstruct(1, "name1");
+        Optional<TestPerson> actual = client.get(new TestPersonId(1));
         assertThat(actual).isPresent();
-        assertThatToString(actual.get()).isEqualTo(expected);
+        assertThat(actual.get()).isEqualTo(expected);
 
-        actual = client.get(999);
+        actual = client.get(new TestPersonId(999));
         assertThat(actual).isNotPresent();
     }
 
     @Test
     @Order(2)
     void testGetAll() {
-        List<TestPersonResponse> actual = client.getAll();
+        List<TestPerson> actual = client.getAll();
         assertThat(actual).hasSize(4);
     }
 
     @Test
     @Order(3)
     void testUpdate() {
-        TestPersonResponse expected = new TestPersonResponse(4, "UP");
-        TestPersonResponse actual = client.update(new UpdateTestPersonRequest(4, "UP"));
-        assertThatToString(actual).isEqualTo(expected);
+        TestPerson expected = TestPerson.reconstruct(4, "UP");
+        TestPerson actual = client.update(TestPerson.reconstruct(4, "UP"));
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     @Order(4)
     void testUpdateOnValidationError() {
-        Throwable thrown = catchThrowable(() -> client.update(new UpdateTestPersonRequest(4, "123456"))); // 5文字より大きい
+        Throwable thrown = catchThrowable(() -> client.update(TestPerson.reconstruct(4, "123456"))); // 5文字より大きい
         assertThat(thrown).isInstanceOf(RmsValidationException.class);
     }
 
     @Test
     @Order(5)
     void testUpdateOnDuplicateError() {
-        Throwable thrown = catchThrowable(() -> client.update(new UpdateTestPersonRequest(2, "name3")));
+        Throwable thrown = catchThrowable(() -> client.update(TestPerson.reconstruct(2, "name3")));
         assertThat(thrown).isInstanceOf(BusinessFlowException.class);
         assertThat(((BusinessFlowException) thrown).getCauseType()).isEqualTo(CauseType.DUPLICATE);
     }
@@ -136,7 +135,7 @@ abstract class AbstractApplicationIntegrationTest {
     @Test
     @Order(6)
     void testUpdateOnNotFound() {
-        Throwable thrown = catchThrowable(() -> client.update(new UpdateTestPersonRequest(999, "UP")));
+        Throwable thrown = catchThrowable(() -> client.update(TestPerson.reconstruct(999, "UP")));
         assertThat(thrown).isInstanceOf(BusinessFlowException.class);
         assertThat(((BusinessFlowException) thrown).getCauseType()).isEqualTo(CauseType.NOT_FOUND);
     }
@@ -144,22 +143,22 @@ abstract class AbstractApplicationIntegrationTest {
     @Test
     @Order(7)
     void testAdd() {
-        TestPersonResponse expected = new TestPersonResponse(newDataId(), "ADD");
-        TestPersonResponse actual = client.add(new AddTestPersonRequest("ADD"));
-        assertThatToString(actual).isEqualTo(expected);
+        TestPerson expected = TestPerson.reconstruct(newDataId(), "ADD");
+        TestPerson actual = client.add("ADD");
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     @Order(8)
     void testAddOnValidationError() {
-        Throwable thrown = catchThrowable(() -> client.add(new AddTestPersonRequest("123456"))); // 5文字より大きい
+        Throwable thrown = catchThrowable(() -> client.add("123456")); // 5文字より大きい
         assertThat(thrown).isInstanceOf(RmsValidationException.class);
     }
 
     @Test
     @Order(9)
     void testAddOnDuplicateError() {
-        Throwable thrown = catchThrowable(() -> client.add(new AddTestPersonRequest("name3")));
+        Throwable thrown = catchThrowable(() -> client.add("name3"));
         assertThat(thrown).isInstanceOf(BusinessFlowException.class);
         assertThat(((BusinessFlowException) thrown).getCauseType()).isEqualTo(CauseType.DUPLICATE);
     }
@@ -167,7 +166,7 @@ abstract class AbstractApplicationIntegrationTest {
     @Test
     @Order(10)
     void testDelete() {
-        client.delete(newDataId());
+        client.delete(new TestPersonId(newDataId()));
         int actual = client.getAll().size();
         assertThat(actual).isEqualTo(4);
     }
@@ -175,7 +174,7 @@ abstract class AbstractApplicationIntegrationTest {
     @Test
     @Order(11)
     void testDeleteOnNotFound() {
-        Throwable thrown = catchThrowable(() -> client.delete(999));
+        Throwable thrown = catchThrowable(() -> client.delete(new TestPersonId(999)));
         assertThat(thrown).isInstanceOf(BusinessFlowException.class);
         assertThat(((BusinessFlowException) thrown).getCauseType()).isEqualTo(CauseType.NOT_FOUND);
     }

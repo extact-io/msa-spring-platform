@@ -1,7 +1,7 @@
 package io.extact.msa.spring.platform.core.auth.jwt;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -26,7 +26,6 @@ import io.extact.msa.spring.platform.core.jwt.validation.JwtValidationConfig;
 public class RmsJwtAuthConfig {
 
     @Bean
-    @ConditionalOnBean(AuthorizeHttpRequestCustomizer.class)
     SecurityFilterChain securityFilterChain(HttpSecurity http, AuthorizeHttpRequestCustomizer requestCustomizer,
             Converter<Jwt, AbstractAuthenticationToken> jwtConverter, AnonymousAuthenticationFilter anonymousFilter)
             throws Exception {
@@ -48,7 +47,8 @@ public class RmsJwtAuthConfig {
     }
 
     @Bean
-    @Order(1) // 複数のHttpSecurityインスタンスが使われる場合を想定して優先度を指定（Order未指定よる優先）
+    @ConditionalOnProperty(name = "rms.auth.multi", havingValue = "true")
+    @Order(1) // @RmsHeaderAuthのHttpSecurityインスタンスも同時に使われる場合を想定して優先度を指定（Order未指定よる優先）
     SecurityFilterChain withQualifireJwtAuthChain(HttpSecurity http,
             @RmsJwtAuth AuthorizeRequestConfigure requestConfigure,
             Converter<Jwt, AbstractAuthenticationToken> jwtConverter, AnonymousAuthenticationFilter anonymousFilter)

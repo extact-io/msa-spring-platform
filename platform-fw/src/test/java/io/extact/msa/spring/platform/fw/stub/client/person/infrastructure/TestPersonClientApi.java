@@ -20,7 +20,7 @@ public interface TestPersonClientApi {
     TestPersonResponse get(@PathVariable("id") Integer id);
 
     @PostExchange
-    TestPersonResponse add(@RequestBody String name);
+    TestPersonResponse add(@RequestBody AddTestPersonRequest req);
 
     @PutExchange
     TestPersonResponse update(@RequestBody UpdateTestPersonRequest req);

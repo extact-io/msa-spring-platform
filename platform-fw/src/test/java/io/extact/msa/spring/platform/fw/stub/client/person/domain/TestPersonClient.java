@@ -9,13 +9,14 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.validation.annotation.Validated;
 
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.TestPerson;
+import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.TestPersonId;
 
 @Validated
 public interface TestPersonClient {
 
     List<TestPerson> getAll();
 
-    Optional<TestPerson> get(int id);
+    Optional<TestPerson> get(TestPersonId id);
 
     @NotNull
     @Valid
@@ -24,5 +25,5 @@ public interface TestPersonClient {
     @Valid
     TestPerson update(TestPerson testPerson);
 
-    void delete(int id);
+    void delete(TestPersonId id);
 }

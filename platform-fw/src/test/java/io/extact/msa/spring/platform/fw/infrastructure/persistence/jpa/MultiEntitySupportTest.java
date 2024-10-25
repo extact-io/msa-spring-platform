@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.infrastructure.persistence;
+package io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa;
 
 import static io.extact.msa.spring.test.assertj.ToStringAssert.*;
 import static org.assertj.core.api.Assertions.*;
@@ -35,7 +35,7 @@ import io.extact.msa.spring.platform.fw.stub.server.person.infrastrucure.jpa.Per
  */
 @Transactional
 @Rollback
-abstract class AbstractMultiEntitySupportTest {
+abstract class MultiEntitySupportTest {
 
     @Test
     void testMultiGet() {
@@ -75,7 +75,7 @@ abstract class AbstractMultiEntitySupportTest {
             spring.sql.init.data-locations=classpath:sql/person-data.sql
             """)
     @DataJpaTest
-    static class EmployeeFileAndPersonJpaTest extends AbstractMultiEntitySupportTest {
+    static class EmployeeFileAndPersonJpaTest extends MultiEntitySupportTest {
 
         @Autowired
         private EmployeeRepository employeeRepository;
@@ -110,7 +110,7 @@ abstract class AbstractMultiEntitySupportTest {
             rms.persistence.person.csv.temporary.resource=temporary/personTemp.csv
             """)
     @DataJpaTest
-    static class EmployeeJpaAndPersonFileTest extends AbstractMultiEntitySupportTest {
+    static class EmployeeJpaAndPersonFileTest extends MultiEntitySupportTest {
 
         @Autowired
         private GenericRepository<Employee> employeeRepository;

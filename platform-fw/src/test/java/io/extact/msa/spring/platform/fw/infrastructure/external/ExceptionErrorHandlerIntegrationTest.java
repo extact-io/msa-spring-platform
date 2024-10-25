@@ -9,6 +9,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import jakarta.validation.Constraint;
@@ -17,6 +18,7 @@ import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.Payload;
 import jakarta.validation.constraints.Size;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,6 +30,11 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -46,22 +53,29 @@ import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
+import io.extact.msa.spring.platform.core.auth.client.BearerTokenExtractor;
+import io.extact.msa.spring.platform.core.auth.client.BearerTokenRequestInitializer;
+import io.extact.msa.spring.platform.core.auth.client.RmsClientAuthenticationToken;
+import io.extact.msa.spring.platform.core.auth.jwt.RmsJwtAuthConfig;
+import io.extact.msa.spring.platform.core.jwt.provider.GenerateToken;
+import io.extact.msa.spring.platform.core.jwt.provider.UserClaims;
+import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderConfig;
+import io.extact.msa.spring.platform.core.jwt.validation.AuthorizeHttpRequestCustomizer;
 import io.extact.msa.spring.platform.fw.domain.constraint.ValidationConfiguration;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
 import io.extact.msa.spring.platform.fw.exception.RmsServiceUnavailableException;
 import io.extact.msa.spring.platform.fw.exception.RmsSystemException;
 import io.extact.msa.spring.platform.fw.exception.RmsValidationException;
+import io.extact.msa.spring.platform.fw.exception.SecurityConstraintException;
 import io.extact.msa.spring.platform.fw.exception.response.ValidationErrorItem;
 import io.extact.msa.spring.platform.fw.exception.response.ValidationErrorMessage;
-import io.extact.msa.spring.platform.fw.infrastructure.external.ErrorMessageDeserializer;
-import io.extact.msa.spring.platform.fw.infrastructure.external.RestClientErrorHandler;
 import io.extact.msa.spring.platform.fw.infrastructure.external.ExceptionErrorHandlerIntegrationTest.PairFieldsEquals.PairFieldsEqualsValidatable;
 import io.extact.msa.spring.platform.fw.infrastructure.external.ExceptionErrorHandlerIntegrationTest.PairFieldsEquals.PairFieldsEqualsValidator;
 import io.extact.msa.spring.platform.fw.web.ExceptionHandled;
 import io.extact.msa.spring.platform.fw.web.RestControllerConfig;
 import io.extact.msa.spring.platform.fw.web.RestControllerExceptionHandler;
-import io.extact.msa.spring.test.spring.EnableAutoConfigurationWithoutSecurity;
+import io.extact.msa.spring.test.spring.EnableAutoConfigurationWithoutJpa;
 import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
 
 /**
@@ -76,31 +90,84 @@ class ExceptionErrorHandlerIntegrationTest {
     private static final String CONVERT_ERROR_MESSAGE = "ex.TypeMismatchException.massage";
 
     @Autowired
-    private ValidationTestClient client;
+    private ExceptionTestClient client;
 
     @Configuration(proxyBeanMethods = false)
-    @EnableAutoConfigurationWithoutSecurity
-    @Import({ RestControllerConfig.class, ValidationConfiguration.class })
+    @EnableAutoConfigurationWithoutJpa
+    @EnableWebSecurity(debug = true)
+    @Import({
+            RestControllerConfig.class,
+            ValidationConfiguration.class,
+            JwtProviderConfig.class,
+            RmsJwtAuthConfig.class })
     static class TestConfig {
 
         @Bean
-        ValidationTestController validationTestController() {
-            return new ValidationTestController();
+        ExceptionTestController validationTestController() {
+            return new ExceptionTestController();
         }
 
         @Bean
-        ValidationTestClient validationTestClient(Environment env) {
-            RestClientErrorHandler errorHandler = new RestClientErrorHandler(new ErrorMessageDeserializer());
+        ExceptionTestClient validationTestClient(Environment env) {
 
             RestClient restClient = RestClient.builder()
                     .uriBuilderFactory(new LocalHostUriBuilderFactory(env))
-                    .defaultStatusHandler(errorHandler)
+                    .defaultStatusHandler(new RestClientErrorHandler(new ErrorMessageDeserializer()))
+                    .requestInitializer(new BearerTokenRequestInitializer())
                     .build();
 
             RestClientAdapter adapter = RestClientAdapter.create(restClient);
             HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
-            return factory.createClient(ValidationTestClient.class);
+            return factory.createClient(ExceptionTestClient.class);
         }
+
+        // ---------- for Spring Security
+        @Bean
+        AuthorizeHttpRequestCustomizer authorizeRequestCustomizer() {
+            return (AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry configurer) -> configurer
+                    .requestMatchers("/auth").hasRole("admin")
+                    .anyRequest().permitAll();
+        }
+    }
+
+    @BeforeEach
+    void beforeEach() {
+        // 直前のテストの状態がThreadLocalに残っているので事前にクリア
+        SecurityContextHolder.clearContext();
+    }
+
+    @Test
+    void occurSecurityConstraint401ExceptionTest() {
+
+        assertThatThrownBy(() -> client.adminApi())
+                .isInstanceOfSatisfying(SecurityConstraintException.class, e -> {
+                    assertThat(e.getErrorStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+                });
+    }
+
+    @Test
+    void occurSecurityConstraint403ExceptionTest() {
+
+        ResponseEntity<AuthData> response = client.authenticate("1", "member");
+
+        AuthData authData = response.getBody();
+        assertThat(authData.userId()).isEqualTo("1");
+        assertThat(authData.groups()).isEqualTo(Set.of("member"));
+
+        // クライアント側のログイン関連処理
+        String bearerToken = BearerTokenExtractor.extract(response.getHeaders());
+        RmsClientAuthenticationToken token = RmsClientAuthenticationToken.builder()
+                .userId(authData.userId())
+                .bearerToken(bearerToken)
+                .groups(authData.groups())
+                .build();
+
+        SecurityContextHolder.setContext(new SecurityContextImpl(token));
+
+        assertThatThrownBy(() -> client.adminApi())
+                .isInstanceOfSatisfying(SecurityConstraintException.class, e -> {
+                    assertThat(e.getErrorStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+                });
     }
 
     @Test
@@ -153,12 +220,14 @@ class ExceptionErrorHandlerIntegrationTest {
                 .isInstanceOfSatisfying(
                         RmsValidationException.class,
                         e -> {
-                            String message = messageSource.getMessage(PARAMETER_ERROR_MESSAGE, null, Locale.getDefault());
+                            String message = messageSource.getMessage(PARAMETER_ERROR_MESSAGE, null,
+                                    Locale.getDefault());
                             assertThat(e.getMessage()).startsWith(message);
 
                             ValidationErrorMessage error = e.getErrorMessage();
                             assertThat(error).isNotNull();
-                            assertThat(error.errorReason()).isEqualTo(HandlerMethodValidationException.class.getSimpleName());
+                            assertThat(error.errorReason())
+                                    .isEqualTo(HandlerMethodValidationException.class.getSimpleName());
                             assertThat(error.errorMessage()).isEqualTo(message);
                             assertThat(error.validationErrorItems()).hasSize(1);
                             assertThat(error.validationErrorItems().get(0).fieldName()).isEqualTo("val1");
@@ -292,7 +361,6 @@ class ExceptionErrorHandlerIntegrationTest {
                                     Locale.getDefault());
                             assertThat(e.getMessage()).startsWith(errorMessage);
 
-
                             String fieldErrorMessage = messageSource.getMessage(
                                     CONVERT_ERROR_MESSAGE,
                                     new Object[] { int.class.getSimpleName() },
@@ -398,7 +466,14 @@ class ExceptionErrorHandlerIntegrationTest {
     }
 
     @HttpExchange
-    static interface ValidationTestClient {
+    static interface ExceptionTestClient {
+
+        @GetExchange("/login") // 認証なし
+        ResponseEntity<AuthData> authenticate(@RequestParam("loginId") String loginId,
+                @RequestParam("password") String password);
+
+        @GetExchange("/auth") // 認証あり(admin-role)
+        boolean adminApi();
 
         @GetExchange("/pathParamSingle/{val1}")
         void pathParamSingle(@PathVariable String val1);
@@ -449,6 +524,15 @@ class ExceptionErrorHandlerIntegrationTest {
         void occurUnknowException();
     }
 
+    record AuthData(
+            String userId,
+            Set<String> groups) implements UserClaims {
+
+        public String principalName() {
+            return this.userId + "@msa-rms";
+        }
+    }
+
     @PairFieldsEquals
     static record ParamDto(
             @Size(min = 2) String val1,
@@ -457,7 +541,19 @@ class ExceptionErrorHandlerIntegrationTest {
 
     @RestController
     @ExceptionHandled
-    public static class ValidationTestController {
+    public static class ExceptionTestController {
+
+        @GetMapping("/login") // 認証なし
+        @GenerateToken
+        public AuthData authenticate(@RequestParam("loginId") String loginId,
+                @RequestParam("password") String password) {
+            return new AuthData(loginId, Set.of(password));
+        }
+
+        @GetMapping("/auth") // 認証あり(admin-role)
+        public boolean adminApi() {
+            return true;
+        }
 
         @GetMapping("/pathParamSingle/{val1}")
         public void pathParamSingle(@PathVariable @Size(min = 2) String val1) {
@@ -475,7 +571,8 @@ class ExceptionErrorHandlerIntegrationTest {
         }
 
         @GetMapping("/queryParamMulti")
-        public void queryParamMulti(@RequestParam @Size(min = 2) String val1, @RequestParam @Size(min = 2) String val2) {
+        public void queryParamMulti(@RequestParam @Size(min = 2) String val1,
+                @RequestParam @Size(min = 2) String val2) {
             // NOP
         }
 
@@ -562,7 +659,8 @@ class ExceptionErrorHandlerIntegrationTest {
             PairFieldsEquals[] value();
         }
 
-        public static class PairFieldsEqualsValidator implements ConstraintValidator<PairFieldsEquals, PairFieldsEqualsValidatable> {
+        public static class PairFieldsEqualsValidator
+                implements ConstraintValidator<PairFieldsEquals, PairFieldsEqualsValidatable> {
 
             public boolean isValid(PairFieldsEqualsValidatable bean, ConstraintValidatorContext context) {
                 if (bean.val1() == null || bean.val2() == null) {
@@ -574,6 +672,7 @@ class ExceptionErrorHandlerIntegrationTest {
 
         public interface PairFieldsEqualsValidatable {
             String val1();
+
             String val2();
         }
     }
