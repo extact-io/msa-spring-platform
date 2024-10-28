@@ -51,8 +51,6 @@ rms:
       - http://localhost:7002/actuator/health/readiness
       - http://localhost:7003/actuator/health/readiness
       - http://localhost:7004/actuator/health/readiness
-  auth:
-    multi: false
   jwt-provider:
     enable: true
     private-key: classpath:/jwt.key

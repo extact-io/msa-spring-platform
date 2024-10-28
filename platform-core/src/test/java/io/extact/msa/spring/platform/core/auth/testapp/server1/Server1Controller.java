@@ -8,12 +8,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.extact.msa.spring.platform.core.jwt.provider.GenerateToken;
-import io.extact.msa.spring.platform.fw.web.ExceptionHandled;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/server1")
-@ExceptionHandled
 @RequiredArgsConstructor
 public class Server1Controller {
 

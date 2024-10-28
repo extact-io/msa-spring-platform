@@ -30,7 +30,7 @@ public class PersonApplicationService implements ApplicationServiceSupport<Perso
     public Person edit(EditPersonCommand command) {
         Person person = repository.find(command.id())
                 .orElseThrow(() -> new BusinessFlowException("target does not exist for id", CauseType.NOT_FOUND));
-        person.changeName(command.name());
+        person.editName(command.name());
         duplicateChecker.check(person);
         repository.update(person);
         return person;

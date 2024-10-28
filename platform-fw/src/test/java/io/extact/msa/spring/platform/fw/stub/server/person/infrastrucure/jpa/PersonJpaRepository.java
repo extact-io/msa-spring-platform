@@ -31,7 +31,7 @@ public class PersonJpaRepository extends AbstractJpaRepository<Person, PersonEnt
     @Override
     public void add(Person person) {
         if (isErrorPattern(person)) {
-            person.changeName("1234567890"); // 桁数オーバーを起こさせる
+            person.editName("1234567890"); // 桁数オーバーを起こさせる
         }
         super.add(person);
     }
@@ -39,7 +39,7 @@ public class PersonJpaRepository extends AbstractJpaRepository<Person, PersonEnt
     @Override
     public void update(Person person) {
         if (isErrorPattern(person)) {
-            person.changeName("1234567890"); // 桁数オーバーを起こさせる
+            person.editName("1234567890"); // 桁数オーバーを起こさせる
         }
         super.update(person);
     }

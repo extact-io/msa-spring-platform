@@ -26,6 +26,7 @@ import io.extact.msa.spring.platform.core.jwt.validation.JwtValidationConfig;
 public class RmsJwtAuthConfig {
 
     @Bean
+    @ConditionalOnProperty(name = "rms.auth.multi", havingValue = "false", matchIfMissing = true)
     SecurityFilterChain securityFilterChain(HttpSecurity http, AuthorizeHttpRequestCustomizer requestCustomizer,
             Converter<Jwt, AbstractAuthenticationToken> jwtConverter, AnonymousAuthenticationFilter anonymousFilter)
             throws Exception {

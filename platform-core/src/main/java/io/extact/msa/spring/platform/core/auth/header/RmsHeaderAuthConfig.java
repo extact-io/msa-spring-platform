@@ -1,6 +1,6 @@
 package io.extact.msa.spring.platform.core.auth.header;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -20,7 +20,7 @@ import io.extact.msa.spring.platform.core.jwt.validation.AuthorizeRequestConfigu
 public class RmsHeaderAuthConfig {
 
     @Bean
-    @ConditionalOnBean(AuthorizeHttpRequestCustomizer.class)
+    @ConditionalOnProperty(name = "rms.auth.multi", havingValue = "false", matchIfMissing = true)
     SecurityFilterChain headerAuthFilterChain1(HttpSecurity http, AuthorizeHttpRequestCustomizer requestCustomizer,
             AnonymousAuthenticationFilter anonymousFilter) throws Exception {
 
@@ -39,6 +39,7 @@ public class RmsHeaderAuthConfig {
     }
 
     @Bean
+    @ConditionalOnProperty(name = "rms.auth.multi", havingValue = "true")
     SecurityFilterChain withQualifireHeaderAuthFilterChain(HttpSecurity http,
             @RmsHeaderAuth AuthorizeRequestConfigure requestConfigure,
             AnonymousAuthenticationFilter anonymousFilter) throws Exception {

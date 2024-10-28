@@ -18,32 +18,29 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
-import io.extact.msa.spring.platform.core.auth.RmsAuthentication;
 import io.extact.msa.spring.platform.core.auth.client.BearerTokenRequestInitializer;
 import io.extact.msa.spring.platform.core.auth.header.LoginUserHeaderRequestInitializer;
 import io.extact.msa.spring.platform.core.auth.header.RmsHeaderAuth;
 import io.extact.msa.spring.platform.core.auth.header.RmsHeaderAuthConfig;
 import io.extact.msa.spring.platform.core.auth.jwt.RmsJwtAuth;
 import io.extact.msa.spring.platform.core.auth.jwt.RmsJwtAuthConfig;
+import io.extact.msa.spring.platform.core.auth.testapp.client.ClientAuthData;
+import io.extact.msa.spring.platform.core.auth.testapp.client.Server1Api;
+import io.extact.msa.spring.platform.core.auth.testapp.client.TestClient;
+import io.extact.msa.spring.platform.core.auth.testapp.client.TestClientAdapter;
+import io.extact.msa.spring.platform.core.auth.testapp.server1.Server1Assert;
+import io.extact.msa.spring.platform.core.auth.testapp.server1.Server1Controller;
+import io.extact.msa.spring.platform.core.auth.testapp.server1.Server2Api;
+import io.extact.msa.spring.platform.core.auth.testapp.server2.Server2Assert;
+import io.extact.msa.spring.platform.core.auth.testapp.server2.Server2Controller;
 import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderConfig;
 import io.extact.msa.spring.platform.core.jwt.validation.AuthorizeRequestConfigure;
-import io.extact.msa.spring.platform.fw.exception.SecurityConstraintException;
-import io.extact.msa.spring.platform.fw.infrastructure.external.ErrorMessageDeserializer;
-import io.extact.msa.spring.platform.fw.infrastructure.external.RestClientErrorHandler;
-import io.extact.msa.spring.platform.fw.stub.auth.server1.Server1Assert;
-import io.extact.msa.spring.platform.fw.stub.auth.server1.Server1Controller;
-import io.extact.msa.spring.platform.fw.stub.auth.server1.Server2Api;
-import io.extact.msa.spring.platform.fw.stub.auth.server2.Server2Assert;
-import io.extact.msa.spring.platform.fw.stub.auth.server2.Server2Controller;
-import io.extact.msa.spring.platform.fw.stub.auth.testclient.ClientAuthData;
-import io.extact.msa.spring.platform.fw.stub.auth.testclient.Server1Api;
-import io.extact.msa.spring.platform.fw.stub.auth.testclient.TestClient;
-import io.extact.msa.spring.platform.fw.stub.auth.testclient.TestClientAdapter;
-import io.extact.msa.spring.platform.fw.web.RestControllerConfig;
 import io.extact.msa.spring.test.spring.EnableAutoConfigurationWithoutJpa;
 import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
 
@@ -58,6 +55,9 @@ import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
  * ・スタブアプリ：RestController(Server2Controller) ※Header-Auth
  * </pre>
  */
+@TestPropertySource(properties = """
+        rms.auth.multi=true
+        """)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class AuthIntegratinTest {
 
@@ -68,10 +68,9 @@ public class AuthIntegratinTest {
     @EnableAutoConfigurationWithoutJpa
     @EnableWebSecurity(debug = true)
     @Import({
-        JwtProviderConfig.class,
-        RmsJwtAuthConfig.class,
-        RmsHeaderAuthConfig.class,
-        RestControllerConfig.class })
+            JwtProviderConfig.class,
+            RmsJwtAuthConfig.class,
+            RmsHeaderAuthConfig.class })
     static class TestConfig {
 
         // ---------- for Spring Security
@@ -106,14 +105,10 @@ public class AuthIntegratinTest {
         }
 
         @Bean
-        TestClient beforeEach(Environment env) {
-
-            // 直前のテストの状態がThreadLocalに残っているので事前にクリア
-            SecurityContextHolder.clearContext();
+        TestClient testClient(Environment env) {
 
             RestClient restClient = RestClient.builder()
                     .uriBuilderFactory(new LocalHostUriBuilderFactory(env))
-                    .defaultStatusHandler(new RestClientErrorHandler(new ErrorMessageDeserializer()))
                     .requestInitializer(new BearerTokenRequestInitializer())
                     .build();
 
@@ -151,7 +146,6 @@ public class AuthIntegratinTest {
 
              RestClient restClient = RestClient.builder()
                      .uriBuilderFactory(new LocalHostUriBuilderFactory(env))
-                     .defaultStatusHandler(new RestClientErrorHandler(new ErrorMessageDeserializer()))
                      .requestInitializer(new LoginUserHeaderRequestInitializer())
                      .build();
 
@@ -181,13 +175,13 @@ public class AuthIntegratinTest {
         assertThat(result).isTrue();
 
         assertThatThrownBy(() -> testClient.memeberApi())
-                .isInstanceOfSatisfying(SecurityConstraintException.class, e -> {
-                    assertThat(e.getErrorStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+                .isInstanceOfSatisfying(HttpClientErrorException.class, e -> {
+                    assertThat(e.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
                 });
 
         assertThatThrownBy(() -> testClient.adminApi())
-                .isInstanceOfSatisfying(SecurityConstraintException.class, e -> {
-                    assertThat(e.getErrorStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+                .isInstanceOfSatisfying(HttpClientErrorException.class, e -> {
+                    assertThat(e.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
                 });
     }
 
@@ -205,8 +199,8 @@ public class AuthIntegratinTest {
         assertThat(result).isTrue();
 
         assertThatThrownBy(() -> testClient.adminApi())
-                .isInstanceOfSatisfying(SecurityConstraintException.class, e -> {
-                    assertThat(e.getErrorStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+                .isInstanceOfSatisfying(HttpClientErrorException.class, e -> {
+                    assertThat(e.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
                 });
     }
 
@@ -225,8 +219,8 @@ public class AuthIntegratinTest {
         assertThat(result).isTrue();
 
         assertThatThrownBy(() -> testClient.memeberApi())
-                .isInstanceOfSatisfying(SecurityConstraintException.class, e -> {
-                    assertThat(e.getErrorStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+                .isInstanceOfSatisfying(HttpClientErrorException.class, e -> {
+                    assertThat(e.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
                 });
     }
 

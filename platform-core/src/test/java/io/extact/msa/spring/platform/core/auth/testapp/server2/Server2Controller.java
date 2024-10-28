@@ -4,12 +4,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.extact.msa.spring.platform.fw.web.ExceptionHandled;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/server2")
-@ExceptionHandled
 @RequiredArgsConstructor
 public class Server2Controller {
 
