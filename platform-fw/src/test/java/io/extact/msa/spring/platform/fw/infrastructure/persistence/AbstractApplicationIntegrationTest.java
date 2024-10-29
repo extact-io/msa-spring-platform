@@ -18,6 +18,7 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
+import io.extact.msa.spring.platform.fw.domain.service.SimpleDuplicateChecker;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
 import io.extact.msa.spring.platform.fw.exception.RmsValidationException;
@@ -29,9 +30,9 @@ import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.TestPers
 import io.extact.msa.spring.platform.fw.stub.client.person.infrastructure.TestPersonClientAdapter;
 import io.extact.msa.spring.platform.fw.stub.client.person.infrastructure.TestPersonClientApi;
 import io.extact.msa.spring.platform.fw.stub.server.person.application.PersonApplicationService;
-import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonDuplicateChecker;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonFactory;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonRepository;
+import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.Person;
 import io.extact.msa.spring.platform.fw.stub.server.person.web.PersonController;
 import io.extact.msa.spring.platform.fw.web.RestControllerConfig;
 import io.extact.msa.spring.test.spring.EnableAutoConfigurationWithoutSecurity;
@@ -65,7 +66,7 @@ abstract class AbstractApplicationIntegrationTest {
         PersonApplicationService personService(PersonRepository repository) {
             return new PersonApplicationService(
                     new PersonFactory(repository),
-                    new PersonDuplicateChecker(repository),
+                    new SimpleDuplicateChecker<Person>(repository),
                     repository);
         }
 

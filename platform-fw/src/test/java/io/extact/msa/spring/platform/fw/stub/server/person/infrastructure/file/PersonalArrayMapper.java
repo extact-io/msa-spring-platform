@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.stub.server.person.infrastrucure.file;
+package io.extact.msa.spring.platform.fw.stub.server.person.infrastructure.file;
 
 import io.extact.msa.spring.platform.fw.exception.RmsSystemException;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.file.ModelArrayMapper;

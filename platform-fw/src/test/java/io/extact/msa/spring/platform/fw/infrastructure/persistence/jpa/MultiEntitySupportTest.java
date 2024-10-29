@@ -24,8 +24,8 @@ import io.extact.msa.spring.platform.fw.stub.server.employee.infrastructure.pers
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonRepository;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.Person;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.PersonId;
-import io.extact.msa.spring.platform.fw.stub.server.person.infrastrucure.file.PersonFileRepositoryConfig;
-import io.extact.msa.spring.platform.fw.stub.server.person.infrastrucure.jpa.PersonJpaRepositoryConfig;
+import io.extact.msa.spring.platform.fw.stub.server.person.infrastructure.file.PersonFileRepositoryConfig;
+import io.extact.msa.spring.platform.fw.stub.server.person.infrastructure.jpa.PersonJpaRepositoryConfig;
 
 /**
  * 複数エンティティを扱った永続化テスト。

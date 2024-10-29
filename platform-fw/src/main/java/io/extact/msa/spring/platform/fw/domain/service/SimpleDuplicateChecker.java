@@ -1,20 +1,21 @@
-package io.extact.msa.spring.platform.fw.stub.server.person.domain;
+package io.extact.msa.spring.platform.fw.domain.service;
 
 import java.util.function.Predicate;
 
+import io.extact.msa.spring.platform.fw.domain.model.DomainModel;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
-import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.Person;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class PersonDuplicateChecker {
+public class SimpleDuplicateChecker<M extends DomainModel> implements DuplicateChecker<M> {
 
-    private final PersonRepository repository;
+    private final DuplicationDataFinder<M> repository;
 
-    public void check(Person person) {
-        repository.findName(person.getName())
-                .filter(Predicate.not(person::equals))
+    @Override
+    public void check(M checkModel) {
+        repository.findDuplicationData(checkModel)
+                .filter(Predicate.not(checkModel::equals))
                 .ifPresent(match -> {
                     throw new BusinessFlowException("The name is already registered.", CauseType.DUPLICATE);
                 });

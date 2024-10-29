@@ -1,8 +1,8 @@
-# msa-rms-platform
+# msa-spring-platform
 > サービスに依らないRMSの基盤的な仕組みを提供するリポジトリ
 
 ## repository内の構成
-msa-rms-platformはMavenのマルチモジュールによるmonorepoになっている。このmonorepoの内容は次のとおり。
+msa-spring-platformはMavenのマルチモジュールによるmonorepoになっている。このmonorepoの内容は次のとおり。
 
 |repository|内容|
 |----------|----|

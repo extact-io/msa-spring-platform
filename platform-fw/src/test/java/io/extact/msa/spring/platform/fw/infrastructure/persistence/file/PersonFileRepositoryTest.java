@@ -14,7 +14,7 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.AbstractPersonRepositoryTest;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonRepository;
-import io.extact.msa.spring.platform.fw.stub.server.person.infrastrucure.file.PersonFileRepositoryConfig;
+import io.extact.msa.spring.platform.fw.stub.server.person.infrastructure.file.PersonFileRepositoryConfig;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 @TestExecutionListeners(listeners = { // 親クラスで定義したトランザクションが開始されないように必要なListenerだけ定義

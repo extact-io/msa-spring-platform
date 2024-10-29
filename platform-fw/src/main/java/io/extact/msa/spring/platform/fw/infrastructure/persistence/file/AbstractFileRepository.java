@@ -105,6 +105,11 @@ public abstract class AbstractFileRepository<M extends DomainModel>
     }
 
     @Override
+    public int nextIdentity() {
+        return getNextSequence();
+    }
+
+    @Override
     public Path getStoragePath() {
         return fileOperator.getFilePath();
     }
@@ -112,7 +117,11 @@ public abstract class AbstractFileRepository<M extends DomainModel>
 
     // ----------------------------------------------------- specific methods
 
-    public int getNextSequence() {
+    protected ModelArrayMapper<M> getMapper() {
+        return modelArrayMapper;
+    }
+
+    protected int getNextSequence() {
         return load().stream()
                 .map(items -> Integer.parseInt(items[0]))
                 .collect(Collectors.maxBy(Integer::compareTo))
@@ -120,16 +129,13 @@ public abstract class AbstractFileRepository<M extends DomainModel>
                 + 1;
     }
 
-    public void delete(Integer id) {
+    protected void delete(Integer id) {
         List<String[]> excludedData = load().stream()
                 .filter(items -> Integer.parseInt(items[0]) != id) // numberはpos:0は共通
                 .toList();
         saveAll(excludedData);
     }
 
-    protected ModelArrayMapper<M> getMapper() {
-        return modelArrayMapper;
-    }
 
     protected List<String[]> load() {
         try {
@@ -141,9 +147,7 @@ public abstract class AbstractFileRepository<M extends DomainModel>
         }
     }
 
-    // ----------------------------------------------------- package private methods
-
-    void save(String[] arrayData) {
+    protected void save(String[] arrayData) {
         try {
             fileOperator.save(arrayData);
         } catch (IOException e) {
@@ -151,7 +155,7 @@ public abstract class AbstractFileRepository<M extends DomainModel>
         }
     }
 
-    void saveAll(List<String[]> allData) {
+    protected void saveAll(List<String[]> allData) {
         try {
             fileOperator.saveAll(allData);
         } catch (IOException e) {

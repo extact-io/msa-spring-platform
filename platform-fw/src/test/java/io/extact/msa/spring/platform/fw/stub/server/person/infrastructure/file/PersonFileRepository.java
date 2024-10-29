@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.stub.server.person.infrastrucure.file;
+package io.extact.msa.spring.platform.fw.stub.server.person.infrastructure.file;
 
 import java.util.Optional;
 
@@ -13,8 +13,8 @@ public class PersonFileRepository extends AbstractFileRepository<Person> impleme
 
     static final String FILE_ENTITY = "person";
 
-    public PersonFileRepository(FileOperator fileReadWriter, ModelArrayMapper<Person> converter) {
-        super(fileReadWriter, converter);
+    public PersonFileRepository(FileOperator fileReadWriter, ModelArrayMapper<Person> mapper) {
+        super(fileReadWriter, mapper);
     }
 
     @Override
@@ -23,14 +23,9 @@ public class PersonFileRepository extends AbstractFileRepository<Person> impleme
     }
 
     @Override
-    public int nextIdentity() {
-        return getNextSequence();
-    }
-
-    @Override
-    public Optional<Person> findName(@NonNull String name) {
+    public Optional<Person> findDuplicationData(@NonNull Person checkPerson) {
         return this.findAll().stream()
-                .filter(person -> person.getName().equals(name))
+                .filter(person -> person.getName().equals(checkPerson.getName()))
                 .findFirst();
     }
 }

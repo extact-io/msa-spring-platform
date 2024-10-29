@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.stub.server.person.infrastrucure.file;
+package io.extact.msa.spring.platform.fw.stub.server.person.infrastructure.file;
 
 import java.io.IOException;
 

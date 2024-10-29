@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.stub.server.person.infrastrucure.jpa;
+package io.extact.msa.spring.platform.fw.stub.server.person.infrastructure.jpa;
 
 import java.util.Optional;
 
@@ -6,7 +6,6 @@ import io.extact.msa.spring.platform.fw.infrastructure.ModelEntityMapper;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa.AbstractJpaRepository;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonRepository;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.Person;
-import lombok.NonNull;
 
 public class PersonJpaRepository extends AbstractJpaRepository<Person, PersonEntity>
         implements PersonRepository {
@@ -21,8 +20,8 @@ public class PersonJpaRepository extends AbstractJpaRepository<Person, PersonEnt
     }
 
     @Override
-    public Optional<Person> findName(@NonNull String name) {
-        return springJpa.findByName(name)
+    public Optional<Person> findDuplicationData(Person checkPerson) {
+        return springJpa.findByName(checkPerson.getName())
                 .map(entityMapper::toModel);
     }
 
@@ -47,5 +46,4 @@ public class PersonJpaRepository extends AbstractJpaRepository<Person, PersonEnt
     private boolean isErrorPattern(Person person) {
         return person.getName().equals("error");
     }
-
 }

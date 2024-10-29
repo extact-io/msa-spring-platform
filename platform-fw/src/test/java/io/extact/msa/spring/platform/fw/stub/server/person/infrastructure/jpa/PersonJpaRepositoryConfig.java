@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.stub.server.person.infrastrucure.jpa;
+package io.extact.msa.spring.platform.fw.stub.server.person.infrastructure.jpa;
 
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.context.TestConfiguration;
