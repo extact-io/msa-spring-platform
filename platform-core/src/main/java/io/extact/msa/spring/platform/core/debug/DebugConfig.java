@@ -5,15 +5,11 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
-
-import io.extact.msa.spring.platform.core.CoreConfig;
 
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(ConfigDumpProperties.class)
 @EnableAspectJAutoProxy
-@Import(CoreConfig.class)
 public class DebugConfig {
 
     @Bean

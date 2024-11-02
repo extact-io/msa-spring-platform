@@ -48,9 +48,6 @@ public abstract class AbstractFileRepository<M extends DomainModel>
     public void afterPropertiesSet() throws Exception {
 
         String entity = getEntityName();
-        if (!env.getProperty(ApiType.PROP_NAME.formatted(entity)).equals(ApiType.FILE)) {
-            return;
-        }
 
         lock.lock();
         try {

@@ -19,8 +19,8 @@ import io.extact.msa.spring.platform.fw.infrastructure.persistence.GenericReposi
 import io.extact.msa.spring.platform.fw.stub.server.employee.domain.EmployeeRepository;
 import io.extact.msa.spring.platform.fw.stub.server.employee.domain.model.Employee;
 import io.extact.msa.spring.platform.fw.stub.server.employee.domain.model.EmployeeId;
-import io.extact.msa.spring.platform.fw.stub.server.employee.infrastructure.persistence.file.EmployeeFileRepositoryConfig;
-import io.extact.msa.spring.platform.fw.stub.server.employee.infrastructure.persistence.jpa.EmployeeJpaRepositoryConfig;
+import io.extact.msa.spring.platform.fw.stub.server.employee.infrastructure.file.EmployeeFileRepositoryConfig;
+import io.extact.msa.spring.platform.fw.stub.server.employee.infrastructure.jpa.EmployeeJpaRepositoryConfig;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonRepository;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.Person;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.PersonId;

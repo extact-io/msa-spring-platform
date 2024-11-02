@@ -70,13 +70,4 @@ public interface GenericRepository<M extends DomainModel> {
      * @return 次のID
      */
     int nextIdentity();
-
-    /**
-     * コンフィグ定数
-     */
-    static class ApiType {
-        public static final String PROP_NAME = "rms.persistence.%s.api-type";
-        public static final String FILE = "file";
-        public static final String JPA = "jpa";
-    }
 }

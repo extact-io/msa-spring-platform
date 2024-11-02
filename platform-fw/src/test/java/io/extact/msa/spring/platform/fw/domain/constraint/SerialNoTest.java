@@ -45,7 +45,7 @@ class SerialNoTest {
         ConstraintViolationSetAssert.assertThat(result)
             .hasSize(1)
             .hasViolationOnPath("value")
-            .hasMessageEndingWith("SerialNoCharacter");
+            .hasMessageEndingWith("bv.SerialNoCharacter.message");
 
         // シリアル番号エラー(15文字より大きい)
         NG= new Data("1234567890123456"); // 境界値:NG

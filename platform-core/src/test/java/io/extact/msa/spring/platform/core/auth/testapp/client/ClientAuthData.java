@@ -2,7 +2,7 @@ package io.extact.msa.spring.platform.core.auth.testapp.client;
 
 import java.util.Set;
 
-import io.extact.msa.spring.platform.core.jwt.provider.UserClaims;
+import io.extact.msa.spring.platform.core.jwt.encode.UserClaims;
 
 public record ClientAuthData(
         String userId,

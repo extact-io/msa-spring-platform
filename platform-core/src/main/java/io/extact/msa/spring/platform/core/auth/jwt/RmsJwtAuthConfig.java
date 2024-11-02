@@ -1,5 +1,8 @@
 package io.extact.msa.spring.platform.core.auth.jwt;
 
+import java.security.interfaces.RSAPublicKey;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -11,18 +14,21 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtValidators;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 
 import io.extact.msa.spring.platform.core.auth.anonymous.RmsAnonymousAuthConfig;
-import io.extact.msa.spring.platform.core.jwt.validation.AuthorizeHttpRequestCustomizer;
-import io.extact.msa.spring.platform.core.jwt.validation.AuthorizeRequestConfigure;
-import io.extact.msa.spring.platform.core.jwt.validation.JwtValidationConfig;
+import io.extact.msa.spring.platform.core.auth.configure.AuthorizeHttpRequestCustomizer;
+import io.extact.msa.spring.platform.core.auth.configure.AuthorizeRequestConfigure;
+import io.extact.msa.spring.platform.core.jwt.decode.JwtDecodeConfig;
 
 @Configuration(proxyBeanMethods = false)
-@Import({ JwtValidationConfig.class, RmsAnonymousAuthConfig.class })
+@Import({ RmsAnonymousAuthConfig.class, JwtDecodeConfig.class })
 public class RmsJwtAuthConfig {
 
     @Bean
@@ -70,6 +76,17 @@ public class RmsJwtAuthConfig {
                 .logout(logout -> logout.disable())
                 .requestCache(cache -> cache.disable())
                 .build();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    JwtDecoder jwtDecoder(
+            @Value("${rms.jwt-deencode.public-key}") RSAPublicKey key,
+            @Value("${rms.jwt-deencode.claim.issuer}") String issuer) {
+
+        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withPublicKey(key).build();
+        jwtDecoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(issuer));
+        return jwtDecoder;
     }
 
     @Bean

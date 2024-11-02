@@ -1,0 +1,41 @@
+package io.extact.msa.spring.platform.core.jwt.encode.impl;
+
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.UUID;
+
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTCreator.Builder;
+import com.auth0.jwt.algorithms.Algorithm;
+
+import io.extact.msa.spring.platform.core.jwt.encode.JsonWebTokenGenerator;
+import io.extact.msa.spring.platform.core.jwt.encode.UserClaims;
+import io.extact.msa.spring.platform.core.jwt.encode.config.JwtEncodeProperties;
+
+public class Auth0RsaJwtGenerator implements JsonWebTokenGenerator {
+
+    private JwtEncodeProperties properties;
+
+    public  Auth0RsaJwtGenerator(JwtEncodeProperties properties) {
+        this.properties = properties;
+    }
+
+    @Override
+    public String generateToken(UserClaims userClaims) {
+        Algorithm alg = Algorithm.RSA256(properties.privateKey());
+        return buildClaims(userClaims).sign(alg);
+    }
+
+    private Builder buildClaims(UserClaims userClaims) {
+        // MicroProfile-JWTで必須とされている項目のみ設定
+        Instant now = properties.clock().clock().instant();
+        return JWT.create()
+                .withSubject(userClaims.userId())
+                .withIssuer(properties.claim().issuer())
+                .withIssuedAt(now)
+                .withExpiresAt(properties.claim().expirationTime(now))
+                .withJWTId(UUID.randomUUID().toString())
+                .withClaim("upn", userClaims.principalName())
+                .withClaim("groups", new ArrayList<>(userClaims.groups()));
+    }
+}

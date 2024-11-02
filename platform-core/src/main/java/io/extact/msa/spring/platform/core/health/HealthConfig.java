@@ -1,12 +1,11 @@
 package io.extact.msa.spring.platform.core.health;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableAsync;
 
-import io.extact.msa.spring.platform.core.CoreConfig;
 import io.extact.msa.spring.platform.core.async.AsyncInvoker;
 import io.extact.msa.spring.platform.core.condition.ConditionalOnPropertyList;
 import io.extact.msa.spring.platform.core.health.client.ReadinessProbeRestClientFactory;
@@ -16,10 +15,10 @@ import io.extact.msa.spring.platform.core.health.client.ReadinessProbeRestClient
 @EnableConfigurationProperties(DependentServersHealthIndicator.Properties.class)
 @EnableAsync
 @ConditionalOnPropertyList(key = "rms.health.depend-services")
-@Import(CoreConfig.class)
 public class HealthConfig {
 
     @Bean
+    @ConditionalOnMissingBean(AsyncInvoker.class)
     AsyncInvoker asyncInvoker() {
         return new AsyncInvoker();
     }

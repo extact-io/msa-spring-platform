@@ -28,16 +28,7 @@ management:
           include: "readinessState,db,dependentServers"
       validate-group-membership: false # groupにindicatorが存在しない場合もエラーにしない設定
 
-#rms.persistence.entity: person
-#rms.persistence.person.apiType.: jpa
-#rms.persistence.person.csv.type: temporary
-#rms.persistence.person.csv.permanent.directory: ./data
-#rms.persistence.person.csv.permanent.filename: person.csv
-#rms.persistence.person.csv.temporary.resource: temporary/personTemp.csv
-
 rms:
-  persistence:
-    entity: person
   debug:
     configdump:
       enable: false # change to true in the test class
@@ -51,7 +42,7 @@ rms:
       - http://localhost:7002/actuator/health/readiness
       - http://localhost:7003/actuator/health/readiness
       - http://localhost:7004/actuator/health/readiness
-  jwt-provider:
+  jwt-encode:
     enable: true
     private-key: classpath:/jwt.key
     clock:
@@ -60,7 +51,7 @@ rms:
     claim:
       issuer: JsonWebTokenIntegrationTest
       exp: 60                 # 有効期限（分単位）
-  jwt-validator:
+  jwt-deencode:
     public-key: classpath:/jwt.pub.key
     claim:
-      issuer: ${rms.jwt-provider.claim.issuer}
+      issuer: ${rms.jwt-encode.claim.issuer}

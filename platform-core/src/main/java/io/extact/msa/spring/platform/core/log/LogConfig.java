@@ -1,0 +1,30 @@
+package io.extact.msa.spring.platform.core.log;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import ch.qos.logback.access.tomcat.LogbackValve;
+
+@Configuration(proxyBeanMethods = false)
+public class LogConfig {
+
+    @Bean
+    @ConditionalOnClass(LogbackValve.class)
+    @ConditionalOnWebApplication(type = Type.SERVLET)
+    @ConditionalOnResource(resources = LogbackValve.DEFAULT_FILENAME)
+    TomcatServletWebServerFactory servletContainer() {
+
+        LogbackValve valve = new LogbackValve();
+        valve.setFilename(LogbackValve.DEFAULT_FILENAME);
+
+        TomcatServletWebServerFactory tomcatServletWebServerFactory = new TomcatServletWebServerFactory();
+        tomcatServletWebServerFactory.addContextValves(valve);
+
+        return tomcatServletWebServerFactory;
+    }
+}

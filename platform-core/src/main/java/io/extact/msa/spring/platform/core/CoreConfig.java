@@ -1,28 +1,24 @@
 package io.extact.msa.spring.platform.core;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
-import ch.qos.logback.access.tomcat.LogbackValve;
+import io.extact.msa.spring.platform.core.debug.DebugConfig;
+import io.extact.msa.spring.platform.core.env.EnvConfig;
+import io.extact.msa.spring.platform.core.health.HealthConfig;
+import io.extact.msa.spring.platform.core.log.LogConfig;
 
+/**
+ * coreモジュールでConditionalでON/OFFの機能があるコンポーネントを
+ * まとめて登録するコンフィグ定義。
+ */
 @Configuration(proxyBeanMethods = false)
+@Import({
+    DebugConfig.class,
+    EnvConfig.class,
+    HealthConfig.class,
+    LogConfig.class
+})
 public class CoreConfig {
 
-    @Bean
-    @ConditionalOnClass(LogbackValve.class)
-    @ConditionalOnWebApplication(type = Type.SERVLET)
-    TomcatServletWebServerFactory servletContainer() {
-
-        LogbackValve valve = new LogbackValve();
-        valve.setFilename(LogbackValve.DEFAULT_FILENAME);
-
-        TomcatServletWebServerFactory tomcatServletWebServerFactory = new TomcatServletWebServerFactory();
-        tomcatServletWebServerFactory.addContextValves(valve);
-
-        return tomcatServletWebServerFactory;
-    }
 }

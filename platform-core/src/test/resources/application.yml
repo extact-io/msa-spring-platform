@@ -42,7 +42,7 @@ rms:
       - http://localhost:7002/actuator/health/readiness
       - http://localhost:7003/actuator/health/readiness
       - http://localhost:7004/actuator/health/readiness
-  jwt-provider:
+  jwt-encode:
     enable: true
     private-key: classpath:/jwt.key
     clock:
@@ -51,8 +51,8 @@ rms:
     claim:
       issuer: JsonWebTokenIntegrationTest
       exp: 60                 # 有効期限（分単位）
-  jwt-validator:
+  jwt-deencode:
     public-key: classpath:/jwt.pub.key
     claim:
-      issuer: ${rms.jwt-provider.claim.issuer}
+      issuer: ${rms.jwt-encode.claim.issuer}
 

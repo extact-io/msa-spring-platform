@@ -56,11 +56,12 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import io.extact.msa.spring.platform.core.auth.client.BearerTokenExtractor;
 import io.extact.msa.spring.platform.core.auth.client.BearerTokenRequestInitializer;
 import io.extact.msa.spring.platform.core.auth.client.RmsClientAuthenticationToken;
+import io.extact.msa.spring.platform.core.auth.configure.AuthorizeHttpRequestCustomizer;
 import io.extact.msa.spring.platform.core.auth.jwt.RmsJwtAuthConfig;
-import io.extact.msa.spring.platform.core.jwt.provider.GenerateToken;
-import io.extact.msa.spring.platform.core.jwt.provider.UserClaims;
-import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderConfig;
-import io.extact.msa.spring.platform.core.jwt.validation.AuthorizeHttpRequestCustomizer;
+import io.extact.msa.spring.platform.core.condition.EnableAutoConfigurationWithoutJpa;
+import io.extact.msa.spring.platform.core.jwt.encode.GenerateToken;
+import io.extact.msa.spring.platform.core.jwt.encode.UserClaims;
+import io.extact.msa.spring.platform.core.jwt.encode.config.JwtEncodeConfig;
 import io.extact.msa.spring.platform.fw.domain.constraint.ValidationConfiguration;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
@@ -75,7 +76,6 @@ import io.extact.msa.spring.platform.fw.infrastructure.external.ExceptionErrorHa
 import io.extact.msa.spring.platform.fw.web.ExceptionHandled;
 import io.extact.msa.spring.platform.fw.web.RestControllerConfig;
 import io.extact.msa.spring.platform.fw.web.RestControllerExceptionHandler;
-import io.extact.msa.spring.test.spring.EnableAutoConfigurationWithoutJpa;
 import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
 
 /**
@@ -98,7 +98,7 @@ class ExceptionErrorHandlerIntegrationTest {
     @Import({
             RestControllerConfig.class,
             ValidationConfiguration.class,
-            JwtProviderConfig.class,
+            JwtEncodeConfig.class,
             RmsJwtAuthConfig.class })
     static class TestConfig {
 

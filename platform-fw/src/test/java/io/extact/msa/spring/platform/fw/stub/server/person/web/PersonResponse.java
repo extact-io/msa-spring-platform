@@ -2,7 +2,7 @@ package io.extact.msa.spring.platform.fw.stub.server.person.web;
 
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.Person;
 
-public record PersonResponse(
+record PersonResponse(
         Integer id,
         String name) {
 

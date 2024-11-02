@@ -10,13 +10,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 
-import io.extact.msa.spring.platform.core.CoreConfig;
 import io.extact.msa.spring.platform.core.auth.anonymous.RmsAnonymousAuthConfig;
-import io.extact.msa.spring.platform.core.jwt.validation.AuthorizeHttpRequestCustomizer;
-import io.extact.msa.spring.platform.core.jwt.validation.AuthorizeRequestConfigure;
+import io.extact.msa.spring.platform.core.auth.configure.AuthorizeHttpRequestCustomizer;
+import io.extact.msa.spring.platform.core.auth.configure.AuthorizeRequestConfigure;
 
 @Configuration(proxyBeanMethods = false)
-@Import({ CoreConfig.class, RmsAnonymousAuthConfig.class })
+@Import(RmsAnonymousAuthConfig.class)
 public class RmsHeaderAuthConfig {
 
     @Bean

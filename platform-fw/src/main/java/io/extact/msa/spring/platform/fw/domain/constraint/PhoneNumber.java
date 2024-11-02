@@ -23,7 +23,7 @@ import jakarta.validation.constraints.Size;
 @Constraint(validatedBy = {})
 @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
 @Retention(RUNTIME)
-@Pattern(regexp = "[0-9\\-]*", message = "{message.io.extact.msa.spring.user.domain.constraint.PhoneNumberCharacter}")
+@Pattern(regexp = "[0-9\\-]*", message = "{bv.PhoneNumberCharacter.message}")
 @Size(max = 14)
 public @interface PhoneNumber {
 

@@ -29,7 +29,7 @@ class PhoneNumberTest {
         ConstraintViolationSetAssert.assertThat(result)
             .hasSize(1)
             .hasViolationOnPath("value")
-            .hasMessageEndingWith("PhoneNumberCharacter");
+            .hasMessageEndingWith("bv.PhoneNumberCharacter.message");
 
         // 電話番号(14文字より大きい)
         NG= new Data("123456789012345");

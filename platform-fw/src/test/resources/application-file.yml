@@ -1,7 +1,6 @@
 rms:
   persistence:
     person:
-      api-type: file
       csv:
         type: temporary
         temporary:

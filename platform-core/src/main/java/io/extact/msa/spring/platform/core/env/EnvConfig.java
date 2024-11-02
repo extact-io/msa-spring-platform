@@ -9,11 +9,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 
-import io.extact.msa.spring.platform.core.CoreConfig;
-
 //ProjectInfoAutoConfiguration is required to activate BuildProperies, GitProperties
 @Configuration(proxyBeanMethods = false)
-@Import({ CoreConfig.class, ProjectInfoAutoConfiguration.class })
+@Import(ProjectInfoAutoConfiguration.class)
 public class EnvConfig {
 
     @Bean

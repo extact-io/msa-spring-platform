@@ -25,7 +25,8 @@ import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 import io.extact.msa.spring.platform.core.auth.client.BearerTokenRequestInitializer;
-import io.extact.msa.spring.platform.core.auth.header.LoginUserHeaderRequestInitializer;
+import io.extact.msa.spring.platform.core.auth.client.LoginUserHeaderRequestInitializer;
+import io.extact.msa.spring.platform.core.auth.configure.AuthorizeRequestConfigure;
 import io.extact.msa.spring.platform.core.auth.header.RmsHeaderAuth;
 import io.extact.msa.spring.platform.core.auth.header.RmsHeaderAuthConfig;
 import io.extact.msa.spring.platform.core.auth.jwt.RmsJwtAuth;
@@ -39,9 +40,8 @@ import io.extact.msa.spring.platform.core.auth.testapp.server1.Server1Controller
 import io.extact.msa.spring.platform.core.auth.testapp.server1.Server2Api;
 import io.extact.msa.spring.platform.core.auth.testapp.server2.Server2Assert;
 import io.extact.msa.spring.platform.core.auth.testapp.server2.Server2Controller;
-import io.extact.msa.spring.platform.core.jwt.provider.config.JwtProviderConfig;
-import io.extact.msa.spring.platform.core.jwt.validation.AuthorizeRequestConfigure;
-import io.extact.msa.spring.test.spring.EnableAutoConfigurationWithoutJpa;
+import io.extact.msa.spring.platform.core.condition.EnableAutoConfigurationWithoutJpa;
+import io.extact.msa.spring.platform.core.jwt.encode.config.JwtEncodeConfig;
 import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
 
 /**
@@ -68,7 +68,7 @@ public class AuthIntegratinTest {
     @EnableAutoConfigurationWithoutJpa
     @EnableWebSecurity(debug = true)
     @Import({
-            JwtProviderConfig.class,
+            JwtEncodeConfig.class,
             RmsJwtAuthConfig.class,
             RmsHeaderAuthConfig.class })
     static class TestConfig {
