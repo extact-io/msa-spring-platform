@@ -15,8 +15,7 @@ public class RmsValidationException extends RentalReservationServiceException {
         return validationError;
     }
 
-    @Override
-    public String getMessage() {
-        return super.getMessage() + ":" + validationError.toString();
+    public String getDetailMessage() {
+        return validationError.errorDetail();
     }
 }

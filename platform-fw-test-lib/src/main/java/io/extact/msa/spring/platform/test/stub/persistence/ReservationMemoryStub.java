@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.test.stub;
+package io.extact.msa.spring.platform.test.stub.persistence;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,8 +11,8 @@ import java.util.Optional;
 import io.extact.msa.spring.platform.fw.domain.type.DateTimePeriod;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
-import io.extact.msa.spring.platform.test.stub.dto.AddReservationStubDto;
-import io.extact.msa.spring.platform.test.stub.dto.ReservationStubDto;
+import io.extact.msa.spring.platform.test.stub.persistence.dto.AddReservationStubDto;
+import io.extact.msa.spring.platform.test.stub.persistence.dto.ReservationStubDto;
 
 public class ReservationMemoryStub {
 

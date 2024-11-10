@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.test.stub.dto;
+package io.extact.msa.spring.platform.test.stub.persistence.dto;
 
 import io.extact.msa.spring.platform.fw.domain.model.Transformable;
 import lombok.AllArgsConstructor;

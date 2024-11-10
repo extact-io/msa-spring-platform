@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.test.stub.dto;
+package io.extact.msa.spring.platform.test.stub.persistence.dto;
 
 import java.time.LocalDateTime;
 import java.util.function.Function;

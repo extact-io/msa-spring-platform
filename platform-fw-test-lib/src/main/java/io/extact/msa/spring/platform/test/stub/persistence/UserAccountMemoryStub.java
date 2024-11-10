@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.test.stub;
+package io.extact.msa.spring.platform.test.stub.persistence;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -9,8 +9,8 @@ import java.util.Optional;
 import io.extact.msa.spring.platform.fw.domain.type.UserType;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
-import io.extact.msa.spring.platform.test.stub.dto.AddUserAccountStubDto;
-import io.extact.msa.spring.platform.test.stub.dto.UserAccountStubDto;
+import io.extact.msa.spring.platform.test.stub.persistence.dto.AddUserAccountStubDto;
+import io.extact.msa.spring.platform.test.stub.persistence.dto.UserAccountStubDto;
 
 public class UserAccountMemoryStub {
 

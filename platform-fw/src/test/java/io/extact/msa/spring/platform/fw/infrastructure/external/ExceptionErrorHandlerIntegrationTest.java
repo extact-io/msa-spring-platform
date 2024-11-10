@@ -103,12 +103,12 @@ class ExceptionErrorHandlerIntegrationTest {
     static class TestConfig {
 
         @Bean
-        ExceptionTestController validationTestController() {
+        ExceptionTestController exceptionTestController() {
             return new ExceptionTestController();
         }
 
         @Bean
-        ExceptionTestClient validationTestClient(Environment env) {
+        ExceptionTestClient exceptionTestClient(Environment env) {
 
             RestClient restClient = RestClient.builder()
                     .uriBuilderFactory(new LocalHostUriBuilderFactory(env))

@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.test.stub.dto;
+package io.extact.msa.spring.platform.test.stub.persistence.dto;
 
 import io.extact.msa.spring.platform.fw.domain.model.Transformable;
 import io.extact.msa.spring.platform.fw.domain.type.UserType;
@@ -11,22 +11,11 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor(staticName = "of")
 @Getter @Setter @ToString
-public class UserAccountStubDto implements Transformable {
-    private Integer id;
+public class AddUserAccountStubDto implements Transformable {
     private String loginId;
     private String password;
     private String userName;
     private String phoneNumber;
     private String contact;
     private UserType userType;
-
-    // original getter
-    public String getUserType() {
-        return userType.name();
-    }
-
-    // original setter
-    public void setUserType(String userType) {
-        this.userType = UserType.valueOf(userType);
-    }
 }

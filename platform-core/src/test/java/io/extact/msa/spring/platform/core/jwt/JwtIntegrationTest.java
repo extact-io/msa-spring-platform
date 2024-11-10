@@ -53,6 +53,7 @@ import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import io.extact.msa.spring.platform.core.CoreConfig;
 import io.extact.msa.spring.platform.core.auth.configure.AuthorizeHttpRequestCustomizer;
 import io.extact.msa.spring.platform.core.jwt.decode.JwtDecodeConfig;
 import io.extact.msa.spring.platform.core.jwt.encode.GenerateToken;
@@ -75,7 +76,7 @@ public class JwtIntegrationTest {
     @Configuration(proxyBeanMethods = false)
     @EnableAutoConfiguration
     @EnableWebSecurity(debug = true)
-    @Import({ JwtEncodeConfig.class, JwtDecodeConfig.class })
+    @Import({ JwtEncodeConfig.class, JwtDecodeConfig.class, CoreConfig.class })
     static class TestConfig {
 
         @Bean
