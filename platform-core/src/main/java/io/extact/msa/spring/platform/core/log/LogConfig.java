@@ -1,14 +1,18 @@
 package io.extact.msa.spring.platform.core.log;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.filter.CommonsRequestLoggingFilter;
 
 import ch.qos.logback.access.tomcat.LogbackValve;
+import io.extact.msa.spring.platform.core.utils.LogingUtils;
 
 @Configuration(proxyBeanMethods = false)
 public class LogConfig {
@@ -17,14 +21,24 @@ public class LogConfig {
     @ConditionalOnClass(LogbackValve.class)
     @ConditionalOnWebApplication(type = Type.SERVLET)
     @ConditionalOnResource(resources = LogbackValve.DEFAULT_FILENAME)
-    TomcatServletWebServerFactory servletContainer() {
+    LogbackAccessConfigCustomizer logbackAccessConfigCustomizer() {
+        return new LogbackAccessConfigCustomizer();
+    }
 
-        LogbackValve valve = new LogbackValve();
-        valve.setFilename(LogbackValve.DEFAULT_FILENAME);
+    @Bean
+    @ConditionalOnProperty(prefix = "rms.log.server", name = "enable", havingValue = "true")
+    CommonsRequestLoggingFilter logFilter(LoggingSystem loggingSystem) {
 
-        TomcatServletWebServerFactory tomcatServletWebServerFactory = new TomcatServletWebServerFactory();
-        tomcatServletWebServerFactory.addContextValves(valve);
+        String loggerName = CommonsRequestLoggingFilter.class.getName();
+        LogingUtils.forceLogEnable(loggingSystem, loggerName, LogLevel.DEBUG);
 
-        return tomcatServletWebServerFactory;
+        CommonsRequestLoggingFilter filter = new CommonsRequestLoggingFilter();
+        filter.setIncludeQueryString(true);
+        filter.setIncludePayload(true);
+        filter.setMaxPayloadLength(10000);
+        filter.setIncludeHeaders(true);
+        filter.setAfterMessagePrefix("REQUEST DATA : ");
+
+        return filter;
     }
 }
