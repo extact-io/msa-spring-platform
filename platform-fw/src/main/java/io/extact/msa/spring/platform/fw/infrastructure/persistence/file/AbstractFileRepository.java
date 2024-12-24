@@ -92,7 +92,7 @@ public abstract class AbstractFileRepository<M extends DomainModel>
                 })
                 .toList();
         if (!replaced.get()) {
-            new RmsPersistenceException("target does not exist for id:" + model.getId().id());
+            throw new RmsPersistenceException("target does not exist for id:" + model.getId().id());
         }
         this.saveAll(lines);
     }
@@ -127,9 +127,19 @@ public abstract class AbstractFileRepository<M extends DomainModel>
     }
 
     protected void delete(Integer id) {
+        AtomicBoolean deleted = new AtomicBoolean(false);
         List<String[]> excludedData = load().stream()
-                .filter(items -> Integer.parseInt(items[0]) != id) // numberはpos:0は共通
+                .filter(items -> {
+                    if (Integer.parseInt(items[0]) == id) { // numberはpos:0は共通
+                        deleted.set(true);
+                        return false;
+                    }
+                    return true;
+                })
                 .toList();
+        if (!deleted.get()) {
+            throw new RmsPersistenceException("target does not exist for id:" + id);
+        }
         saveAll(excludedData);
     }
 

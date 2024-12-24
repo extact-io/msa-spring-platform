@@ -70,7 +70,7 @@ public abstract class AbstractJpaRepository<M extends DomainModel, E extends Tab
         E entity = model.transform(modelEntityMapper::toEnity);
         if (!entityManager.contains(entity)
                 && executor.findById(model.getId().id()).isEmpty()) {
-            new RmsPersistenceException("target does not exist for pk:" + entity.getPk());
+            throw new RmsPersistenceException("target does not exist for id:" + entity.getPk());
         }
         executor.saveAndFlush(entity);
     }
@@ -78,6 +78,10 @@ public abstract class AbstractJpaRepository<M extends DomainModel, E extends Tab
     @Override
     public void delete(M model) {
         E entity = model.transform(modelEntityMapper::toEnity);
+        if (!entityManager.contains(entity)
+                && executor.findById(model.getId().id()).isEmpty()) {
+            throw new RmsPersistenceException("target does not exist for id:" + entity.getPk());
+        }
         executor.delete(entity);
         entityManager.flush();
     }

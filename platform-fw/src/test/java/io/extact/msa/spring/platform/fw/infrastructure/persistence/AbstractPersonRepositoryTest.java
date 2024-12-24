@@ -10,6 +10,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.method.MethodValidationException;
 
+import io.extact.msa.spring.platform.fw.exception.RmsPersistenceException;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonRepository;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.Person;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.PersonId;
@@ -69,7 +70,8 @@ public abstract class AbstractPersonRepositoryTest {
 
     @Test
     void testUpdateOnNotFound() {
-        repository().update(Person.reconstruct(999, "UP"));
+        Throwable thrown = catchThrowable(() -> repository().update(Person.reconstruct(999, "UP")));
+        assertThat(thrown).isInstanceOf(RmsPersistenceException.class).hasMessageContaining("id:" + 999);
     }
 
     @Test
@@ -108,7 +110,8 @@ public abstract class AbstractPersonRepositoryTest {
 
     @Test
     void testDeleteOnNotFound() {
-        repository().delete(Person.reconstruct(5, "dummy"));
+        Throwable thrown = catchThrowable(() -> repository().delete(Person.reconstruct(999, "dummy")));
+        assertThat(thrown).isInstanceOf(RmsPersistenceException.class).hasMessageContaining("id:" + 999);
     }
 
 }
