@@ -20,12 +20,16 @@ import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.PersonId
  * スーパークラスで宣言されたテストメソッドでは具象側のテストクラスのトランザクション属性は
  * 無視される仕様となっている。ファイル実装に副作用はないため、このクラスで宣言されたテスト
  * メソッドがロールバックされるように@Transactionalと@Rollbackをつけている。
+ * <p>
+ * ただし、この結果fileのテストでもspring-boot-testの仕組みトランザクションが開始されるよう
+ * になる。このためトランザクションを必要としないサブクラスのテストではトランザクションの開
+ * 始を無効化するかトランザクションをフェイクする必要がある
  *
  * @see https://github.com/spring-projects/spring-framework/issues/12480
  */
 @Transactional
 @Rollback
-public abstract class AbstractPersonRepositoryTest {
+public abstract class PersonRepositoryTest {
 
     protected abstract PersonRepository repository();
 
@@ -114,4 +118,5 @@ public abstract class AbstractPersonRepositoryTest {
         assertThat(thrown).isInstanceOf(RmsPersistenceException.class).hasMessageContaining("id:" + 999);
     }
 
+    protected abstract void testNextIdentity();
 }

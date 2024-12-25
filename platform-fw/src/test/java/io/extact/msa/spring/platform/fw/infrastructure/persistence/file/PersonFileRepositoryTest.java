@@ -1,44 +1,83 @@
 package io.extact.msa.spring.platform.fw.infrastructure.persistence.file;
 
+import static org.assertj.core.api.Assertions.*;
+
+import java.io.IOException;
+
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Scope;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.transaction.PlatformTransactionManager;
 
-import io.extact.msa.spring.platform.fw.infrastructure.persistence.AbstractPersonRepositoryTest;
+import io.extact.msa.spring.platform.fw.infrastructure.persistence.PersonRepositoryTest;
+import io.extact.msa.spring.platform.fw.infrastructure.persistence.file.PersonFileRepositoryTest.TestConfig;
+import io.extact.msa.spring.platform.fw.infrastructure.persistence.file.io.FileOperator;
+import io.extact.msa.spring.platform.fw.infrastructure.persistence.file.io.LoadPathDeriver;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonRepository;
+import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.Person;
+import io.extact.msa.spring.platform.fw.stub.server.person.infrastructure.file.PersonFileRepository;
 import io.extact.msa.spring.platform.fw.stub.server.person.infrastructure.file.PersonFileRepositoryConfig;
+import io.extact.msa.spring.test.spring.NopTransactionManager;
+import io.extact.msa.spring.test.spring.SelfRootContext;
 
-@SpringBootTest(webEnvironment = WebEnvironment.NONE)
-@TestExecutionListeners(listeners = { // 親クラスで定義したトランザクションが開始されないように必要なListenerだけ定義
-        DependencyInjectionTestExecutionListener.class,
-        DirtiesContextTestExecutionListener.class
-})
+@SpringBootTest(classes = { SelfRootContext.class, TestConfig.class }, webEnvironment = WebEnvironment.NONE)
 @ActiveProfiles("file")
-class PersonFileRepositoryTest extends AbstractPersonRepositoryTest {
+class PersonFileRepositoryTest extends PersonRepositoryTest {
 
     private PersonRepository repository;
 
-    @Configuration(proxyBeanMethods = false)
+    @TestConfiguration(proxyBeanMethods = false)
     @Import(PersonFileRepositoryConfig.class)
     static class TestConfig {
+
+        @Bean
+        @Scope("prototype")
+        @Primary
+        PersonRepository prototypePersonFileRepository(Environment env, ModelArrayMapper<Person> mapper)
+                throws IOException {
+            LoadPathDeriver pathDeriver = new LoadPathDeriver(env); // Bean生成の都度ファイルを再配置する
+            FileOperator fileOperator = new FileOperator(pathDeriver.derive(PersonFileRepository.FILE_ENTITY));
+            return new PersonFileRepository(fileOperator, mapper);
+        }
+
+        @Bean
+        PlatformTransactionManager nopTransactionManager() {
+            return new NopTransactionManager();
+        }
     }
 
     // prototypeスコープにして毎回ファイルの初期が行われるようにする
     @BeforeEach
-    void beforeEach(@Autowired @Qualifier("prototype") PersonRepository repository) {
+    void beforeEach(@Autowired PersonRepository repository) {
         this.repository = repository;
     }
 
     @Override
     protected PersonRepository repository() {
         return repository;
+    }
+
+    @Test
+    @Override
+    protected void testNextIdentity() {
+        // when
+        int firstTime = repository.nextIdentity();
+        repository.add(Person.reconstruct(firstTime, "1st"));
+        int secondTime = repository.nextIdentity();
+        repository.add(Person.reconstruct(secondTime, "2nd"));
+        int thirdTime = repository.nextIdentity();
+        repository.add(Person.reconstruct(thirdTime, "3rd"));
+        // then
+        assertThat(secondTime).isEqualTo(firstTime + 1);
+        assertThat(thirdTime).isEqualTo(secondTime + 1);
     }
 }

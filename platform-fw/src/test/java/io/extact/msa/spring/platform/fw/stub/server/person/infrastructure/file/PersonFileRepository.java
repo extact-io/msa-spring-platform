@@ -11,7 +11,7 @@ import lombok.NonNull;
 
 public class PersonFileRepository extends AbstractFileRepository<Person> implements PersonRepository {
 
-    static final String FILE_ENTITY = "person";
+    public static final String FILE_ENTITY = "person";
 
     public PersonFileRepository(FileOperator fileReadWriter, ModelArrayMapper<Person> mapper) {
         super(fileReadWriter, mapper);

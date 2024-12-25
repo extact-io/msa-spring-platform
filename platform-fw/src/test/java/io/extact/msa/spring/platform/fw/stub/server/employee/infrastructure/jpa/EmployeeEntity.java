@@ -6,7 +6,6 @@ import jakarta.persistence.Access;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
-import io.extact.msa.spring.platform.fw.domain.constraint.RmsId;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa.TableEntity;
 import io.extact.msa.spring.platform.fw.stub.server.employee.domain.model.Employee;
 import lombok.AllArgsConstructor;
@@ -24,7 +23,6 @@ import lombok.ToString;
 public class EmployeeEntity implements TableEntity<Employee> {
 
     @Id
-    @RmsId
     private Integer id;
     private String name;
     private String deptName;
