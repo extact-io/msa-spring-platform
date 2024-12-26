@@ -21,22 +21,22 @@ public abstract class AbstractJpaRepository<M extends DomainModel, E extends Tab
 
 
     private final ModelEntityMapper<M, E> modelEntityMapper;
-    private final SpringDataJpaExecutor<E> executor;
+    private final JpaRepositoryDelegator<E> delegator;
     private final Class<E> targetEntityClass;
     private final SequenceGenerator sequenceGenerator;
 
     @Autowired
     private EntityManager entityManager;
 
-    public AbstractJpaRepository(SpringDataJpaExecutor<E> executor, ModelEntityMapper<M, E> modelEntityMapper,
+    public AbstractJpaRepository(JpaRepositoryDelegator<E> delegator, ModelEntityMapper<M, E> modelEntityMapper,
             SequenceGeneratorFactory sequencefactory) {
         this.modelEntityMapper = modelEntityMapper;
-        this.executor = executor;
+        this.delegator = delegator;
         this.targetEntityClass = resolveTargetEntityClass();
         this.sequenceGenerator = sequencefactory.create(targetEntityClass);
     }
 
-    public AbstractJpaRepository(SpringDataJpaExecutor<E> executor, ModelEntityMapper<M, E> modelEntityMapper) {
+    public AbstractJpaRepository(JpaRepositoryDelegator<E> executor, ModelEntityMapper<M, E> modelEntityMapper) {
         this(executor, modelEntityMapper, entityClass -> new DefaultSequenceGenerator(entityClass));
     }
 
@@ -47,14 +47,14 @@ public abstract class AbstractJpaRepository<M extends DomainModel, E extends Tab
 
     @Override
     public Optional<M> find(Identity id) {
-        Optional<E> entity = executor.findById(id.id());
+        Optional<E> entity = delegator.findById(id.id());
         return entity.map(E::toModel);
 
     }
 
     @Override
     public List<M> findAll() {
-        return executor.findAllByOrderByIdAsc().stream()
+        return delegator.findAllByOrderByIdAsc().stream()
                 .map(E::toModel)
                 .toList();
     }
@@ -62,27 +62,27 @@ public abstract class AbstractJpaRepository<M extends DomainModel, E extends Tab
     @Override
     public void add(M model) {
         E entity = model.transform(modelEntityMapper::toEnity);
-        executor.saveAndFlush(entity);
+        delegator.saveAndFlush(entity);
     }
 
     @Override
     public void update(M model) {
         E entity = model.transform(modelEntityMapper::toEnity);
         if (!entityManager.contains(entity)
-                && executor.findById(model.getId().id()).isEmpty()) {
+                && delegator.findById(model.getId().id()).isEmpty()) {
             throw new RmsPersistenceException("target does not exist for id:" + entity.getPk());
         }
-        executor.saveAndFlush(entity);
+        delegator.saveAndFlush(entity);
     }
 
     @Override
     public void delete(M model) {
         E entity = model.transform(modelEntityMapper::toEnity);
         if (!entityManager.contains(entity)
-                && executor.findById(model.getId().id()).isEmpty()) {
+                && delegator.findById(model.getId().id()).isEmpty()) {
             throw new RmsPersistenceException("target does not exist for id:" + entity.getPk());
         }
-        executor.delete(entity);
+        delegator.delete(entity);
         entityManager.flush();
     }
 

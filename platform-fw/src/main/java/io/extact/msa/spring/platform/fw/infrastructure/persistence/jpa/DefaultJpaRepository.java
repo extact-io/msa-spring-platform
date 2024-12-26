@@ -7,12 +7,12 @@ import io.extact.msa.spring.platform.fw.infrastructure.persistence.GenericReposi
 public class DefaultJpaRepository<M extends DomainModel, E extends TableEntity<M>>
     extends AbstractJpaRepository<M, E> implements GenericRepository<M> {
 
-    public DefaultJpaRepository(SpringDataJpaExecutor<E> executor, ModelEntityMapper<M, E> modelEntityMapper,
+    public DefaultJpaRepository(JpaRepositoryDelegator<E> executor, ModelEntityMapper<M, E> modelEntityMapper,
             SequenceGeneratorFactory sequencefactory) {
         super(executor, modelEntityMapper, sequencefactory);
     }
 
-    public DefaultJpaRepository(SpringDataJpaExecutor<E> executor, ModelEntityMapper<M, E> modelEntityMapper) {
+    public DefaultJpaRepository(JpaRepositoryDelegator<E> executor, ModelEntityMapper<M, E> modelEntityMapper) {
         super(executor, modelEntityMapper);
     }
 
