@@ -7,22 +7,22 @@ import org.apache.commons.lang3.Range;
 
 public class DateTimePeriod {
 
-    private LocalDateTime startDateTime;
-    private LocalDateTime endDateTime;
+    private LocalDateTime fromDateTime;
+    private LocalDateTime toDateTime;
     private Range<ChronoLocalDateTime<?>> period;
 
-    public DateTimePeriod(LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        this.startDateTime = startDateTime;
-        this.endDateTime = endDateTime;
-        period = Range.between(startDateTime, endDateTime);
+    public DateTimePeriod(LocalDateTime fromDateTime, LocalDateTime toDateTime) {
+        this.fromDateTime = fromDateTime;
+        this.toDateTime = toDateTime;
+        period = Range.between(fromDateTime, toDateTime);
     }
 
-    public LocalDateTime getStartDateTime() {
-        return this.startDateTime;
+    public LocalDateTime getFromDateTime() {
+        return this.fromDateTime;
     }
 
-    public LocalDateTime getEndDateTime() {
-        return this.endDateTime;
+    public LocalDateTime getToDateTime() {
+        return this.toDateTime;
     }
 
     public boolean isOverlappedBy(DateTimePeriod otherPeriod) {

@@ -15,8 +15,8 @@ import org.springframework.core.env.Environment;
 
 import io.extact.msa.spring.platform.fw.domain.model.DomainModel;
 import io.extact.msa.spring.platform.fw.domain.model.Identity;
+import io.extact.msa.spring.platform.fw.domain.repository.GenericRepository;
 import io.extact.msa.spring.platform.fw.exception.RmsPersistenceException;
-import io.extact.msa.spring.platform.fw.infrastructure.persistence.GenericRepository;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.file.io.FileOperator;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.file.io.IoSystemException;
 

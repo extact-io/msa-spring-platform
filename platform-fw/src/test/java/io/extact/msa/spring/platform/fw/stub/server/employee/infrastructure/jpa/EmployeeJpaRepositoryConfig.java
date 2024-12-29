@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import io.extact.msa.spring.platform.fw.domain.constraint.ValidationConfiguration;
-import io.extact.msa.spring.platform.fw.infrastructure.persistence.GenericRepository;
+import io.extact.msa.spring.platform.fw.domain.repository.GenericRepository;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa.DefaultJpaRepository;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa.DefaultModelEntityMapper;
 import io.extact.msa.spring.platform.fw.stub.server.employee.domain.model.Employee;

@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.infrastructure.persistence;
+package io.extact.msa.spring.platform.fw.domain.repository;
 
 import java.util.List;
 import java.util.Optional;

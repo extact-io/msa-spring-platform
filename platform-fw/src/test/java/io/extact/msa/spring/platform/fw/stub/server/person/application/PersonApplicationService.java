@@ -3,10 +3,10 @@ package io.extact.msa.spring.platform.fw.stub.server.person.application;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.extact.msa.spring.platform.fw.application.ApplicationServiceSupport;
+import io.extact.msa.spring.platform.fw.domain.repository.GenericRepository;
 import io.extact.msa.spring.platform.fw.domain.service.DuplicateChecker;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
-import io.extact.msa.spring.platform.fw.infrastructure.persistence.GenericRepository;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonFactory;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonRepository;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.Person;

@@ -15,7 +15,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.extact.msa.spring.platform.fw.infrastructure.persistence.GenericRepository;
+import io.extact.msa.spring.platform.fw.domain.repository.GenericRepository;
 import io.extact.msa.spring.platform.fw.stub.server.employee.domain.EmployeeRepository;
 import io.extact.msa.spring.platform.fw.stub.server.employee.domain.model.Employee;
 import io.extact.msa.spring.platform.fw.stub.server.employee.domain.model.EmployeeId;

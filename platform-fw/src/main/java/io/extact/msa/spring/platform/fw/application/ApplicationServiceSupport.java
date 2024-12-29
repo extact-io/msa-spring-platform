@@ -7,9 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import io.extact.msa.spring.platform.fw.domain.model.DomainModel;
 import io.extact.msa.spring.platform.fw.domain.model.Identity;
+import io.extact.msa.spring.platform.fw.domain.repository.GenericRepository;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
-import io.extact.msa.spring.platform.fw.infrastructure.persistence.GenericRepository;
 
 /**
  * ApplicaitonServiceの共通的なメソッドを定義したインターフェース。

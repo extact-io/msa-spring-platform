@@ -40,15 +40,15 @@ public @interface BeforeAfterDateTime {
 
     public static class BeforeAfterDateTimeValidator implements ConstraintValidator<BeforeAfterDateTime, BeforeAfterDateTimeValidatable> {
         public boolean isValid(BeforeAfterDateTimeValidatable bean, ConstraintValidatorContext context) {
-            if (bean.fromDateTime() == null || bean.toDateTime() == null) {
+            if (bean.getFromDateTime() == null || bean.getToDateTime() == null) {
                 return true; // チェックしない
             }
-            return bean.fromDateTime().isBefore(bean.toDateTime());
+            return bean.getFromDateTime().isBefore(bean.getToDateTime());
         }
     }
 
     public interface BeforeAfterDateTimeValidatable {
-        public LocalDateTime fromDateTime();
-        public LocalDateTime toDateTime();
+        public LocalDateTime getFromDateTime();
+        public LocalDateTime getToDateTime();
     }
 }
