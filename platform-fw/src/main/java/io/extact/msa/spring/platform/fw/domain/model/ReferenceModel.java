@@ -6,6 +6,9 @@ package io.extact.msa.spring.platform.fw.domain.model;
  * Domainクラスの状態を変更する操作は制限したいため、このインタフェースを設けいている。
  * よって、interface層からDomainクラス本体への参照は禁止とする。
  */
-public interface ReferenceModel extends Identifiable, Transformable {
-
+public interface ReferenceModel extends Identifiable, Transformable, Comparable<ReferenceModel> {
+    @Override
+    default int compareTo(ReferenceModel other) {
+        return getId().compareTo(other.getId());
+    }
 }

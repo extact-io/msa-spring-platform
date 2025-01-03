@@ -72,6 +72,7 @@ public abstract class AbstractFileRepository<M extends DomainModel>
     public List<M> findAll() {
         return load().stream()
                 .map(modelArrayMapper::toModel)
+                .sorted()
                 .toList();
     }
 
