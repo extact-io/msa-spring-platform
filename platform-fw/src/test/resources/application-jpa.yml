@@ -10,3 +10,23 @@ spring:
       ddl-auto: none
     properties:
       javax.persistence.validation.mode: NONE
+
+rms:
+  persistence:
+    sql:
+      init:
+        platform:
+        username:
+        password:
+        continue-on-error:
+        separator:
+        encoding:
+        mode:
+    item:
+      csv:
+        type: temporary
+        temporary:
+          resource: temporary/personTemp.csv
+      sql:
+        schema-locations: classpath:sql/person-schema.sql
+        data-locations: classpath:sql/person-data.sql

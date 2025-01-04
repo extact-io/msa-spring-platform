@@ -1,7 +1,7 @@
 package io.extact.msa.spring.platform.test.stub.persistence.dto;
 
 import io.extact.msa.spring.platform.fw.domain.model.Transformable;
-import io.extact.msa.spring.platform.fw.domain.type.UserType;
+import io.extact.msa.spring.rms.domain.user.model.UserType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

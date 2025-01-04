@@ -14,7 +14,7 @@ import io.extact.msa.spring.platform.fw.domain.model.DomainModel;
 import io.extact.msa.spring.platform.fw.domain.model.Identity;
 import io.extact.msa.spring.platform.fw.domain.repository.GenericRepository;
 import io.extact.msa.spring.platform.fw.exception.RmsPersistenceException;
-import io.extact.msa.spring.platform.fw.infrastructure.ModelEntityMapper;
+import io.extact.msa.spring.platform.fw.infrastructure.persistence.ModelEntityMapper;
 
 public abstract class AbstractJpaRepository<M extends DomainModel, E extends TableEntity<M>>
         implements GenericRepository<M>, EnvironmentAware {

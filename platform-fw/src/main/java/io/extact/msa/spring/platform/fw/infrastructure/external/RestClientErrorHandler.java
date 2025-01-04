@@ -18,7 +18,6 @@ import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseTyp
 import io.extact.msa.spring.platform.fw.exception.RmsServiceUnavailableException;
 import io.extact.msa.spring.platform.fw.exception.RmsSystemException;
 import io.extact.msa.spring.platform.fw.exception.RmsValidationException;
-import io.extact.msa.spring.platform.fw.exception.SecurityConstraintException;
 import io.extact.msa.spring.platform.fw.exception.response.SimpleErrorMessage;
 import io.extact.msa.spring.platform.fw.exception.response.ValidationErrorMessage;
 

@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import io.extact.msa.spring.platform.fw.domain.type.DateTimePeriod;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
 import io.extact.msa.spring.platform.test.stub.persistence.dto.AddReservationStubDto;
 import io.extact.msa.spring.platform.test.stub.persistence.dto.ReservationStubDto;
+import io.extact.msa.spring.rms.domain.reservation.constraint.DateTimePeriod;
 
 public class ReservationMemoryStub {
 

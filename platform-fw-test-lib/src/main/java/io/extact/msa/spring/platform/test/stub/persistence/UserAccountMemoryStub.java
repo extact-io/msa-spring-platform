@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import io.extact.msa.spring.platform.fw.domain.type.UserType;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
 import io.extact.msa.spring.platform.test.stub.persistence.dto.AddUserAccountStubDto;
 import io.extact.msa.spring.platform.test.stub.persistence.dto.UserAccountStubDto;
+import io.extact.msa.spring.rms.domain.user.model.UserType;
 
 public class UserAccountMemoryStub {
 

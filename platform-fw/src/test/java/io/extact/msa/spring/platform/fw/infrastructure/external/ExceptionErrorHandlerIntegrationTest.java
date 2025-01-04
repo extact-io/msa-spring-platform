@@ -1,21 +1,12 @@
 package io.extact.msa.spring.platform.fw.infrastructure.external;
 
-import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.*;
 import static org.assertj.core.api.Assertions.*;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import jakarta.validation.Constraint;
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
-import jakarta.validation.Payload;
 import jakarta.validation.constraints.Size;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -62,17 +53,16 @@ import io.extact.msa.spring.platform.core.condition.EnableAutoConfigurationWitho
 import io.extact.msa.spring.platform.core.jwt.encode.GenerateToken;
 import io.extact.msa.spring.platform.core.jwt.encode.UserClaims;
 import io.extact.msa.spring.platform.core.jwt.encode.config.JwtEncodeConfig;
+import io.extact.msa.spring.platform.fw.domain.constraint.EqualPairFields;
 import io.extact.msa.spring.platform.fw.domain.constraint.ValidationConfiguration;
+import io.extact.msa.spring.platform.fw.domain.constraint.EqualPairFields.EqualPairFieldsValidatable;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
 import io.extact.msa.spring.platform.fw.exception.RmsServiceUnavailableException;
 import io.extact.msa.spring.platform.fw.exception.RmsSystemException;
 import io.extact.msa.spring.platform.fw.exception.RmsValidationException;
-import io.extact.msa.spring.platform.fw.exception.SecurityConstraintException;
 import io.extact.msa.spring.platform.fw.exception.response.ValidationErrorItem;
 import io.extact.msa.spring.platform.fw.exception.response.ValidationErrorMessage;
-import io.extact.msa.spring.platform.fw.infrastructure.external.ExceptionErrorHandlerIntegrationTest.PairFieldsEquals.PairFieldsEqualsValidatable;
-import io.extact.msa.spring.platform.fw.infrastructure.external.ExceptionErrorHandlerIntegrationTest.PairFieldsEquals.PairFieldsEqualsValidator;
 import io.extact.msa.spring.platform.fw.web.ExceptionHandled;
 import io.extact.msa.spring.platform.fw.web.RestControllerConfig;
 import io.extact.msa.spring.platform.fw.web.RestControllerExceptionHandler;
@@ -533,10 +523,10 @@ class ExceptionErrorHandlerIntegrationTest {
         }
     }
 
-    @PairFieldsEquals
+    @EqualPairFields
     static record ParamDto(
             @Size(min = 2) String val1,
-            @Size(min = 2) String val2) implements PairFieldsEqualsValidatable {
+            @Size(min = 2) String val2) implements EqualPairFieldsValidatable {
     }
 
     @RestController
@@ -633,47 +623,6 @@ class ExceptionErrorHandlerIntegrationTest {
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .header("rms-exception", occuredException.getClass().getSimpleName())
                     .body(occuredException.getMessage());
-        }
-    }
-
-    @Documented
-    @Constraint(validatedBy = { PairFieldsEqualsValidator.class })
-    @Target({ TYPE, ANNOTATION_TYPE })
-    @Retention(RUNTIME)
-    public @interface PairFieldsEquals {
-
-        String message() default "{bv.PairFieldsEquals.message}";
-
-        Class<?>[] groups() default {};
-
-        Class<? extends Payload>[] payload() default {};
-
-        String val1() default "input1";
-
-        String val2() default "input2";
-
-        @Target({ TYPE, ANNOTATION_TYPE })
-        @Retention(RUNTIME)
-        @Documented
-        public @interface List {
-            PairFieldsEquals[] value();
-        }
-
-        public static class PairFieldsEqualsValidator
-                implements ConstraintValidator<PairFieldsEquals, PairFieldsEqualsValidatable> {
-
-            public boolean isValid(PairFieldsEqualsValidatable bean, ConstraintValidatorContext context) {
-                if (bean.val1() == null || bean.val2() == null) {
-                    return true; // チェックしない
-                }
-                return bean.val1().equals(bean.val2());
-            }
-        }
-
-        public interface PairFieldsEqualsValidatable {
-            String val1();
-
-            String val2();
         }
     }
 

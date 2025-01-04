@@ -2,7 +2,6 @@ package io.extact.msa.spring.platform.fw.domain.constraint;
 
 import static org.assertj.core.api.Assertions.*;
 
-import java.time.LocalDateTime;
 import java.util.Locale;
 
 import jakarta.validation.constraints.Size;
@@ -17,7 +16,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import io.extact.msa.spring.platform.fw.domain.constraint.BeforeAfterDateTime.BeforeAfterDateTimeValidatable;
+import io.extact.msa.spring.platform.fw.domain.constraint.EqualPairFields.EqualPairFieldsValidatable;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class ApplicationMessageTest {
@@ -31,15 +30,15 @@ class ApplicationMessageTest {
     @Test
     void testDefaultMessage(@Autowired Validator validator, @Autowired MessageSource messageSource) {
 
-        Data NG = new Data(LocalDateTime.now(), LocalDateTime.now().minusHours(1));
+        ParamDto NG = new ParamDto("value1", "value2");
 
         Errors errors = validator.validateObject(NG);
 
         String defaultMessage = errors.getGlobalError().getDefaultMessage();
-        assertThat(defaultMessage).isEqualTo("{1}より過去の{2}は許可されていません");
+        assertThat(defaultMessage).isEqualTo("{1}と{2}を同じ値にしてください");
 
         String resolvedMessage = messageSource.getMessage(errors.getGlobalError(), Locale.getDefault());
-        assertThat(resolvedMessage).isEqualTo("利用開始日時より過去の利用終了日時は許可されていません");
+        assertThat(resolvedMessage).isEqualTo("テスト値1とテスト値2を同じ値にしてください");
     }
 
     @Test
@@ -56,10 +55,10 @@ class ApplicationMessageTest {
         assertThat(resolvedMessage).isEqualTo("名前は1から3のサイズにしてください");
     }
 
-    @BeforeAfterDateTime
-    static record Data(
-            LocalDateTime fromDateTime,
-            LocalDateTime toDateTime) implements BeforeAfterDateTimeValidatable {
+    @EqualPairFields
+    static record ParamDto(
+            @Size(min = 2) String val1,
+            @Size(min = 2) String val2) implements EqualPairFieldsValidatable {
     }
 
     static record Value(

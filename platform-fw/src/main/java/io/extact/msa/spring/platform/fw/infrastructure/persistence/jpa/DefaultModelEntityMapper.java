@@ -3,7 +3,7 @@ package io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa;
 import java.util.function.Function;
 
 import io.extact.msa.spring.platform.fw.domain.model.DomainModel;
-import io.extact.msa.spring.platform.fw.infrastructure.ModelEntityMapper;
+import io.extact.msa.spring.platform.fw.infrastructure.persistence.ModelEntityMapper;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
