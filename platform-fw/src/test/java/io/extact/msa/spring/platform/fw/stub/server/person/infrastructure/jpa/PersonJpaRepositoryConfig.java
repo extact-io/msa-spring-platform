@@ -6,13 +6,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import io.extact.msa.spring.platform.fw.domain.constraint.ValidationConfiguration;
+import io.extact.msa.spring.platform.fw.domain.constraint.ValidationConfig;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa.DefaultModelEntityMapper;
 
 @TestConfiguration(proxyBeanMethods = false)
 @EntityScan(basePackageClasses = PersonEntity.class)
 @EnableJpaRepositories(basePackageClasses = PersonSpringDataJpa.class)
-@Import(ValidationConfiguration.class)
+@Import(ValidationConfig.class)
 public class PersonJpaRepositoryConfig {
 
     @Bean

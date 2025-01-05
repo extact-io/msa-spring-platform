@@ -2,17 +2,17 @@ package io.extact.msa.spring.platform.fw.domain.model;
 
 import jakarta.validation.groups.Default;
 
-public interface ModelValidator<M> {
+public interface ModelValidator {
 
-    void validateModel(M model, Object... groups);
+    void validateModel(DomainModel model, Object... groups);
 
-    default void validateModel(M model) {
+    default void validateModel(DomainModel model) {
         this.validateModel(model, Default.class);
     }
 
-    void validateField(M model, String targetField, Object... groups);
+    void validateField(DomainModel model, String targetField, Object... groups);
 
-    default void validateField(M model, String targetField) {
+    default void validateField(DomainModel model, String targetField) {
         this.validateField(model, targetField, Default.class);
     }
 }

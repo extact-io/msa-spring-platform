@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
 import io.extact.msa.spring.test.assertj.ConstraintViolationSetAssert;
 
-@SpringBootTest(classes = ValidationConfiguration.class, webEnvironment = WebEnvironment.NONE)
+@SpringBootTest(classes = ValidationConfig.class, webEnvironment = WebEnvironment.NONE)
 class RmsIdTest {
 
     @Test

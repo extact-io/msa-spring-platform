@@ -54,7 +54,6 @@ import io.extact.msa.spring.platform.core.jwt.encode.GenerateToken;
 import io.extact.msa.spring.platform.core.jwt.encode.UserClaims;
 import io.extact.msa.spring.platform.core.jwt.encode.config.JwtEncodeConfig;
 import io.extact.msa.spring.platform.fw.domain.constraint.EqualPairFields;
-import io.extact.msa.spring.platform.fw.domain.constraint.ValidationConfiguration;
 import io.extact.msa.spring.platform.fw.domain.constraint.EqualPairFields.EqualPairFieldsValidatable;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
@@ -63,6 +62,7 @@ import io.extact.msa.spring.platform.fw.exception.RmsSystemException;
 import io.extact.msa.spring.platform.fw.exception.RmsValidationException;
 import io.extact.msa.spring.platform.fw.exception.response.ValidationErrorItem;
 import io.extact.msa.spring.platform.fw.exception.response.ValidationErrorMessage;
+import io.extact.msa.spring.platform.fw.infrastructure.framework.validator.ValidatorConfig;
 import io.extact.msa.spring.platform.fw.web.ExceptionHandled;
 import io.extact.msa.spring.platform.fw.web.RestControllerConfig;
 import io.extact.msa.spring.platform.fw.web.RestControllerExceptionHandler;
@@ -87,7 +87,7 @@ class ExceptionErrorHandlerIntegrationTest {
     @EnableWebSecurity(debug = true)
     @Import({
             RestControllerConfig.class,
-            ValidationConfiguration.class,
+            ValidatorConfig.class,
             JwtEncodeConfig.class,
             RmsJwtAuthConfig.class })
     static class TestConfig {
@@ -527,6 +527,16 @@ class ExceptionErrorHandlerIntegrationTest {
     static record ParamDto(
             @Size(min = 2) String val1,
             @Size(min = 2) String val2) implements EqualPairFieldsValidatable {
+
+        @Override
+        public String getPair1() {
+            return val1;
+        }
+
+        @Override
+        public String getPair2() {
+            return val2;
+        }
     }
 
     @RestController

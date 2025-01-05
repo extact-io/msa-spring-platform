@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 
-import io.extact.msa.spring.platform.fw.domain.constraint.ValidationConfiguration;
+import io.extact.msa.spring.platform.fw.domain.constraint.ValidationConfig;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.file.ModelArrayMapper;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.file.io.FileOperator;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.file.io.LoadPathDeriver;
@@ -18,7 +18,7 @@ import io.extact.msa.spring.platform.fw.stub.server.employee.domain.EmployeeRepo
 import io.extact.msa.spring.platform.fw.stub.server.employee.domain.model.Employee;
 
 @TestConfiguration(proxyBeanMethods = false)
-@Import(ValidationConfiguration.class)
+@Import(ValidationConfig.class)
 public class EmployeeFileRepositoryConfig {
 
     @Bean

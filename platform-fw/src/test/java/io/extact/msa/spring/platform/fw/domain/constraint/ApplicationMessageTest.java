@@ -22,7 +22,7 @@ import io.extact.msa.spring.platform.fw.domain.constraint.EqualPairFields.EqualP
 class ApplicationMessageTest {
 
     @Configuration(proxyBeanMethods = false)
-    @Import(ValidationConfiguration.class)
+    @Import(ValidationConfig.class)
     static class TestConfig {
         // NOP
     }
@@ -59,6 +59,16 @@ class ApplicationMessageTest {
     static record ParamDto(
             @Size(min = 2) String val1,
             @Size(min = 2) String val2) implements EqualPairFieldsValidatable {
+
+        @Override
+        public String getPair1() {
+            return val1;
+        }
+
+        @Override
+        public String getPair2() {
+            return val2;
+        }
     }
 
     static record Value(

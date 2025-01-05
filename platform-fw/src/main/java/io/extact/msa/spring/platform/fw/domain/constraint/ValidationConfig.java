@@ -12,11 +12,11 @@ import io.extact.msa.spring.platform.core.message.CustomLocalValidatorFactoryBea
 
 /**
  * BeanValidationのコンフィグレーション。
- * BeanValidationで利用するMessageSourceのBeanは利用者側で登録すること。
+ * BeanValidationで利用するMessageSourceのBeanはspring.messageなどで利用者側で登録すること。
  */
 @Configuration(proxyBeanMethods = false)
 @ImportAutoConfiguration(MessageSourceAutoConfiguration.class)
-public class ValidationConfiguration {
+public class ValidationConfig {
 
     /**
      * Spring配下のメッセージファイル(application-messages.proeperiesなど)をBeanValidationから
