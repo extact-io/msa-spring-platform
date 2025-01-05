@@ -14,7 +14,7 @@ import jakarta.validation.Payload;
 
 @Documented
 @Constraint(validatedBy = { EqualPairFields.PairFieldsEqualsValidator.class })
-@Target({ TYPE, ANNOTATION_TYPE })
+@Target({ TYPE, ANNOTATION_TYPE, METHOD })
 @Retention(RUNTIME)
 public @interface EqualPairFields {
 
@@ -39,16 +39,15 @@ public @interface EqualPairFields {
             implements ConstraintValidator<EqualPairFields, EqualPairFields.EqualPairFieldsValidatable> {
 
         public boolean isValid(EqualPairFields.EqualPairFieldsValidatable bean, ConstraintValidatorContext context) {
-            if (bean.val1() == null || bean.val2() == null) {
+            if (bean.getPair1() == null || bean.getPair2() == null) {
                 return true; // チェックしない
             }
-            return bean.val1().equals(bean.val2());
+            return bean.getPair1().equals(bean.getPair2());
         }
     }
 
     public interface EqualPairFieldsValidatable {
-        String val1();
-
-        String val2();
+        String getPair1();
+        String getPair2();
     }
 }

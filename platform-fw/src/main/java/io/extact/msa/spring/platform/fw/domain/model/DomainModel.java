@@ -1,5 +1,5 @@
 package io.extact.msa.spring.platform.fw.domain.model;
 
-public interface DomainModel extends Verifiable, ValidatorAware, ReferenceModel {
+public interface DomainModel extends ReferenceModel {
 
 }
