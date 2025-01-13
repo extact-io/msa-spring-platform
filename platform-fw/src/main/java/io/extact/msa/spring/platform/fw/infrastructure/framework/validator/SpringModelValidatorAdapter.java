@@ -41,12 +41,25 @@ public class SpringModelValidatorAdapter implements ModelValidator {
                 model,
                 model.getClass().getSimpleName());
 
+        Object fieldValue = getFieldValue(model, targetField);
+
         validator.validateValue(
                 model.getClass(),
                 targetField,
-                getFieldValue(model, targetField),
+                fieldValue,
                 errors,
                 groups);
+
+        // Rootのモデルからみてフィールドにエラーがなく、かつフィールドがDomainModelだった場合は
+        // フィールドオブジェクトに対する@Validによる検証も実施してあげる
+        if (!errors.hasErrors()) {
+            errors = new BeanPropertyBindingResult(
+                    model,
+                    model.getClass().getSimpleName() + "." + targetField);
+            if (fieldValue instanceof DomainModel nestedModel) {
+                validator.validate(nestedModel, errors, groups);
+            }
+        }
 
         if (errors.hasErrors()) {
             ValidationErrorMessage errorMessage = translator.from(

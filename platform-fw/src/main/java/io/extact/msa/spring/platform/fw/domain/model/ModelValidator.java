@@ -3,13 +3,13 @@ package io.extact.msa.spring.platform.fw.domain.model;
 import jakarta.validation.groups.Default;
 
 /**
- * {@link DomainModel}に対するバリデーションインターフェース。
+ * {@link EntityModel}に対するバリデーションインターフェース。
  * バリデーションエラーが発生した場合はエラー情報を設定した{@code} RmsValidationException}を返す。
  */
 public interface ModelValidator {
 
     /**
-     * {@link DomainModel} に定義されている{@code jakarta.validation.Constraint}に対する
+     * {@link EntityModel} に定義されている{@code jakarta.validation.Constraint}に対する
      * バリデーションを実行する。
      *
      * @param model モデル
@@ -18,7 +18,7 @@ public interface ModelValidator {
     void validateModel(DomainModel model, Object... groups);
 
     /**
-     * {@link DomainModel} に定義されている{@code jakarta.validation.Constraint}に対する
+     * {@link EntityModel} に定義されている{@code jakarta.validation.Constraint}に対する
      * バリデーションを実行する。
      *
      * @param model モデル
@@ -28,7 +28,7 @@ public interface ModelValidator {
     }
 
     /**
-     * 引数で指定された{@link DomainModel} のフィールドに対してのみバリデーションを行う。
+     * 引数で指定された{@link EntityModel} のフィールドに対してのみバリデーションを行う。
      *
      * validateFieldはvalidateModelと違い、ネストオブジェクトのフィールドを再帰的にvalidateしていく
      * ことはなしない。よって、フィールドに@Validを付けている場合も、ネストオブジェクトのフィールドも
@@ -50,7 +50,7 @@ public interface ModelValidator {
     void validateField(DomainModel model, String targetField, Object... groups);
 
     /**
-     * 引数で指定された{@link DomainModel} のフィールドに対してのみバリデーションを行う。
+     * 引数で指定された{@link EntityModel} のフィールドに対してのみバリデーションを行う。
      *
      * @param model モデル
      * @param targetField バリデーションするフィールド名

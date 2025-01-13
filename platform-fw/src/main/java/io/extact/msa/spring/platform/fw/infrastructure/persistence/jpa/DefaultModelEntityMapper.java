@@ -2,12 +2,12 @@ package io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa;
 
 import java.util.function.Function;
 
-import io.extact.msa.spring.platform.fw.domain.model.DomainModel;
+import io.extact.msa.spring.platform.fw.domain.model.EntityModel;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.ModelEntityMapper;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class DefaultModelEntityMapper<M extends DomainModel, E extends TableEntity<M>>
+public class DefaultModelEntityMapper<M extends EntityModel, E extends TableEntity<M>>
         implements ModelEntityMapper<M, E> {
 
     private final Function<M, E> modelToEntityMapper;

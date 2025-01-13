@@ -3,7 +3,6 @@ package io.extact.msa.spring.platform.fw.infrastructure.framework;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.List;
 import java.util.Map;
 
 import jakarta.validation.Valid;
@@ -21,20 +20,17 @@ import org.springframework.context.annotation.Import;
 import io.extact.msa.spring.platform.fw.domain.constraint.RmsId;
 import io.extact.msa.spring.platform.fw.domain.constraint.ValidationGroups.Add;
 import io.extact.msa.spring.platform.fw.domain.constraint.ValidationGroups.Update;
-import io.extact.msa.spring.platform.fw.domain.model.DomainModel;
+import io.extact.msa.spring.platform.fw.domain.model.EntityModel;
+import io.extact.msa.spring.platform.fw.domain.model.EntityModelReference;
 import io.extact.msa.spring.platform.fw.domain.model.Identity;
 import io.extact.msa.spring.platform.fw.domain.model.ModelValidator;
-import io.extact.msa.spring.platform.fw.domain.model.ReferenceModel;
+import io.extact.msa.spring.platform.fw.domain.model.ValueModel;
 import io.extact.msa.spring.platform.fw.exception.RmsValidationException;
-import io.extact.msa.spring.platform.fw.exception.response.ValidationErrorItem;
-import io.extact.msa.spring.platform.fw.exception.response.ValidationErrorMessage;
-import io.extact.msa.spring.platform.fw.infrastructure.framework.validator.SpringModelValidatorAdapter;
 import io.extact.msa.spring.platform.fw.infrastructure.framework.validator.ValidatorConfig;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.EqualPairFields;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.EqualPairFields.EqualPairFieldsValidatable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
@@ -48,7 +44,6 @@ class SpringModelValidatorAdapterTest {
     static class TestConfig {
     }
 
-    private static String VALIDATION_ERROR_MESSAGE = "バリデーションエラーが発生しました";
     private static String NOT_NULL_MESSAGE = "null は許可されていません";
     private static String MIN_SIZE_1_MESSAGE = "1 以上の値にしてください";
     private static String MAX_SIZE_10_MESSAGE = "10 以下の値にしてください";
@@ -70,7 +65,7 @@ class SpringModelValidatorAdapterTest {
         // then
         RmsValidationExceptionAsserter.asserterTo(e)
                 .verifyMessageHeader()
-                .verifyItemOf("id", NOT_NULL_MESSAGE);
+                .verifyItemOf("TestModel.id", NOT_NULL_MESSAGE);
 
         // given
         model.id = new TestId(-1);
@@ -81,7 +76,7 @@ class SpringModelValidatorAdapterTest {
         // then
         RmsValidationExceptionAsserter.asserterTo(e)
                 .verifyMessageHeader()
-                .verifyItemOf("id.id", MIN_SIZE_1_MESSAGE);
+                .verifyItemOf("TestModel.id.id", MIN_SIZE_1_MESSAGE);
     }
 
     @Test
@@ -92,25 +87,23 @@ class SpringModelValidatorAdapterTest {
         model.id = null;
         // when
         RmsValidationException e = assertThrows(RmsValidationException.class, () -> {
-            validator.validateField(model, "id"); // ← ここで例外が発生
-            validator.validateField(model, "id.id");
+            validator.validateField(model, "id");
         });
         // then
         RmsValidationExceptionAsserter.asserterTo(e)
                 .verifyMessageHeader()
-                .verifyItemOf("id", NOT_NULL_MESSAGE);
+                .verifyItemOf("TestModel.id", NOT_NULL_MESSAGE);
 
         // given
         model.id = new TestId(-1);
         // when
         e = assertThrows(RmsValidationException.class, () -> {
             validator.validateField(model, "id");
-            validator.validateField(model, "id.id"); // ← ここで例外が発生
         });
         // then
         RmsValidationExceptionAsserter.asserterTo(e)
                 .verifyMessageHeader()
-                .verifyItemOf("id.id", MIN_SIZE_1_MESSAGE);
+                .verifyItemOf("TestModel.id.id", MIN_SIZE_1_MESSAGE);
     }
 
     @Test
@@ -128,7 +121,7 @@ class SpringModelValidatorAdapterTest {
         // then
         RmsValidationExceptionAsserter.asserterTo(e)
                 .verifyMessageHeader()
-                .verifyItemOf("no", MAX_SIZE_10_MESSAGE);
+                .verifyItemOf("TestModel.no", MAX_SIZE_10_MESSAGE);
     }
 
     @Test
@@ -143,7 +136,7 @@ class SpringModelValidatorAdapterTest {
         // then
         RmsValidationExceptionAsserter.asserterTo(e)
                 .verifyMessageHeader()
-                .verifyItemOf("no", MAX_SIZE_10_MESSAGE);
+                .verifyItemOf("TestModel.no", MAX_SIZE_10_MESSAGE);
     }
 
     @Test
@@ -161,7 +154,7 @@ class SpringModelValidatorAdapterTest {
         // then
         RmsValidationExceptionAsserter.asserterTo(e)
                 .verifyMessageHeader()
-                .verifyItemOf("pairFields", NOT_NULL_MESSAGE);
+                .verifyItemOf("TestModel.pairFields", NOT_NULL_MESSAGE);
 
         // given
         model.pairFields = new PairFields("123", "abc");
@@ -172,7 +165,7 @@ class SpringModelValidatorAdapterTest {
         // then
         RmsValidationExceptionAsserter.asserterTo(e)
                 .verifyMessageHeader()
-                .verifyItemOf("pairFields", NOT_EQUALS_FIELD_PAIR);
+                .verifyItemOf("TestModel.pairFields", NOT_EQUALS_FIELD_PAIR);
 
         // given
         model.pairFields = new PairFields(null, "123");
@@ -184,8 +177,8 @@ class SpringModelValidatorAdapterTest {
         RmsValidationExceptionAsserter.asserterTo(e)
                 .verifyMessageHeader()
                 .verifyItemOf(Map.of(
-                        "pairFields", NOT_EQUALS_FIELD_PAIR,
-                        "pairFields.pair1", NOT_NULL_MESSAGE));
+                        "TestModel.pairFields", NOT_EQUALS_FIELD_PAIR,
+                        "TestModel.pairFields.pair1", NOT_NULL_MESSAGE));
 
         // given
         model.pairFields = new PairFields(null, null);
@@ -197,8 +190,8 @@ class SpringModelValidatorAdapterTest {
         RmsValidationExceptionAsserter.asserterTo(e)
                 .verifyMessageHeader()
                 .verifyItemOf(Map.of(
-                        "pairFields.pair1", NOT_NULL_MESSAGE,
-                        "pairFields.pair2", NOT_NULL_MESSAGE));
+                        "TestModel.pairFields.pair1", NOT_NULL_MESSAGE,
+                        "TestModel.pairFields.pair2", NOT_NULL_MESSAGE));
     }
 
 
@@ -210,53 +203,49 @@ class SpringModelValidatorAdapterTest {
         model.pairFields = null;
         // when
         RmsValidationException e = assertThrows(RmsValidationException.class, () -> {
-            validator.validateField(model, "pairFields"); // ← ここで例外が発生
-            validator.validateField(model, "pairFields.pair1");
-            validator.validateField(model, "pairFields.pair2");
+            validator.validateField(model, "pairFields");
         });
         // then
         RmsValidationExceptionAsserter.asserterTo(e)
                 .verifyMessageHeader()
-                .verifyItemOf("pairFields", NOT_NULL_MESSAGE);
+                .verifyItemOf("TestModel.pairFields", NOT_NULL_MESSAGE);
 
         // given
         model.pairFields = new PairFields("123", "abc");
         // when
         e = assertThrows(RmsValidationException.class, () -> {
-            validator.validateField(model, "pairFields"); // ← ここで例外が発生
-            validator.validateField(model, "pairFields.pair1");
-            validator.validateField(model, "pairFields.pair2");
+            validator.validateField(model, "pairFields");
         });
         // then
         RmsValidationExceptionAsserter.asserterTo(e)
                 .verifyMessageHeader()
-                .verifyItemOf("pairFields", NOT_EQUALS_FIELD_PAIR);
+                .verifyItemOf("TestModel.pairFields", NOT_EQUALS_FIELD_PAIR);
 
         // given
         model.pairFields = new PairFields(null, "123");
         // when
         e = assertThrows(RmsValidationException.class, () -> {
-            validator.validateField(model, "pairFields"); // ← ここで例外が発生
-            validator.validateField(model, "pairFields.pair1");
-            validator.validateField(model, "pairFields.pair2");
+            validator.validateField(model, "pairFields");
         });
         // then
         RmsValidationExceptionAsserter.asserterTo(e)
                 .verifyMessageHeader()
-                .verifyItemOf("pairFields", NOT_EQUALS_FIELD_PAIR);
+                .verifyItemOf(Map.of(
+                        "TestModel.pairFields", NOT_EQUALS_FIELD_PAIR,
+                        "TestModel.pairFields.pair1", NOT_NULL_MESSAGE));
 
         // given
         model.pairFields = new PairFields(null, null);
         // when
         e = assertThrows(RmsValidationException.class, () -> {
             validator.validateField(model, "pairFields");
-            validator.validateField(model, "pairFields.pair1"); // ← ここで例外が発生
-            validator.validateField(model, "pairFields.pair2");
         });
         // then
         RmsValidationExceptionAsserter.asserterTo(e)
                 .verifyMessageHeader()
-                .verifyItemOf("pairFields.pair1", NOT_NULL_MESSAGE);
+                .verifyItemOf(Map.of(
+                        "TestModel.pairFields.pair1", NOT_NULL_MESSAGE,
+                        "TestModel.pairFields.pair2", NOT_NULL_MESSAGE));
     }
 
     @Test
@@ -275,7 +264,7 @@ class SpringModelValidatorAdapterTest {
         // then
         RmsValidationExceptionAsserter.asserterTo(e)
                 .verifyMessageHeader()
-                .verifyItemOf("nest", NOT_NULL_MESSAGE);
+                .verifyItemOf("TestModel.nest", NOT_NULL_MESSAGE);
 
         // given
         model.nest = new NestModel(null, null);
@@ -287,8 +276,8 @@ class SpringModelValidatorAdapterTest {
         RmsValidationExceptionAsserter.asserterTo(e)
                 .verifyMessageHeader()
                 .verifyItemOf(Map.of(
-                        "nest.val1", NOT_NULL_MESSAGE,
-                        "nest.val2", NOT_NULL_MESSAGE));
+                        "TestModel.nest.val1", NOT_NULL_MESSAGE,
+                        "TestModel.nest.val2", NOT_NULL_MESSAGE));
     }
 
     @Test
@@ -299,26 +288,24 @@ class SpringModelValidatorAdapterTest {
         // when
         RmsValidationException e = assertThrows(RmsValidationException.class, () -> {
             validator.validateField(model, "nest");
-            validator.validateField(model, "nest.val1");
-            validator.validateField(model, "nest.val2");
         });
         // then
         RmsValidationExceptionAsserter.asserterTo(e)
                 .verifyMessageHeader()
-                .verifyItemOf("nest", NOT_NULL_MESSAGE);
+                .verifyItemOf("TestModel.nest", NOT_NULL_MESSAGE);
 
         // given
         model.nest = new NestModel(null, null);
         // when
         e = assertThrows(RmsValidationException.class, () -> {
             validator.validateField(model, "nest");
-            validator.validateField(model, "nest.val1"); // ← ここで例外が発生
-            validator.validateField(model, "nest.val2");
         });
         // then
         RmsValidationExceptionAsserter.asserterTo(e)
                 .verifyMessageHeader()
-                .verifyItemOf("nest.val1", NOT_NULL_MESSAGE);
+                .verifyItemOf(Map.of(
+                        "TestModel.nest.val1", NOT_NULL_MESSAGE,
+                        "TestModel.nest.val2", NOT_NULL_MESSAGE));
     }
 
 
@@ -393,7 +380,7 @@ class SpringModelValidatorAdapterTest {
         // then
         RmsValidationExceptionAsserter.asserterTo(e)
                 .verifyMessageHeader()
-                .verifyItemOf("id", NOT_NULL_MESSAGE);
+                .verifyItemOf("TestModelForGroup.id", NOT_NULL_MESSAGE);
     }
 
     @Test
@@ -403,12 +390,7 @@ class SpringModelValidatorAdapterTest {
         TestModelForGroup model = new TestModelForGroup();
         // when
         assertThatCode(() -> {
-                validator.validateField(model, "id");           // for Default Group
-                // 値がある場合のみ満たすべき条件があるような場合は
-                // nullのネストプロパティが辿られないようにする
-                if (model.getId() != null) {
-                    validator.validateField(model, "id.id");    // for Default Group
-                }
+            validator.validateField(model, "id"); // for Default Group
         })
         // then
         .doesNotThrowAnyException();
@@ -416,10 +398,7 @@ class SpringModelValidatorAdapterTest {
         // given
         // when
         assertThatCode(() -> {
-            validator.validateField(model, "id", Add.class);        // for Add Group
-            if (model.getId() != null) {
-                validator.validateField(model, "id.id", Add.class); // for Add Group
-            }
+            validator.validateField(model, "id", Add.class); // for Add Group
         })
         // then
         .doesNotThrowAnyException();
@@ -427,15 +406,12 @@ class SpringModelValidatorAdapterTest {
         // given
         // when
         RmsValidationException e = assertThrows(RmsValidationException.class, () -> {
-            validator.validateField(model, "id", Update.class);         // for Update Group
-            if (model.getId() != null) {
-                validator.validateField(model, "id.id", Update.class);  // for Update Group
-            }
+            validator.validateField(model, "id", Update.class); // for Update Group
         });
         // then
         RmsValidationExceptionAsserter.asserterTo(e)
                 .verifyMessageHeader()
-                .verifyItemOf("id", NOT_NULL_MESSAGE);
+                .verifyItemOf("TestModelForGroup.id", NOT_NULL_MESSAGE);
     }
 
     @Test
@@ -471,7 +447,7 @@ class SpringModelValidatorAdapterTest {
         // then
         RmsValidationExceptionAsserter.asserterTo(e)
                 .verifyMessageHeader()
-                .verifyItemOf("no", MAX_SIZE_10_MESSAGE);
+                .verifyItemOf("TestModelForGroup.no", MAX_SIZE_10_MESSAGE);
     }
 
     @Test
@@ -482,7 +458,7 @@ class SpringModelValidatorAdapterTest {
         model.no = 99;
         // when
         assertThatCode(() -> {
-                validator.validateField(model, "no"); // for Default Group
+            validator.validateField(model, "no"); // for Default Group
         })
         // then
         .doesNotThrowAnyException();
@@ -504,7 +480,7 @@ class SpringModelValidatorAdapterTest {
         // then
         RmsValidationExceptionAsserter.asserterTo(e)
                 .verifyMessageHeader()
-                .verifyItemOf("no", MAX_SIZE_10_MESSAGE);
+                .verifyItemOf("TestModelForGroup.no", MAX_SIZE_10_MESSAGE);
     }
 
     @Test
@@ -540,7 +516,7 @@ class SpringModelValidatorAdapterTest {
         // then
         RmsValidationExceptionAsserter.asserterTo(e)
                 .verifyMessageHeader()
-                .verifyItemOf("nest.val2", NOT_NULL_MESSAGE);
+                .verifyItemOf("TestModelForGroup.nest.val2", NOT_NULL_MESSAGE);
     }
 
 
@@ -552,9 +528,7 @@ class SpringModelValidatorAdapterTest {
         model.nest = new NestModelForGroup("val1", null);
         // when
         assertThatCode(() -> {
-                validator.validateField(model, "nest");         // for Default Group
-                validator.validateField(model, "nest.val1");    // for Default Group
-                validator.validateField(model, "nest.val2");    // for Default Group
+            validator.validateField(model, "nest"); // for Default Group
         })
         // then
         .doesNotThrowAnyException();
@@ -562,9 +536,7 @@ class SpringModelValidatorAdapterTest {
         // given
         // when
         assertThatCode(() -> {
-            validator.validateField(model, "nest", Add.class);      // for Add Group
-            validator.validateField(model, "nest.val1", Add.class); // for Add Group
-            validator.validateField(model, "nest.val2", Add.class); // for Add Group
+            validator.validateField(model, "nest", Add.class); // for Add Group
         })
         // then
         .doesNotThrowAnyException();
@@ -573,14 +545,12 @@ class SpringModelValidatorAdapterTest {
         model.pairFields = null; // updateでエラーにならいことの確認
         // when
         RmsValidationException e = assertThrows(RmsValidationException.class, () -> {
-            validator.validateField(model, "nest", Update.class);      // for Update Group
-            validator.validateField(model, "nest.val1", Update.class); // for Update Group
-            validator.validateField(model, "nest.val2", Update.class); // for Update Group
+            validator.validateField(model, "nest", Update.class); // for Update Group
         });
         // then
         RmsValidationExceptionAsserter.asserterTo(e)
                 .verifyMessageHeader()
-                .verifyItemOf("nest.val2", NOT_NULL_MESSAGE);
+                .verifyItemOf("TestModelForGroup.nest.val2", NOT_NULL_MESSAGE);
     }
 
 
@@ -599,85 +569,54 @@ class SpringModelValidatorAdapterTest {
         assertThat(e).hasMessageContaining("unknownField");
     }
 
-    @RequiredArgsConstructor
-    static class RmsValidationExceptionAsserter {
-
-        private final RmsValidationException e;
-
-        static RmsValidationExceptionAsserter asserterTo(RmsValidationException e) {
-            return new RmsValidationExceptionAsserter(e);
-        }
-
-        RmsValidationExceptionAsserter verifyMessageHeader() {
-            assertThat(e).hasMessageContaining(VALIDATION_ERROR_MESSAGE);
-
-            ValidationErrorMessage message = e.getErrorMessage();
-            assertThat(message.errorReason()).isEqualTo(SpringModelValidatorAdapter.class.getSimpleName());
-            assertThat(message.errorMessage()).isEqualTo(VALIDATION_ERROR_MESSAGE);
-
-            return this;
-        }
-
-        RmsValidationExceptionAsserter verifyItemOf(String fieldName, String errorMessage) {
-            ValidationErrorMessage message = e.getErrorMessage();
-            List<ValidationErrorItem> items = message.validationErrorItems();
-            assertThat(items)
-                    .containsExactlyInAnyOrderElementsOf(
-                            List.of(new ValidationErrorItem(fieldName, errorMessage)));
-            return this;
-        }
-
-        RmsValidationExceptionAsserter verifyItemOf(Map<String, String> expectedMap) {
-
-            List<ValidationErrorItem> expectItems = expectedMap.entrySet().stream()
-                    .map(entry -> new ValidationErrorItem(entry.getKey(), entry.getValue()))
-                    .toList();
-
-            ValidationErrorMessage message = e.getErrorMessage();
-            List<ValidationErrorItem> items = message.validationErrorItems();
-
-            assertThat(items).containsExactlyInAnyOrderElementsOf(expectItems);
-
-            return this;
-        }
-    }
-
-
     // ---------------------------------------------------------------------------- Model clssses for Test
 
-    @Value
-    static class PairFields implements EqualPairFieldsValidatable {
-        @Getter
-        private final @NotNull String pair1;
-        @Getter
-        private final @NotNull String pair2;
-    }
-
-    static record TestId(
-            @RmsId int id) implements Identity {
-    }
-
     @AllArgsConstructor
-    static class TestModel implements TestModelReference, DomainModel {
+    static class TestModel implements TestModelReference, EntityModel {
 
         TestModel() {
         }
 
         @Getter
-        private @NotNull @Valid TestId id;
+        @NotNull
+        @Valid
+        private TestId id;
+
         @Getter
-        private @Max(10) int no;
+        @Max(10)
+        private int no;
+
         @Getter
-        private @NotNull @EqualPairFields @Valid PairFields pairFields;
+        @NotNull
+        @Valid
+        private PairFields pairFields;
+
         @Getter
-        private @NotNull @Valid NestModel nest;
+        @NotNull
+        @Valid
+        private NestModel nest;
 
         @Override
         public void configureValidator(ModelValidator validator) {
         }
     }
 
-    interface TestModelReference extends ReferenceModel {
+    static record TestId(
+            @RmsId int id) implements Identity {
+    }
+
+    @Value
+    @EqualPairFields
+    static class PairFields implements EqualPairFieldsValidatable, ValueModel {
+        @Getter
+        @NotNull
+        private final String pair1;
+        @Getter
+        @NotNull
+        private final String pair2;
+    }
+
+    interface TestModelReference extends EntityModelReference {
         TestId getId();
 
         int getNo();
@@ -688,23 +627,19 @@ class SpringModelValidatorAdapterTest {
     }
 
     @AllArgsConstructor
-    static class NestModel implements NestModelReference {
+    static class NestModel implements ValueModel {
         @Getter
-        private @NotNull String val1;
+        @NotNull
+        private String val1;
         @Getter
-        private @NotNull String val2;
-    }
-
-    interface NestModelReference {
-        String getVal1();
-
-        String getVal2();
+        @NotNull
+        private String val2;
     }
 
     // ---------------------------------------------------------------------------- Model for Group clssses Test
 
     @AllArgsConstructor
-    static class TestModelForGroup implements DomainModel {
+    static class TestModelForGroup implements EntityModel {
 
         TestModelForGroup() {
         }
@@ -720,7 +655,7 @@ class SpringModelValidatorAdapterTest {
 
         @Getter
         @NotNull
-        @EqualPairFields
+        //@EqualPairFields
         @Valid
         private PairFields pairFields;
 
@@ -736,7 +671,7 @@ class SpringModelValidatorAdapterTest {
 
 
     @AllArgsConstructor
-    static class NestModelForGroup implements NestModelReference {
+    static class NestModelForGroup implements ValueModel {
         @Getter
         @NotNull
         private String val1;

@@ -2,7 +2,7 @@ package io.extact.msa.spring.platform.fw.stub.server.person.domain.model;
 
 import jakarta.validation.constraints.NotNull;
 
-import io.extact.msa.spring.platform.fw.domain.model.DomainModel;
+import io.extact.msa.spring.platform.fw.domain.model.EntityModel;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.constraint.PersonName;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @EqualsAndHashCode(of = "id")
 @Getter
-public class Person implements DomainModel {
+public class Person implements EntityModel {
 
     private final @NotNull PersonId id;
     private @PersonName String name;

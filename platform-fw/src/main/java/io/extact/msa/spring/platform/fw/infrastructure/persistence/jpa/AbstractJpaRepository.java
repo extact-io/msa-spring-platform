@@ -10,14 +10,15 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.env.Environment;
 
-import io.extact.msa.spring.platform.fw.domain.model.DomainModel;
+import io.extact.msa.spring.platform.fw.domain.model.EntityModel;
 import io.extact.msa.spring.platform.fw.domain.model.Identity;
 import io.extact.msa.spring.platform.fw.domain.repository.GenericRepository;
+import io.extact.msa.spring.platform.fw.domain.service.IdentityGenerator;
 import io.extact.msa.spring.platform.fw.exception.RmsPersistenceException;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.ModelEntityMapper;
 
-public abstract class AbstractJpaRepository<M extends DomainModel, E extends TableEntity<M>>
-        implements GenericRepository<M>, EnvironmentAware {
+public abstract class AbstractJpaRepository<M extends EntityModel, E extends TableEntity<M>>
+        implements GenericRepository<M>, IdentityGenerator, EnvironmentAware {
 
 
     private final ModelEntityMapper<M, E> modelEntityMapper;

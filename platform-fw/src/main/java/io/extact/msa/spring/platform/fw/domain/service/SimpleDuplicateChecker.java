@@ -2,13 +2,13 @@ package io.extact.msa.spring.platform.fw.domain.service;
 
 import java.util.function.Predicate;
 
-import io.extact.msa.spring.platform.fw.domain.model.DomainModel;
+import io.extact.msa.spring.platform.fw.domain.model.EntityModel;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class SimpleDuplicateChecker<M extends DomainModel> implements DuplicateChecker<M> {
+public class SimpleDuplicateChecker<M extends EntityModel> implements DuplicateChecker<M> {
 
     private final DuplicationDataFinder<M> repository;
 

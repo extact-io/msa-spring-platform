@@ -1,6 +1,6 @@
 package io.extact.msa.spring.platform.fw.stub.client.person.domain.model;
 
-import io.extact.msa.spring.platform.fw.domain.model.DomainModel;
+import io.extact.msa.spring.platform.fw.domain.model.EntityModel;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.constraint.PersonName;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,7 @@ import lombok.NonNull;
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @EqualsAndHashCode(of = "id")
 @Getter
-public class TestPerson implements DomainModel {
+public class TestPerson implements EntityModel {
 
     private final @NonNull TestPersonId id;
     private @NonNull @PersonName String name;

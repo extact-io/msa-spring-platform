@@ -9,7 +9,7 @@ spring:
   main:
     banner-mode: off
   messages:
-    basename: application-messages,test-application-messages
+    basename: fw-messages,test-fw-messages
     encoding: UTF-8
 
 management:

@@ -1,8 +1,8 @@
 package io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa;
 
-import io.extact.msa.spring.platform.fw.domain.model.DomainModel;
+import io.extact.msa.spring.platform.fw.domain.model.EntityModel;
 
-public interface TableEntity<M extends DomainModel> {
+public interface TableEntity<M extends EntityModel> {
 
     default Integer getPk() {
         return getId();

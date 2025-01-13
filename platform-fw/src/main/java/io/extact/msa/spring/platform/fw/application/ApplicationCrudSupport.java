@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import io.extact.msa.spring.platform.fw.domain.model.DomainModel;
+import io.extact.msa.spring.platform.fw.domain.model.EntityModel;
 import io.extact.msa.spring.platform.fw.domain.model.Identity;
 import io.extact.msa.spring.platform.fw.domain.repository.GenericRepository;
 import io.extact.msa.spring.platform.fw.domain.service.DuplicateChecker;
@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
  * @param <M> Modelクラス
  */
 @RequiredArgsConstructor
-public class ApplicationCrudSupport<M extends DomainModel> {
+public class ApplicationCrudSupport<M extends EntityModel> {
 
     private final DuplicateChecker<M> duplicateChecker;
     private final GenericRepository<M> repository;

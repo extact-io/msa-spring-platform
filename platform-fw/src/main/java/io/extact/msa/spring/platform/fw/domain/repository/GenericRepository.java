@@ -11,7 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import io.extact.msa.spring.platform.fw.domain.constraint.ValidationGroups.Add;
 import io.extact.msa.spring.platform.fw.domain.constraint.ValidationGroups.Delete;
 import io.extact.msa.spring.platform.fw.domain.constraint.ValidationGroups.Update;
-import io.extact.msa.spring.platform.fw.domain.model.DomainModel;
+import io.extact.msa.spring.platform.fw.domain.model.EntityModel;
 import io.extact.msa.spring.platform.fw.domain.model.Identity;
 
 /**
@@ -20,7 +20,7 @@ import io.extact.msa.spring.platform.fw.domain.model.Identity;
  * @param <M> ドメインモデルの型
  */
 @Validated // メソッドバリデーションを有効にするための@Validated
-public interface GenericRepository<M extends DomainModel> {
+public interface GenericRepository<M extends EntityModel> {
 
     /**
      * IDのエンティティを取得する。
@@ -63,11 +63,4 @@ public interface GenericRepository<M extends DomainModel> {
      */
     @Validated({ Default.class, Delete.class })
     void delete(@Valid M model);
-
-    /**
-     * 次のIDを発番する。
-     *
-     * @return 次のID
-     */
-    int nextIdentity();
 }

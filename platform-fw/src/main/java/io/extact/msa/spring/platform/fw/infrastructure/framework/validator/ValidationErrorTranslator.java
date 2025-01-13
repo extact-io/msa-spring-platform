@@ -64,7 +64,6 @@ public class ValidationErrorTranslator {
         return from(bindingResult, errorReason, defaultLocale());
     }
 
-
     // @Validated以外(@NotNullなど)の入力チェックエラー
     public ValidationErrorMessage from(HandlerMethodValidationException e, Locale locale) {
 
@@ -109,7 +108,6 @@ public class ValidationErrorTranslator {
                 List.of(errorItem));
     }
 
-
     // -------------------------------------------------------- private methods
 
     private String parameterErrorMessage(Locale locale) {
@@ -121,7 +119,9 @@ public class ValidationErrorTranslator {
         // MessageSourceResolvable#getArgumentsの0番目はエラーとなったフィールド固定
         // https://terasolunaorg.github.io/guideline/current/ja/ArchitectureInDetail/WebApplicationDetail/Validation.html#application-messages-properties
         return switch (errorMessage.getArguments()[0]) {
-            case MessageSourceResolvable fieldMessage -> messageSource.getMessage(fieldMessage, locale);
+            case MessageSourceResolvable fieldMessage -> messageSource.getMessage(
+                    new FirstCodeAsDefaultMessageResolver(fieldMessage),
+                    locale);
             default -> "unknown field...";
         };
     }
@@ -158,5 +158,29 @@ public class ValidationErrorTranslator {
             return null;
         }
         return array[array.length - 1];
+    }
+
+    @RequiredArgsConstructor
+    static class FirstCodeAsDefaultMessageResolver implements MessageSourceResolvable {
+
+        private final MessageSourceResolvable original;
+
+        @Override
+        public String[] getCodes() {
+            return original.getCodes();
+        }
+
+        @Override
+        public Object[] getArguments() {
+            return original.getArguments();
+        }
+
+        @Override
+        public String getDefaultMessage() {
+            String[] codes = getCodes();
+            return codes != null && codes[0] != null
+                    ? codes[0] // フィールド名のpathが一番長いものをデフォルトにする
+                    : original.getDefaultMessage();
+        }
     }
 }

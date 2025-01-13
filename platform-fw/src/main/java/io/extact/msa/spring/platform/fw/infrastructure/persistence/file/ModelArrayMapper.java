@@ -1,8 +1,8 @@
 package io.extact.msa.spring.platform.fw.infrastructure.persistence.file;
 
-import io.extact.msa.spring.platform.fw.domain.model.DomainModel;
+import io.extact.msa.spring.platform.fw.domain.model.EntityModel;
 
-public interface ModelArrayMapper<M extends DomainModel> {
+public interface ModelArrayMapper<M extends EntityModel> {
 
     M toModel(String[] attributes);
 

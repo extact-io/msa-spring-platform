@@ -13,15 +13,16 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 
-import io.extact.msa.spring.platform.fw.domain.model.DomainModel;
+import io.extact.msa.spring.platform.fw.domain.model.EntityModel;
 import io.extact.msa.spring.platform.fw.domain.model.Identity;
 import io.extact.msa.spring.platform.fw.domain.repository.GenericRepository;
+import io.extact.msa.spring.platform.fw.domain.service.IdentityGenerator;
 import io.extact.msa.spring.platform.fw.exception.RmsPersistenceException;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.file.io.FileOperator;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.file.io.IoSystemException;
 
-public abstract class AbstractFileRepository<M extends DomainModel>
-        implements EnvironmentAware, InitializingBean, GenericRepository<M>, FileRepository {
+public abstract class AbstractFileRepository<M extends EntityModel>
+        implements GenericRepository<M>, IdentityGenerator, FileRepository, EnvironmentAware, InitializingBean {
 
     private final ReentrantLock lock = new ReentrantLock();
 
