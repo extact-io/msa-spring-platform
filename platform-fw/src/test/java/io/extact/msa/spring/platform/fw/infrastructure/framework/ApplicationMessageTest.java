@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.domain.constraint;
+package io.extact.msa.spring.platform.fw.infrastructure.framework;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -16,7 +16,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import io.extact.msa.spring.platform.fw.domain.constraint.EqualPairFields.EqualPairFieldsValidatable;
+import io.extact.msa.spring.platform.fw.domain.constraint.ValidationConfig;
+import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.EqualPairFields;
+import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.EqualPairFields.EqualPairFieldsValidatable;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class ApplicationMessageTest {

@@ -53,8 +53,6 @@ import io.extact.msa.spring.platform.core.condition.EnableAutoConfigurationWitho
 import io.extact.msa.spring.platform.core.jwt.encode.GenerateToken;
 import io.extact.msa.spring.platform.core.jwt.encode.UserClaims;
 import io.extact.msa.spring.platform.core.jwt.encode.config.JwtEncodeConfig;
-import io.extact.msa.spring.platform.fw.domain.constraint.EqualPairFields;
-import io.extact.msa.spring.platform.fw.domain.constraint.EqualPairFields.EqualPairFieldsValidatable;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
 import io.extact.msa.spring.platform.fw.exception.RmsServiceUnavailableException;
@@ -63,6 +61,8 @@ import io.extact.msa.spring.platform.fw.exception.RmsValidationException;
 import io.extact.msa.spring.platform.fw.exception.response.ValidationErrorItem;
 import io.extact.msa.spring.platform.fw.exception.response.ValidationErrorMessage;
 import io.extact.msa.spring.platform.fw.infrastructure.framework.validator.ValidatorConfig;
+import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.EqualPairFields;
+import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.EqualPairFields.EqualPairFieldsValidatable;
 import io.extact.msa.spring.platform.fw.web.ExceptionHandled;
 import io.extact.msa.spring.platform.fw.web.RestControllerConfig;
 import io.extact.msa.spring.platform.fw.web.RestControllerExceptionHandler;
@@ -76,7 +76,7 @@ import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
 @TestPropertySource(properties = "spring.main.banner-mode=off")
 class ExceptionErrorHandlerIntegrationTest {
 
-    private static final String PARAMETER_ERROR_MESSAGE = "ex.ParameterErrorException.message";
+    private static final String PARAMETER_ERROR_MESSAGE = "ex.ValidationErrorException.message";
     private static final String CONVERT_ERROR_MESSAGE = "ex.TypeMismatchException.massage";
 
     @Autowired

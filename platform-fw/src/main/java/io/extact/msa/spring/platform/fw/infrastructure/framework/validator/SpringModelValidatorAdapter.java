@@ -1,6 +1,5 @@
 package io.extact.msa.spring.platform.fw.infrastructure.framework.validator;
 
-
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -8,6 +7,8 @@ import org.springframework.validation.SmartValidator;
 
 import io.extact.msa.spring.platform.fw.domain.model.DomainModel;
 import io.extact.msa.spring.platform.fw.domain.model.ModelValidator;
+import io.extact.msa.spring.platform.fw.exception.RmsValidationException;
+import io.extact.msa.spring.platform.fw.exception.response.ValidationErrorMessage;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -26,7 +27,10 @@ public class SpringModelValidatorAdapter implements ModelValidator {
         validator.validate(model, errors, groups);
 
         if (errors.hasErrors()) {
-            System.out.println("★：" + errors.toString()); // TODO ここをTranslatorに置き換える
+            ValidationErrorMessage errorMessage = translator.from(
+                    errors,
+                    SpringModelValidatorAdapter.class.getSimpleName());
+            throw new RmsValidationException(errorMessage);
         }
     }
 
@@ -45,11 +49,15 @@ public class SpringModelValidatorAdapter implements ModelValidator {
                 groups);
 
         if (errors.hasErrors()) {
-            System.out.println("★：" + errors.toString());
+            ValidationErrorMessage errorMessage = translator.from(
+                    errors,
+                    SpringModelValidatorAdapter.class.getSimpleName());
+            throw new RmsValidationException(errorMessage);
         }
     }
 
     public Object getFieldValue(Object target, String field) {
+        // 可能なアクセスパスはJava Bean、つまりpublicなgetterアクセスのみ
         PropertyAccessor accessor = PropertyAccessorFactory.forBeanPropertyAccess(target);
         return accessor.getPropertyValue(field);
     }

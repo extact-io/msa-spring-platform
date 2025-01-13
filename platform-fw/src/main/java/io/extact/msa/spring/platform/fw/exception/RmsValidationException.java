@@ -6,6 +6,11 @@ public class RmsValidationException extends RentalReservationServiceException {
 
     private ValidationErrorMessage validationError;
 
+    public RmsValidationException(ValidationErrorMessage validationError) {
+        super(validationError.errorMessage());
+        this.validationError = validationError;
+    }
+
     public RmsValidationException(String message, ValidationErrorMessage validationError) {
         super(message);
         this.validationError = validationError;

@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.domain.constraint;
+package io.extact.msa.spring.platform.fw.stub.server.person.domain.model;
 
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.*;
@@ -42,8 +42,11 @@ public @interface EqualPairFields {
             if (bean == null) {
                 return true;
             }
-            if (bean.getPair1() == null || bean.getPair2() == null) {
-                return true; // チェックしない
+            if (bean.getPair1() == null && bean.getPair2() == null) {
+                return true;
+            }
+            if (bean.getPair1() == null && bean.getPair2() != null) {
+                return false;
             }
             return bean.getPair1().equals(bean.getPair2());
         }
