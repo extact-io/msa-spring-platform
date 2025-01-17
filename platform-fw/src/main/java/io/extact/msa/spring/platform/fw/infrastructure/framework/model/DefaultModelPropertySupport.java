@@ -5,22 +5,22 @@ import java.util.function.Supplier;
 
 import org.springframework.util.ReflectionUtils;
 
-import io.extact.msa.spring.platform.fw.domain.model.DomainModel;
+import io.extact.msa.spring.platform.fw.domain.model.EntityModel;
 import io.extact.msa.spring.platform.fw.domain.model.ModelPropertySupport;
 import io.extact.msa.spring.platform.fw.domain.model.ModelValidator;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class DefaultModelSetterSupport<M extends DomainModel> implements ModelPropertySupport {
+public class DefaultModelPropertySupport implements ModelPropertySupport {
 
-    private final Supplier<M> creator;
+    private final Supplier<EntityModel> testModelCreator;
     private final ModelValidator validator;
-    private final M updateModel;
+    private final EntityModel updateModel;
 
     public void setPropertyWithValidation(String propertyName, Object newValue) {
 
         // 入力値のチェック
-        M testModel = creator.get();
+        EntityModel testModel = testModelCreator.get();
         setFieldValue(testModel, propertyName, newValue);
         validator.validateField(testModel, propertyName);
 

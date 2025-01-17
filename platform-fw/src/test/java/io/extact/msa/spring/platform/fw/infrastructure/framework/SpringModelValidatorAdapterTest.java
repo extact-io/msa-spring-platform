@@ -597,7 +597,7 @@ class SpringModelValidatorAdapterTest {
         private NestModel nest;
 
         @Override
-        public void configureValidator(ModelValidator validator) {
+        public void configureSupport(ModelValidator validator) {
         }
     }
 
@@ -665,7 +665,7 @@ class SpringModelValidatorAdapterTest {
         private NestModelForGroup nest;
 
         @Override
-        public void configureValidator(ModelValidator validator) {
+        public void configureSupport(ModelValidator validator) {
         }
     }
 
