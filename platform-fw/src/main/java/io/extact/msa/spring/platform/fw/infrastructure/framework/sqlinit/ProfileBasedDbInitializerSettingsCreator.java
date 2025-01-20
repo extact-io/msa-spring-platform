@@ -7,7 +7,8 @@ import org.springframework.boot.autoconfigure.sql.init.SqlInitializationProperti
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.core.env.Environment;
 
-import io.extact.msa.spring.platform.fw.infrastructure.framework.profile.ActiveProfile;
+import io.extact.msa.spring.platform.core.env.ActiveProfileResolver;
+import io.extact.msa.spring.platform.fw.infrastructure.framework.profile.PersistenceActiveProfile;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -19,7 +20,8 @@ class ProfileBasedDbInitializerSettingsCreator {
 
     static DatabaseInitializationSettings create(Environment env, SqlInitializationProperties properties) {
 
-        List<String> entities = resoleveJpaEntitiesFrom(env.getActiveProfiles());
+        ActiveProfileResolver apr = new ActiveProfileResolver(env);
+        List<String> entities = resoleveJpaEntitiesFrom(apr.resolveActiveProfiles());
         List<String> schemaLocations = resoleveSchemaLocationsFor(entities, env);
         List<String> dataLocations = resoleveDataLocationsFor(entities, env);
 
@@ -37,9 +39,9 @@ class ProfileBasedDbInitializerSettingsCreator {
 
     private static List<String> resoleveJpaEntitiesFrom(String[] activeProfiles) {
         return Stream.of(activeProfiles)
-                .map(ActiveProfile::new)
-                .filter(ActiveProfile::isJpaProfile)
-                .map(ActiveProfile::getTargetEntity)
+                .map(PersistenceActiveProfile::new)
+                .filter(PersistenceActiveProfile::isJpaProfile)
+                .map(PersistenceActiveProfile::getTargetEntity)
                 .toList();
     }
 

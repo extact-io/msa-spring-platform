@@ -21,4 +21,9 @@ public class EnvConfig {
             @Autowired(required = false) GitProperties gitProperties) {
         return new MainModuleInformation(environment, buildProperties, gitProperties);
     }
+
+    @Bean
+    ActiveProfileResolver activeProfileResolver(Environment env) {
+        return new ActiveProfileResolver(env);
+    }
 }

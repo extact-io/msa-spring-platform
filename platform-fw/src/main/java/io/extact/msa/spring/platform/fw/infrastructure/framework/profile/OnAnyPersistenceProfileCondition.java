@@ -9,6 +9,8 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
+import io.extact.msa.spring.platform.core.env.ActiveProfileResolver;
+
 public class OnAnyPersistenceProfileCondition extends SpringBootCondition {
 
     @Override
@@ -22,10 +24,11 @@ public class OnAnyPersistenceProfileCondition extends SpringBootCondition {
 
         PersistenceProfileType persistenceType = (PersistenceProfileType) attributes.get("value");
         Environment environment = context.getEnvironment();
+        ActiveProfileResolver apr = new ActiveProfileResolver(environment);
 
         // 指定された永続化タイプに一致するプロファイルが1つでもあるか確認
-        return Stream.of(environment.getActiveProfiles())
-                .map(ActiveProfile::new)
+        return Stream.of(apr.resolveActiveProfiles())
+                .map(PersistenceActiveProfile::new)
                 .filter(activeProfile -> activeProfile.matchesType(persistenceType))
                 .findFirst()
                 .map(activeProfile -> ConditionOutcome.match(

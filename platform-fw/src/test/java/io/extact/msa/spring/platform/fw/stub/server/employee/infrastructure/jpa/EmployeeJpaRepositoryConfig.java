@@ -18,13 +18,6 @@ import io.extact.msa.spring.platform.fw.stub.server.employee.domain.model.Employ
 @Import(ValidationConfig.class)
 public class EmployeeJpaRepositoryConfig {
 
-//    @Bean
-//    EmployeeJpaRepository employeeJpaRepository(EmployeeSpringDataJpa executor) {
-//        return new EmployeeJpaRepository(
-//                executor,
-//                new DefaultModelEntityMapper<>(EmployeeEntity::from));
-//    }
-
     @Bean
     GenericRepository<Employee> defaultJpaRepository(EmployeeSpringDataJpa executor) {
         return new DefaultJpaRepository<Employee, EmployeeEntity>(

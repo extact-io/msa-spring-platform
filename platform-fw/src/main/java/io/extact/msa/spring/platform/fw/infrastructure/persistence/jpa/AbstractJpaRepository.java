@@ -49,14 +49,14 @@ public abstract class AbstractJpaRepository<M extends EntityModel, E extends Tab
     @Override
     public Optional<M> find(Identity id) {
         Optional<E> entity = delegator.findById(id.id());
-        return entity.map(E::toModel);
+        return entity.map(modelEntityMapper::toModel);
 
     }
 
     @Override
     public List<M> findAll() {
         return delegator.findAllByOrderByIdAsc().stream()
-                .map(E::toModel)
+                .map(modelEntityMapper::toModel)
                 .toList();
     }
 

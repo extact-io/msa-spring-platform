@@ -1,6 +1,7 @@
 package io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa;
 
 import io.extact.msa.spring.platform.fw.domain.model.EntityModel;
+import io.extact.msa.spring.platform.fw.domain.model.ModelPropertySupportFactory;
 
 public interface TableEntity<M extends EntityModel> {
 
@@ -10,5 +11,5 @@ public interface TableEntity<M extends EntityModel> {
 
     Integer getId();
 
-    M toModel();
+    M toModel(ModelPropertySupportFactory factory);
 }

@@ -4,12 +4,13 @@ import java.util.Optional;
 
 import lombok.Getter;
 
-public class ActiveProfile {
+public class PersistenceActiveProfile {
 
-    private final @Getter String profileName;
+    @Getter
+    private final String profileName;
     private final Optional<PersistenceProfileType> persistenceType;
 
-    public ActiveProfile(String profileName) {
+    public PersistenceActiveProfile(String profileName) {
         this.profileName = profileName;
         this.persistenceType = PersistenceProfileType.from(profileName);
     }
