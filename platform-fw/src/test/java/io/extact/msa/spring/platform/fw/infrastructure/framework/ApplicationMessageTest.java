@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import io.extact.msa.spring.platform.fw.domain.constraint.ValidationConfig;
+import io.extact.msa.spring.platform.fw.infrastructure.framework.validator.ValidatorConfig;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.EqualPairFields;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.EqualPairFields.EqualPairFieldsValidatable;
 
@@ -24,7 +24,7 @@ import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.EqualPai
 class ApplicationMessageTest {
 
     @Configuration(proxyBeanMethods = false)
-    @Import(ValidationConfig.class)
+    @Import(ValidatorConfig.class)
     static class TestConfig {
         // NOP
     }

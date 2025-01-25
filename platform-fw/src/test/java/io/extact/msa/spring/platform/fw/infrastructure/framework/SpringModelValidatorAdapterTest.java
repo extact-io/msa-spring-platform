@@ -23,10 +23,11 @@ import io.extact.msa.spring.platform.fw.domain.constraint.ValidationGroups.Updat
 import io.extact.msa.spring.platform.fw.domain.model.EntityModel;
 import io.extact.msa.spring.platform.fw.domain.model.EntityModelReference;
 import io.extact.msa.spring.platform.fw.domain.model.Identity;
+import io.extact.msa.spring.platform.fw.domain.model.ModelPropertySupportFactory;
 import io.extact.msa.spring.platform.fw.domain.model.ModelValidator;
 import io.extact.msa.spring.platform.fw.domain.model.ValueModel;
 import io.extact.msa.spring.platform.fw.exception.RmsValidationException;
-import io.extact.msa.spring.platform.fw.infrastructure.framework.validator.ValidatorConfig;
+import io.extact.msa.spring.platform.fw.infrastructure.framework.model.ModelConfig;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.EqualPairFields;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.EqualPairFields.EqualPairFieldsValidatable;
 import lombok.AllArgsConstructor;
@@ -40,7 +41,7 @@ class SpringModelValidatorAdapterTest {
     private ModelValidator validator;
 
     @Configuration(proxyBeanMethods = false)
-    @Import(ValidatorConfig.class)
+    @Import(ModelConfig.class)
     static class TestConfig {
     }
 
@@ -597,7 +598,7 @@ class SpringModelValidatorAdapterTest {
         private NestModel nest;
 
         @Override
-        public void configureSupport(ModelValidator validator) {
+        public void configureSupport(ModelPropertySupportFactory modeSupportFactory) {
         }
     }
 
@@ -665,7 +666,7 @@ class SpringModelValidatorAdapterTest {
         private NestModelForGroup nest;
 
         @Override
-        public void configureSupport(ModelValidator validator) {
+        public void configureSupport(ModelPropertySupportFactory modeSupportFactory) {
         }
     }
 

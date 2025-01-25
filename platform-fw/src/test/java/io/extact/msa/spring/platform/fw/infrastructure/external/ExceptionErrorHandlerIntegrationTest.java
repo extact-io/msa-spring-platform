@@ -76,7 +76,7 @@ import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
 @TestPropertySource(properties = "spring.main.banner-mode=off")
 class ExceptionErrorHandlerIntegrationTest {
 
-    private static final String PARAMETER_ERROR_MESSAGE = "ex.ValidationErrorException.message";
+    private static final String PARAMETER_ERROR_MESSAGE = "ex.ParameterErrorException.message";
     private static final String CONVERT_ERROR_MESSAGE = "ex.TypeMismatchException.massage";
 
     @Autowired

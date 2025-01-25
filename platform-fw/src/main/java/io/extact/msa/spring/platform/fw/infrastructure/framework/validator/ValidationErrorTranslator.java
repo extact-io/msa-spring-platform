@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class ValidationErrorTranslator {
 
     private static final String CONVERT_ERROR_MESSAGE = "ex.TypeMismatchException.massage";
-    private static final String VALIDATION_ERROR_MESSAGE = "ex.ValidationErrorException.message";
+    private static final String PARAMETER_ERROR_MESSAGE = "ex.ParameterErrorException.message";
 
     private final MessageSource messageSource;
 
@@ -38,13 +38,13 @@ public class ValidationErrorTranslator {
             String fieldName = resovleFieldName(error, locale);
             String message = messageSource.getMessage(error, locale);
             message = messageSource.getMessage(error, locale);
-            return (ValidationErrorItem) new ValidationErrorItem(fieldName, message);
+            return new ValidationErrorItem(fieldName, message);
         });
 
         Stream<ValidationErrorItem> globalErrors = result.getGlobalErrors().stream().map(error -> {
             String globalName = resovleObjectName(error, locale);
             String message = messageSource.getMessage(error, locale);
-            return (ValidationErrorItem) new ValidationErrorItem(globalName, message);
+            return new ValidationErrorItem(globalName, message);
         });
 
         ValidationErrorMessage validationMessage = new ValidationErrorMessage(
@@ -77,7 +77,7 @@ public class ValidationErrorTranslator {
         List<ValidationErrorItem> parameterErrors = errors.stream().map(error -> {
             String fieldName = resovleFieldName(error, locale);
             String message = messageSource.getMessage(error, locale);
-            return (ValidationErrorItem) new ValidationErrorItem(fieldName, message);
+            return new ValidationErrorItem(fieldName, message);
         }).toList();
 
         ValidationErrorMessage validationMessage = new ValidationErrorMessage(
@@ -111,7 +111,7 @@ public class ValidationErrorTranslator {
     // -------------------------------------------------------- private methods
 
     private String parameterErrorMessage(Locale locale) {
-        return messageSource.getMessage(VALIDATION_ERROR_MESSAGE, null, locale);
+        return messageSource.getMessage(PARAMETER_ERROR_MESSAGE, null, locale);
     }
 
     private String resovleFieldName(MessageSourceResolvable errorMessage, Locale locale) {
