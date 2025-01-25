@@ -32,8 +32,8 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 import io.extact.msa.spring.platform.core.auth.configure.AuthorizeHttpRequestCustomizer;
 import io.extact.msa.spring.platform.core.jwt.encode.JsonWebTokenGenerator;
+import io.extact.msa.spring.platform.core.jwt.encode.JwtEncodeConfig;
 import io.extact.msa.spring.platform.core.jwt.encode.UserClaims;
-import io.extact.msa.spring.platform.core.jwt.encode.config.JwtEncodeConfig;
 import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
 import io.extact.msa.spring.test.spring.NopResponseErrorHandler;
 

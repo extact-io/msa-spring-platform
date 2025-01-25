@@ -41,7 +41,7 @@ import io.extact.msa.spring.platform.core.auth.testapp.server1.Server2Api;
 import io.extact.msa.spring.platform.core.auth.testapp.server2.Server2Assert;
 import io.extact.msa.spring.platform.core.auth.testapp.server2.Server2Controller;
 import io.extact.msa.spring.platform.core.condition.EnableAutoConfigurationWithoutJpa;
-import io.extact.msa.spring.platform.core.jwt.encode.config.JwtEncodeConfig;
+import io.extact.msa.spring.platform.core.jwt.encode.JwtEncodeConfig;
 import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
 
 /**

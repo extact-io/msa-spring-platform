@@ -51,8 +51,8 @@ import io.extact.msa.spring.platform.core.auth.configure.AuthorizeHttpRequestCus
 import io.extact.msa.spring.platform.core.auth.jwt.RmsJwtAuthConfig;
 import io.extact.msa.spring.platform.core.condition.EnableAutoConfigurationWithoutJpa;
 import io.extact.msa.spring.platform.core.jwt.encode.GenerateToken;
+import io.extact.msa.spring.platform.core.jwt.encode.JwtEncodeConfig;
 import io.extact.msa.spring.platform.core.jwt.encode.UserClaims;
-import io.extact.msa.spring.platform.core.jwt.encode.config.JwtEncodeConfig;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
 import io.extact.msa.spring.platform.fw.exception.RmsServiceUnavailableException;

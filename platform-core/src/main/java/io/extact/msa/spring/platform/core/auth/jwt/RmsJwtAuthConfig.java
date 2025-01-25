@@ -28,7 +28,9 @@ import io.extact.msa.spring.platform.core.auth.configure.AuthorizeRequestConfigu
 import io.extact.msa.spring.platform.core.jwt.decode.JwtDecodeConfig;
 
 @Configuration(proxyBeanMethods = false)
-@Import({ RmsAnonymousAuthConfig.class, JwtDecodeConfig.class })
+@Import({
+        RmsAnonymousAuthConfig.class,
+        JwtDecodeConfig.class })
 public class RmsJwtAuthConfig {
 
     @Bean
