@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -74,6 +75,23 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .header(RMS_EXCEPTION_HEAD, e.getClass().getSimpleName())
+                .body(message);
+    }
+
+    // @ReqestParameterに対するパラメータなしエラー
+    // パラメータなしを検知した時点で例外が送出されるため、パラメータなしが複数あった場合でも最初に検知された
+    // 1件のフィールドに対してのみ例外が送出される
+    @Override
+    protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException e,
+            HttpHeaders headers, HttpStatusCode status, WebRequest req) {
+
+        log.warn("exception occured. message={}", e.getMessage());
+
+        ValidationErrorMessage message = errorTranslator.from(e, req.getLocale());
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .header(RMS_EXCEPTION_HEAD, TypeMismatchException.class.getSimpleName())
                 .body(message);
     }
 

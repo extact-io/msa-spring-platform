@@ -12,6 +12,7 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import io.extact.msa.spring.platform.fw.exception.response.SimpleErrorMessage;
@@ -22,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ValidationErrorTranslator {
 
+    private static final String REQUEST_PARAMETER_NONE_MESSAGE = "ex.RequestParameterNoneException.message";
     private static final String CONVERT_ERROR_MESSAGE = "ex.TypeMismatchException.massage";
     private static final String PARAMETER_ERROR_MESSAGE = "ex.ParameterErrorException.message";
 
@@ -89,8 +91,27 @@ public class ValidationErrorTranslator {
         return validationMessage;
     }
 
+    // @ReqestParameterに対するパラメータなしエラー
+    public ValidationErrorMessage from(MissingServletRequestParameterException e, Locale locale) {
+
+        String fieldName = e.getParameterName();
+        String message = messageSource.getMessage(
+                REQUEST_PARAMETER_NONE_MESSAGE,
+                null,
+                defaultLocale());
+
+        ValidationErrorItem errorItem = new ValidationErrorItem(fieldName, message);
+
+        return new ValidationErrorMessage(
+                new SimpleErrorMessage(
+                        e.getClass().getSimpleName(),
+                        parameterErrorMessage(locale)),
+                List.of(errorItem));
+    }
+
     // 入力のコンバートエラー
     public ValidationErrorMessage from(TypeMismatchException e, Locale locale) {
+
         String fieldName = e.getPropertyName();
         String requiredType = e.getRequiredType().getSimpleName();
 
