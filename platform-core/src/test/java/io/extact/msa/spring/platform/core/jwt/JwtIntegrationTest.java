@@ -76,7 +76,10 @@ public class JwtIntegrationTest {
     @Configuration(proxyBeanMethods = false)
     @EnableAutoConfiguration
     @EnableWebSecurity(debug = true)
-    @Import({ JwtEncodeConfig.class, JwtDecodeConfig.class, CoreConfig.class })
+    @Import({
+            JwtEncodeConfig.class,
+            JwtDecodeConfig.class,
+            CoreConfig.class })
     static class TestConfig {
 
         @Bean

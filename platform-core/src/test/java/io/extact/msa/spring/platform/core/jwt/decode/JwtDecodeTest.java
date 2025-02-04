@@ -147,7 +147,9 @@ public class JwtDecodeTest {
     @Configuration(proxyBeanMethods = false)
     @EnableAutoConfiguration
     @EnableWebSecurity(debug = true)
-    @Import({ JwtEncodeConfig.class, JwtDecodeConfig.class })
+    @Import({
+            JwtEncodeConfig.class,
+            JwtDecodeConfig.class })
     static class TestConfig {
 
         @Bean

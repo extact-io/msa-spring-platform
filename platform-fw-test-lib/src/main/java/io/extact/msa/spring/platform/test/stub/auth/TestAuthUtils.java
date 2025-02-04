@@ -1,6 +1,7 @@
 package io.extact.msa.spring.platform.test.stub.auth;
 
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,13 +22,17 @@ public class TestAuthUtils {
         return testAuth;
     }
 
+    public static Authentication signinByHeaderWithRolePrefix(int id, String... roles) {
+        return signinByHeader(id, withRolePrefix(roles));
+    }
+
     public static Authentication signinByJwt(JsonWebTokenGenerator generator, int id, String... roles) {
 
         String bearerToken = generateToken(generator, id, roles);
 
         RmsClientAuthenticationToken tokenAuth = RmsClientAuthenticationToken.builder()
                 .userId(String.valueOf(id))
-                .groups(Set.of(roles))
+                .groups(Set.of(roles)) // ROLE_は内部で追加される
                 .bearerToken(bearerToken)
                 .build();
         SecurityContextHolder.getContext().setAuthentication(tokenAuth);
@@ -66,5 +71,11 @@ public class TestAuthUtils {
         };
 
         return generator.generateToken(userClaims);
+    }
+
+    private static String[] withRolePrefix(String... roles) {
+        return Stream.of(roles)
+                .map("ROLE_"::concat)
+                .toArray(String[]::new);
     }
 }
