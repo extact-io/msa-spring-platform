@@ -29,8 +29,8 @@ import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.TestPers
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.TestPersonId;
 import io.extact.msa.spring.platform.fw.stub.client.person.infrastructure.TestPersonClientAdapter;
 import io.extact.msa.spring.platform.fw.stub.client.person.infrastructure.TestPersonClientApi;
-import io.extact.msa.spring.platform.fw.stub.server.person.application.PersonApplicationService;
-import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonFactory;
+import io.extact.msa.spring.platform.fw.stub.server.person.application.PersonService;
+import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonCreator;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonRepository;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.Person;
 import io.extact.msa.spring.platform.fw.stub.server.person.web.PersonController;
@@ -63,15 +63,15 @@ abstract class AbstractApplicationIntegrationTest {
     static class TestConfig {
 
         @Bean
-        PersonApplicationService personService(PersonRepository repository) {
-            return new PersonApplicationService(
-                    new PersonFactory(repository),
+        PersonService personService(PersonRepository repository) {
+            return new PersonService(
+                    new PersonCreator(repository),
                     new SimpleDuplicateChecker<Person>(repository),
                     repository);
         }
 
         @Bean
-        PersonController personController(PersonApplicationService service) {
+        PersonController personController(PersonService service) {
             return new PersonController(service);
         }
 

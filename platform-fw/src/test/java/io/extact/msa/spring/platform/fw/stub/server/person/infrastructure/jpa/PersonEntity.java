@@ -6,8 +6,11 @@ import jakarta.persistence.Access;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
+import io.extact.msa.spring.platform.fw.domain.model.ModelPropertySupportFactory;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa.TableEntity;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.Person;
+import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.Person.PersonCreatable;
+import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.PersonId;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +23,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @Getter @Setter
 @ToString
-public class PersonEntity implements TableEntity<Person> {
+public class PersonEntity implements TableEntity<Person>, PersonCreatable {
 
     @Id
     private Integer id;
@@ -31,7 +34,9 @@ public class PersonEntity implements TableEntity<Person> {
     }
 
     @Override
-    public Person toModel() {
-        return Person.reconstruct(this.id, this.name);
+    public Person toModel(ModelPropertySupportFactory factory) {
+        Person person = newInstance(new PersonId(id), name);
+        person.configureSupport(factory);
+        return person;
     }
 }

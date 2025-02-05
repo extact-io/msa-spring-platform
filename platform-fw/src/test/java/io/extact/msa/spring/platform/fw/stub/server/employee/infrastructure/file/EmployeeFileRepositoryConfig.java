@@ -1,16 +1,14 @@
 package io.extact.msa.spring.platform.fw.stub.server.employee.infrastructure.file;
 
-import java.io.IOException;
-
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 
-import io.extact.msa.spring.platform.fw.domain.constraint.ValidationConfig;
+import io.extact.msa.spring.platform.fw.domain.model.ModelPropertySupportFactory;
+import io.extact.msa.spring.platform.fw.domain.model.ModelValidator;
+import io.extact.msa.spring.platform.fw.infrastructure.framework.model.DefaultModelPropertySupportFactory;
+import io.extact.msa.spring.platform.fw.infrastructure.framework.model.ModelConfig;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.file.ModelArrayMapper;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.file.io.FileOperator;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.file.io.LoadPathDeriver;
@@ -18,31 +16,22 @@ import io.extact.msa.spring.platform.fw.stub.server.employee.domain.EmployeeRepo
 import io.extact.msa.spring.platform.fw.stub.server.employee.domain.model.Employee;
 
 @TestConfiguration(proxyBeanMethods = false)
-@Import(ValidationConfig.class)
+@Import(ModelConfig.class)
 public class EmployeeFileRepositoryConfig {
 
     @Bean
-    FileOperator fileOperator(Environment env) throws IOException {
+    ModelArrayMapper<Employee> employeeArrayMapper(ModelValidator validator) {
+        return new EmployeeArrayMapper(modelSupportFactory(validator));
+    }
+
+    @Bean
+    EmployeeRepository employeeFileRepository(Environment env, ModelArrayMapper<Employee> mapper) {
         LoadPathDeriver pathDeriver = new LoadPathDeriver(env);
-        return new FileOperator(pathDeriver.derive(EmployeeFileRepository.FILE_ENTITY));
-    }
-
-    @Bean
-    ModelArrayMapper<Employee> employeeArrayMapper() {
-        return EmployeeArrayMapper.INSTANCE;
-    }
-
-    @Bean
-    @Primary
-    EmployeeRepository employeeFileRepository(FileOperator fileOperator, ModelArrayMapper<Employee> mapper) {
+        FileOperator fileOperator = new FileOperator(pathDeriver.derive(EmployeeFileRepository.FILE_ENTITY));
         return new EmployeeFileRepository(fileOperator, mapper);
     }
 
-    @Bean
-    @Scope("prototype")
-    @Qualifier("prototype") // for unit test
-    EmployeeRepository prototypePersonFileRepository(Environment env) throws IOException {
-        FileOperator fileOperator = fileOperator(env); // Bean生成の都度ファイルを再配置する
-        return new EmployeeFileRepository(fileOperator, employeeArrayMapper());
+    private ModelPropertySupportFactory modelSupportFactory(ModelValidator validator) {
+        return new DefaultModelPropertySupportFactory(validator);
     }
 }

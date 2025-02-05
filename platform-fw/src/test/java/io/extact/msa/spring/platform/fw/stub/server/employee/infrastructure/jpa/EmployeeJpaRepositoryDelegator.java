@@ -1,7 +1,10 @@
 package io.extact.msa.spring.platform.fw.stub.server.employee.infrastructure.jpa;
 
+import java.util.Optional;
+
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa.JpaRepositoryDelegator;
 
-public interface EmployeeSpringDataJpa extends JpaRepositoryDelegator<EmployeeEntity> {
+public interface EmployeeJpaRepositoryDelegator extends JpaRepositoryDelegator<EmployeeEntity> {
 
+    Optional<EmployeeEntity> findByName(String name);
 }

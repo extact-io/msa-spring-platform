@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa.JpaRepositoryDelegator;
 
-public interface PersonSpringDataJpa extends JpaRepositoryDelegator<PersonEntity> {
+public interface PersonJpaRepositoryDelegator extends JpaRepositoryDelegator<PersonEntity> {
 
     Optional<PersonEntity> findByName(String name);
 }

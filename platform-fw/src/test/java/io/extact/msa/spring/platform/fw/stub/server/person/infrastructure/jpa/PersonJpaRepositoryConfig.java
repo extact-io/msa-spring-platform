@@ -6,19 +6,31 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import io.extact.msa.spring.platform.fw.domain.constraint.ValidationConfig;
+import io.extact.msa.spring.platform.fw.domain.model.ModelPropertySupportFactory;
+import io.extact.msa.spring.platform.fw.domain.model.ModelValidator;
+import io.extact.msa.spring.platform.fw.infrastructure.framework.model.DefaultModelPropertySupportFactory;
+import io.extact.msa.spring.platform.fw.infrastructure.framework.model.ModelConfig;
+import io.extact.msa.spring.platform.fw.infrastructure.framework.sqlinit.ProfileBasedDbInitializerConfig;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa.DefaultModelEntityMapper;
 
 @TestConfiguration(proxyBeanMethods = false)
 @EntityScan(basePackageClasses = PersonEntity.class)
-@EnableJpaRepositories(basePackageClasses = PersonSpringDataJpa.class)
-@Import(ValidationConfig.class)
+@EnableJpaRepositories(basePackageClasses = PersonJpaRepositoryDelegator.class)
+@Import({
+    ModelConfig.class,
+    ProfileBasedDbInitializerConfig.class })
 public class PersonJpaRepositoryConfig {
 
     @Bean
-    PersonJpaRepository personJpaRepository(PersonSpringDataJpa springData) {
+    PersonJpaRepository personJpaRepository(PersonJpaRepositoryDelegator delegator, ModelValidator validator) {
         return new PersonJpaRepository(
-                springData,
-                new DefaultModelEntityMapper<>(PersonEntity::from));
+                delegator,
+                new DefaultModelEntityMapper<>(
+                        PersonEntity::from,
+                        modelSupportFactory(validator)));
+    }
+
+    private ModelPropertySupportFactory modelSupportFactory(ModelValidator validator) {
+        return new DefaultModelPropertySupportFactory(validator);
     }
 }

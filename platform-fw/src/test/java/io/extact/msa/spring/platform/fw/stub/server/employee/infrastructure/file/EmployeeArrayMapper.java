@@ -1,19 +1,26 @@
 package io.extact.msa.spring.platform.fw.stub.server.employee.infrastructure.file;
 
+import io.extact.msa.spring.platform.fw.domain.model.ModelPropertySupportFactory;
 import io.extact.msa.spring.platform.fw.exception.RmsSystemException;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.file.ModelArrayMapper;
 import io.extact.msa.spring.platform.fw.stub.server.employee.domain.model.Employee;
+import io.extact.msa.spring.platform.fw.stub.server.employee.domain.model.Employee.EmployeeCreatable;
+import io.extact.msa.spring.platform.fw.stub.server.employee.domain.model.EmployeeId;
+import lombok.RequiredArgsConstructor;
 
-public class EmployeeArrayMapper implements ModelArrayMapper<Employee> {
+@RequiredArgsConstructor
+public class EmployeeArrayMapper implements ModelArrayMapper<Employee>, EmployeeCreatable {
 
-    public static final EmployeeArrayMapper INSTANCE = new EmployeeArrayMapper();
+    private final ModelPropertySupportFactory modelSupportFactory;
 
     @Override
     public Employee toModel(String[] attributes) throws RmsSystemException {
         Integer id = Integer.parseInt(attributes[0]);
         String name = attributes[1];
         String deptName = attributes[2];
-        return Employee.reconstruct(id, name, deptName);
+        Employee employee = newInstance(new EmployeeId(id), name, deptName);
+        employee.configureSupport(modelSupportFactory);
+        return employee;
     }
 
     @Override

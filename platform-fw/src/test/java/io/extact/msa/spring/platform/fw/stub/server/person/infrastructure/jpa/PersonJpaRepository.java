@@ -10,10 +10,10 @@ import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.Person;
 public class PersonJpaRepository extends AbstractJpaRepository<Person, PersonEntity>
         implements PersonRepository {
 
-    private PersonSpringDataJpa springJpa;
+    private PersonJpaRepositoryDelegator springJpa;
     private ModelEntityMapper<Person, PersonEntity> entityMapper;
 
-    public PersonJpaRepository(PersonSpringDataJpa jpa, ModelEntityMapper<Person, PersonEntity> entityMapper) {
+    public PersonJpaRepository(PersonJpaRepositoryDelegator jpa, ModelEntityMapper<Person, PersonEntity> entityMapper) {
         super(jpa, entityMapper);
         this.springJpa = jpa;
         this.entityMapper = entityMapper;

@@ -3,26 +3,38 @@ package io.extact.msa.spring.platform.fw.stub.server.person.domain.model;
 import jakarta.validation.constraints.NotNull;
 
 import io.extact.msa.spring.platform.fw.domain.model.EntityModel;
+import io.extact.msa.spring.platform.fw.domain.model.ModelPropertySupport;
+import io.extact.msa.spring.platform.fw.domain.model.ModelPropertySupportFactory;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.constraint.PersonName;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode(of = "id")
 @Getter
-public class Person implements EntityModel {
+public class Person implements EntityModel, PersonReference {
 
-    private final @NotNull PersonId id;
+    private @NotNull PersonId id;
     private @PersonName String name;
 
-    public static Person reconstruct(int id, String name) {
-        return new Person(new PersonId(id), name);
+    @ToString.Exclude
+    private ModelPropertySupport modelSupport;
+
+    Person(PersonId id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
-    public void editName(String name) {
-        this.name = name;
+    public void editName(String newName) {
+        modelSupport.setPropertyWithValidation("name", newName);
+    }
+
+    @Override
+    public void configureSupport(ModelPropertySupportFactory factory) {
+        this.modelSupport = factory.create(Person::new, this);
     }
 
     public interface PersonCreatable {
