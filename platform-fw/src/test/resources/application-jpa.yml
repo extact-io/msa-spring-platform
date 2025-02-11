@@ -1,11 +1,6 @@
 spring:
-  sql:
-    init:
-      schema-locations: classpath:sql/person-schema.sql
-      data-locations: classpath:sql/person-data.sql
   jpa:
-    open-in-view:
-      false
+    open-in-view: false
     hibernate:
       ddl-auto: none
     properties:
@@ -13,15 +8,6 @@ spring:
 
 rms:
   persistence:
-    sql:
-      init:
-        platform:
-        username:
-        password:
-        continue-on-error:
-        separator:
-        encoding:
-        mode:
     item:
       csv:
         type: temporary

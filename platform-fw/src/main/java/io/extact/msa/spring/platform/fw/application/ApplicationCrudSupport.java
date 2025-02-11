@@ -54,4 +54,19 @@ public class ApplicationCrudSupport<M extends EntityModel> {
                 .orElseThrow(() -> new BusinessFlowException("target does not exist for id", CauseType.NOT_FOUND));
         repository.delete(target);
     }
+
+    public static void main(String[] args) {
+        int intRecordCount = 0;
+        int intPageCount = 0;
+
+        int result;
+        if (1 > intRecordCount) {
+            result = 0;
+        } else if ((intRecordCount % intPageCount) == 0) {
+            result = (intRecordCount / intPageCount);
+        } else {
+           result = ((intRecordCount - (intRecordCount % intPageCount)) / intPageCount) + 1;
+        }
+        System.out.println(result);
+    }
 }

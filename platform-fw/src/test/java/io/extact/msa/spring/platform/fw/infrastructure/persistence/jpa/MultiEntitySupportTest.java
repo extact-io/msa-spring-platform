@@ -18,11 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
 import io.extact.msa.spring.platform.fw.domain.repository.GenericRepository;
 import io.extact.msa.spring.platform.fw.stub.server.employee.domain.EmployeeRepository;
 import io.extact.msa.spring.platform.fw.stub.server.employee.domain.model.Employee;
+import io.extact.msa.spring.platform.fw.stub.server.employee.domain.model.Employee.EmployeeCreatable;
 import io.extact.msa.spring.platform.fw.stub.server.employee.domain.model.EmployeeId;
 import io.extact.msa.spring.platform.fw.stub.server.employee.infrastructure.file.EmployeeFileRepositoryConfig;
 import io.extact.msa.spring.platform.fw.stub.server.employee.infrastructure.jpa.EmployeeJpaRepositoryConfig;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonRepository;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.Person;
+import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.Person.PersonCreatable;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.PersonId;
 import io.extact.msa.spring.platform.fw.stub.server.person.infrastructure.file.PersonFileRepositoryConfig;
 import io.extact.msa.spring.platform.fw.stub.server.person.infrastructure.jpa.PersonJpaRepositoryConfig;
@@ -37,10 +39,13 @@ import io.extact.msa.spring.platform.fw.stub.server.person.infrastructure.jpa.Pe
 @Rollback
 abstract class MultiEntitySupportTest {
 
+    private static final EmployeeCreatable employeeCreator = new EmployeeCreatable() {};
+    private static final PersonCreatable personCreator = new PersonCreatable() {};
+
     @Test
     void testMultiGet() {
 
-        Employee employeeExpected = Employee.reconstruct(1, "name1", "dept1");
+        Employee employeeExpected = employeeCreator.newInstance(new EmployeeId(1), "name1", "dept1");
         Optional<Employee> employeeActual = employeeRepository().find(new EmployeeId(1));
 
         assertThat(employeeActual).isPresent();
@@ -50,7 +55,7 @@ abstract class MultiEntitySupportTest {
         assertThat(employeeActual).isNotPresent();
 
 
-        Person personExpected = Person.reconstruct(1, "name1");
+        Person personExpected = personCreator.newInstance(new PersonId(1), "name1");
         Optional<Person> personActual = personRepository().find(new PersonId(1));
 
         assertThat(personActual).isPresent();

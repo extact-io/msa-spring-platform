@@ -10,15 +10,15 @@ import org.springframework.context.annotation.Configuration;
  *
  * これは通常の結合テストを行う場合は便利であるが、あるBeanを単体で登録してテストしたい場合に困る。
  * これを回避するため、テストクラスにインナークラスで<code>@Configuration</code>を指定したコンフィグクラスを
- * 作成した場合、<code>@Configuration</code>がクラスパス上にあるためインナークラスであっても他のテストクラスから
- * 意図せずコンポーネントスキャンされてしまう。<p>
+ * 作成しても、<code>src/test</code>配下であっても<code>@Configuration</code>が<code>@SpringBootApplication</code>配下の
+ * クラスパス上にあるためインナークラスであっても他のテストクラスから意図せずコンポーネントスキャンされてしまう。<p>
  *
  * コンポーネントスキャンの対象にならないようにと<code>@TestConfiguration</code>を使って定義した場合、今度は
  * コンテキストが未指定の扱いとなり<code>@SpringBootApplication</code>がスキャンされてしまう。<p>
  *
- * この問題を回避するため、このクラスではコンテキストとして指定しつつもないも読み込まない副作用のないコンフィグ
- * となっている。<code>@SpringBootApplication</code>が検索されないようにテストクラス自身をコンテキストの起点として、テストで
- * 必要なBeanを登録する場合はコード例のように@TestConfigurationを使ってBean登録する。@TestConfigurationは他のテスト
+ * この問題を回避するため、このクラスはコンテキストとして指定しつつもなにも読み込まない副作用のないコンフィグ
+ * となっている。<code>@SpringBootApplication</code>が検索されないようにテストクラス自身をコンテキストの起点として、
+ * テストで必要なBeanを登録する場合はコード例のように@TestConfigurationを使ってBean登録する。@TestConfigurationは他のテスト
  * クラスからはスキャンされないため、他のテストクラスから完全に隔離してテスト用のBeanを登録することができる。
  *
  * <pre>

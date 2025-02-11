@@ -1,6 +1,7 @@
 package io.extact.msa.spring.platform.fw;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,33 +11,24 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.env.Environment;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.client.support.RestClientAdapter;
-import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
-import io.extact.msa.spring.platform.fw.domain.service.SimpleDuplicateChecker;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
 import io.extact.msa.spring.platform.fw.exception.RmsValidationException;
-import io.extact.msa.spring.platform.fw.infrastructure.external.ErrorMessageDeserializer;
-import io.extact.msa.spring.platform.fw.infrastructure.external.RestClientErrorHandler;
-import io.extact.msa.spring.platform.fw.stub.client.person.domain.TestPersonClient;
-import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.TestPerson;
-import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.TestPersonId;
-import io.extact.msa.spring.platform.fw.stub.client.person.infrastructure.TestPersonClientAdapter;
-import io.extact.msa.spring.platform.fw.stub.client.person.infrastructure.TestPersonClientApi;
-import io.extact.msa.spring.platform.fw.stub.server.person.application.PersonService;
-import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonCreator;
-import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonRepository;
-import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.Person;
-import io.extact.msa.spring.platform.fw.stub.server.person.web.PersonController;
-import io.extact.msa.spring.platform.fw.web.RestControllerConfig;
+import io.extact.msa.spring.platform.fw.stub.client.person.domain.ExternalPersonClient;
+import io.extact.msa.spring.platform.fw.stub.client.person.domain.ExternalPersonCreator;
+import io.extact.msa.spring.platform.fw.stub.client.person.domain.ExternalPersonDomainConfig;
+import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.ExternalPerson;
+import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.ExternalPerson.ExternalPersonCreatable;
+import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.ExternalPersonId;
+import io.extact.msa.spring.platform.fw.stub.client.person.infrastructure.ExternalPersonClientConfig;
+import io.extact.msa.spring.platform.fw.stub.server.person.application.PersonServiceConfig;
+import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonDomainConfig;
+import io.extact.msa.spring.platform.fw.stub.server.person.web.PersonControllerConfig;
+import io.extact.msa.spring.test.assertj.ToStringAssert;
 import io.extact.msa.spring.test.spring.EnableAutoConfigurationWithoutSecurity;
-import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
 
 /**
  * スタブのPersonアプリを使ってplatform.fwクラスをテストする。
@@ -54,120 +46,181 @@ import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
 @TestMethodOrder(OrderAnnotation.class)
 abstract class AbstractApplicationIntegrationTest {
 
+    protected static final ExternalPersonCreatable testCreator = new ExternalPersonCreatable() {};
+
     @Autowired
-    protected TestPersonClient client;
+    protected ExternalPersonClient client;
 
     @Configuration(proxyBeanMethods = false)
     @EnableAutoConfigurationWithoutSecurity // 認証チェックなし
-    @Import({ RestControllerConfig.class })
+    @Import({
+            PersonDomainConfig.class,
+            PersonServiceConfig.class,
+            PersonControllerConfig.class,
+            ExternalPersonDomainConfig.class,
+            ExternalPersonClientConfig.class})
     static class TestConfig {
-
-        @Bean
-        PersonService personService(PersonRepository repository) {
-            return new PersonService(
-                    new PersonCreator(repository),
-                    new SimpleDuplicateChecker<Person>(repository),
-                    repository);
-        }
-
-        @Bean
-        PersonController personController(PersonService service) {
-            return new PersonController(service);
-        }
-
-        @Bean
-        TestPersonClient personClient(Environment env) {
-
-            RestClient restClient = RestClient.builder()
-                    .uriBuilderFactory(new LocalHostUriBuilderFactory(env))
-                    .defaultStatusHandler(new RestClientErrorHandler(new ErrorMessageDeserializer()))
-                    .build();
-
-            RestClientAdapter adapter = RestClientAdapter.create(restClient);
-            HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
-            TestPersonClientApi personApi = factory.createClient(TestPersonClientApi.class);
-
-            return new TestPersonClientAdapter(personApi);
-        }
     }
 
     @Test
     @Order(1)
     void testGet() {
-        TestPerson expected = TestPerson.reconstruct(1, "name1");
-        Optional<TestPerson> actual = client.get(new TestPersonId(1));
-        assertThat(actual).isPresent();
-        assertThat(actual.get()).isEqualTo(expected);
 
-        actual = client.get(new TestPersonId(999));
+        // given -- match
+        ExternalPersonId id = new ExternalPersonId(1);
+        // when
+        Optional<ExternalPerson> actual = client.get(id);
+        // then
+        ExternalPerson expected = testCreator.newInstance(new ExternalPersonId(1), "name1");
+        assertThat(actual).isPresent();
+        ToStringAssert.assertThatToString(actual.get()).isEqualTo(expected);
+
+        // given -- unmatch
+        id = new ExternalPersonId(999);
+        // when
+        actual = client.get(id);
+        // then
         assertThat(actual).isNotPresent();
     }
 
     @Test
     @Order(2)
     void testGetAll() {
-        List<TestPerson> actual = client.getAll();
+        // given
+        // when
+        List<ExternalPerson> actual = client.getAll();
+        // then
         assertThat(actual).hasSize(4);
     }
 
     @Test
     @Order(3)
     void testUpdate() {
-        TestPerson expected = TestPerson.reconstruct(4, "UP");
-        TestPerson actual = client.update(TestPerson.reconstruct(4, "UP"));
-        assertThat(actual).isEqualTo(expected);
+        // given
+        ExternalPersonId id = new ExternalPersonId(4);
+        String name = "up";
+        ExternalPerson updatePerson = testCreator.newInstance(id, name);
+
+        // when
+        ExternalPerson actual = client.update(updatePerson);
+
+        // then
+        ToStringAssert.assertThatToString(actual).isEqualTo(updatePerson);
     }
 
     @Test
     @Order(4)
     void testUpdateOnValidationError() {
-        Throwable thrown = catchThrowable(() -> client.update(TestPerson.reconstruct(4, "123456"))); // 5文字より大きい
-        assertThat(thrown).isInstanceOf(RmsValidationException.class);
+
+        // given
+        ExternalPersonId id = new ExternalPersonId(4);
+        String name = "123456"; // 5文字より大きい
+        ExternalPerson updatePerson = testCreator.newInstance(id, name);
+
+        // when
+        RmsValidationException thrown = assertThrows(RmsValidationException.class, () -> {
+            client.update(updatePerson);
+        });
+
+        // then
+        assertThat(thrown.getErrorMessage().validationErrorItems()).hasSize(1);
+        assertThat(thrown.getDetailMessage()).contains("名前");
     }
 
     @Test
     @Order(5)
     void testUpdateOnDuplicateError() {
-        Throwable thrown = catchThrowable(() -> client.update(TestPerson.reconstruct(2, "name3")));
-        assertThat(thrown).isInstanceOf(BusinessFlowException.class);
-        assertThat(((BusinessFlowException) thrown).getCauseType()).isEqualTo(CauseType.DUPLICATE);
+
+        // given
+        ExternalPersonId id = new ExternalPersonId(2);
+        String name = "name3"; // 既にあるname
+        ExternalPerson updatePerson = testCreator.newInstance(id, name);
+
+        // when
+        BusinessFlowException thrown = assertThrows(BusinessFlowException.class, () -> {
+            client.update(updatePerson);
+        });
+
+        // then
+        assertThat(thrown.getCauseType()).isEqualTo(CauseType.DUPLICATE);
     }
 
     @Test
     @Order(6)
     void testUpdateOnNotFound() {
-        Throwable thrown = catchThrowable(() -> client.update(TestPerson.reconstruct(999, "UP")));
-        assertThat(thrown).isInstanceOf(BusinessFlowException.class);
-        assertThat(((BusinessFlowException) thrown).getCauseType()).isEqualTo(CauseType.NOT_FOUND);
+
+        // given
+        ExternalPersonId id = new ExternalPersonId(999); // not exist
+        String name = "UP";
+        ExternalPerson updatePerson = testCreator.newInstance(id, name);
+
+        // when
+        BusinessFlowException thrown = assertThrows(BusinessFlowException.class, () -> {
+            client.update(updatePerson);
+        });
+
+        // then
+        assertThat(thrown.getCauseType()).isEqualTo(CauseType.NOT_FOUND);
     }
 
     @Test
     @Order(7)
-    void testAdd() {
-        TestPerson expected = TestPerson.reconstruct(newDataId(), "ADD");
-        TestPerson actual = client.add("ADD");
-        assertThat(actual).isEqualTo(expected);
+    void testAdd(@Autowired ExternalPersonCreator creator) {
+        // given
+        String name = "ADD";
+        ExternalPerson addPerson = creator.create(name);
+
+        // when
+        ExternalPerson actual = client.add(addPerson);
+
+        // then
+        assertThat(actual).isNotNull();
+        assertThat(actual.getId()).isEqualTo(new ExternalPersonId(newDataId()));
+        assertThat(actual.getName()).isEqualTo(addPerson.getName());
     }
 
     @Test
     @Order(8)
-    void testAddOnValidationError() {
-        Throwable thrown = catchThrowable(() -> client.add("123456")); // 5文字より大きい
-        assertThat(thrown).isInstanceOf(RmsValidationException.class);
+    void testAddOnValidationError(@Autowired ExternalPersonCreator creator) {
+        // given
+        String name = "123456"; // 5文字より大きい
+
+        // when
+        RmsValidationException thrown = assertThrows(RmsValidationException.class, () -> {
+            creator.create(name);
+        });
+
+        // then
+        assertThat(thrown.getErrorMessage().validationErrorItems()).hasSize(1);
+        assertThat(thrown.getDetailMessage()).contains("名前");
     }
 
     @Test
     @Order(9)
-    void testAddOnDuplicateError() {
-        Throwable thrown = catchThrowable(() -> client.add("name3"));
-        assertThat(thrown).isInstanceOf(BusinessFlowException.class);
-        assertThat(((BusinessFlowException) thrown).getCauseType()).isEqualTo(CauseType.DUPLICATE);
+    void testAddOnDuplicateError(@Autowired ExternalPersonCreator creator) {
+        // given
+        String name = "name3"; // 既にあるname
+        ExternalPerson addPerson = creator.create(name);
+
+        // when
+        BusinessFlowException thrown = assertThrows(BusinessFlowException.class, () -> {
+            client.add(addPerson);
+        });
+
+        // then
+        assertThat(thrown.getCauseType()).isEqualTo(CauseType.DUPLICATE);
     }
 
     @Test
     @Order(10)
     void testDelete() {
-        client.delete(new TestPersonId(newDataId()));
+        // given
+        ExternalPersonId id = new ExternalPersonId(newDataId());
+
+        // when
+        client.delete(id);
+
+        // then
         int actual = client.getAll().size();
         assertThat(actual).isEqualTo(4);
     }
@@ -175,9 +228,16 @@ abstract class AbstractApplicationIntegrationTest {
     @Test
     @Order(11)
     void testDeleteOnNotFound() {
-        Throwable thrown = catchThrowable(() -> client.delete(new TestPersonId(999)));
-        assertThat(thrown).isInstanceOf(BusinessFlowException.class);
-        assertThat(((BusinessFlowException) thrown).getCauseType()).isEqualTo(CauseType.NOT_FOUND);
+        // given
+        ExternalPersonId id = new ExternalPersonId(999); // not exist
+
+        // when
+        BusinessFlowException thrown = assertThrows(BusinessFlowException.class, () -> {
+            client.delete(id);
+        });
+
+        // then
+        assertThat(thrown.getCauseType()).isEqualTo(CauseType.NOT_FOUND);
     }
 
     protected abstract int newDataId();

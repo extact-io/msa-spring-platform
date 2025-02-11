@@ -9,13 +9,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
-import io.extact.msa.spring.platform.fw.infrastructure.persistence.PersonRepositoryTest;
+import io.extact.msa.spring.platform.fw.infrastructure.persistence.AbstractPersonRepositoryTest;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonRepository;
 import io.extact.msa.spring.platform.fw.stub.server.person.infrastructure.jpa.PersonJpaRepositoryConfig;
 
 @DataJpaTest
 @ActiveProfiles("jpa")
-class PersonJpaRepositoryTest extends PersonRepositoryTest {
+class PersonJpaRepositoryTest extends AbstractPersonRepositoryTest {
 
     @Autowired
     private PersonRepository repository;

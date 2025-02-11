@@ -4,10 +4,16 @@ import static org.assertj.core.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+import io.extact.msa.spring.platform.fw.domain.model.ModelPropertySupportFactory;
+import io.extact.msa.spring.platform.fw.infrastructure.framework.model.DefaultModelPropertySupportFactory;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.Person;
+import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.Person.PersonCreatable;
+import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.PersonId;
 import io.extact.msa.spring.platform.fw.stub.server.person.infrastructure.jpa.PersonEntity;
 
 class PersonEntityTest {
+
+    private static final PersonCreatable testCreator = new PersonCreatable() {};
 
     @Test
     void testConstructor() {
@@ -27,7 +33,7 @@ class PersonEntityTest {
     @Test
     void testFromPerson() {
         // given
-        Person person = Person.reconstruct(1, "John Doe");
+        Person person = testCreator.newInstance(new PersonId(1), "John Doe");
 
         // when
         PersonEntity personEntity = PersonEntity.from(person);
@@ -42,9 +48,10 @@ class PersonEntityTest {
     void testToModel() {
         // given
         PersonEntity personEntity = new PersonEntity(1, "John Doe");
+        ModelPropertySupportFactory dummy = new DefaultModelPropertySupportFactory(null);
 
         // when
-        Person person = personEntity.toModel();
+        Person person = personEntity.toModel(dummy);
 
         // then
         assertThat(person).isNotNull();

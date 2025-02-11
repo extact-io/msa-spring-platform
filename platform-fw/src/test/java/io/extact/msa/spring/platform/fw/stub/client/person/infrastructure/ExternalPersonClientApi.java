@@ -11,19 +11,19 @@ import org.springframework.web.service.annotation.PostExchange;
 import org.springframework.web.service.annotation.PutExchange;
 
 @HttpExchange("/persons")
-public interface TestPersonClientApi {
+public interface ExternalPersonClientApi {
 
     @GetExchange
-    List<TestPersonResponse> getAll();
+    List<ExternalPersonResponse> getAll();
 
     @GetExchange("/{id}")
-    TestPersonResponse get(@PathVariable("id") Integer id);
+    ExternalPersonResponse get(@PathVariable("id") Integer id);
 
     @PostExchange
-    TestPersonResponse add(@RequestBody AddTestPersonRequest req);
+    ExternalPersonResponse add(@RequestBody ExternalPersonAddRequest req);
 
     @PutExchange
-    TestPersonResponse update(@RequestBody UpdateTestPersonRequest req);
+    ExternalPersonResponse update(@RequestBody ExternalPersonUpdateRequest req);
 
     @DeleteExchange("/{id}")
     void delete(@PathVariable("id") Integer itemId);
