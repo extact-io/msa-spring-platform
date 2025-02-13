@@ -12,17 +12,21 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.validation.method.MethodValidationException;
 
+import io.extact.msa.spring.platform.fw.infrastructure.framework.sqlinit.ProfileBasedDbInitializerConfig;
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.ExternalPersonCreator;
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.ExternalPerson;
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.ExternalPersonId;
 import io.extact.msa.spring.platform.fw.stub.server.person.infrastructure.jpa.PersonJpaRepositoryConfig;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("jpa")
+@ActiveProfiles("person-jpa")
 class JpaApplicationIntegrationTest extends AbstractApplicationIntegrationTest {
 
     @Configuration(proxyBeanMethods = false)
-    @Import({ AbstractApplicationIntegrationTest.TestConfig.class, PersonJpaRepositoryConfig.class })
+    @Import({
+        AbstractApplicationIntegrationTest.TestConfig.class,
+        ProfileBasedDbInitializerConfig.class,
+        PersonJpaRepositoryConfig.class })
     static class TestConfig {
     }
 

@@ -32,6 +32,10 @@ public class Person implements EntityModel, PersonReference {
         modelSupport.setPropertyWithValidation("name", newName);
     }
 
+    public void editNameWithoutValidation(String newName) {
+        this.name = newName;
+    }
+
     @Override
     public void configureSupport(ModelPropertySupportFactory factory) {
         this.modelSupport = factory.create(Person::new, this);

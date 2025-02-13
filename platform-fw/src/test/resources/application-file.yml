@@ -1,7 +1,0 @@
-rms:
-  persistence:
-    person:
-      csv:
-        type: temporary
-        temporary:
-          resource: temporary/personTemp.csv

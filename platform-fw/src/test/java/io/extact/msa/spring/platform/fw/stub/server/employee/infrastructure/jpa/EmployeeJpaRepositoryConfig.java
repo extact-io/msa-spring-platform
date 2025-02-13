@@ -11,7 +11,6 @@ import io.extact.msa.spring.platform.fw.domain.model.ModelValidator;
 import io.extact.msa.spring.platform.fw.domain.repository.GenericRepository;
 import io.extact.msa.spring.platform.fw.infrastructure.framework.model.DefaultModelPropertySupportFactory;
 import io.extact.msa.spring.platform.fw.infrastructure.framework.model.ModelConfig;
-import io.extact.msa.spring.platform.fw.infrastructure.framework.sqlinit.ProfileBasedDbInitializerConfig;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa.DefaultJpaRepository;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa.DefaultModelEntityMapper;
 import io.extact.msa.spring.platform.fw.stub.server.employee.domain.model.Employee;
@@ -19,9 +18,7 @@ import io.extact.msa.spring.platform.fw.stub.server.employee.domain.model.Employ
 @TestConfiguration(proxyBeanMethods = false)
 @EntityScan(basePackageClasses = EmployeeEntity.class)
 @EnableJpaRepositories(basePackageClasses = EmployeeJpaRepositoryDelegator.class)
-@Import({
-    ModelConfig.class,
-    ProfileBasedDbInitializerConfig.class })
+@Import(ModelConfig.class)
 public class EmployeeJpaRepositoryConfig {
 
     @Bean

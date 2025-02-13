@@ -10,15 +10,12 @@ import io.extact.msa.spring.platform.fw.domain.model.ModelPropertySupportFactory
 import io.extact.msa.spring.platform.fw.domain.model.ModelValidator;
 import io.extact.msa.spring.platform.fw.infrastructure.framework.model.DefaultModelPropertySupportFactory;
 import io.extact.msa.spring.platform.fw.infrastructure.framework.model.ModelConfig;
-import io.extact.msa.spring.platform.fw.infrastructure.framework.sqlinit.ProfileBasedDbInitializerConfig;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa.DefaultModelEntityMapper;
 
 @TestConfiguration(proxyBeanMethods = false)
 @EntityScan(basePackageClasses = PersonEntity.class)
 @EnableJpaRepositories(basePackageClasses = PersonJpaRepositoryDelegator.class)
-@Import({
-    ModelConfig.class,
-    ProfileBasedDbInitializerConfig.class })
+@Import(ModelConfig.class)
 public class PersonJpaRepositoryConfig {
 
     @Bean

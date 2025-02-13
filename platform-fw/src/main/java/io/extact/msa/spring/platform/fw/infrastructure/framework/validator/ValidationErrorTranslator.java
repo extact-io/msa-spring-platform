@@ -141,7 +141,7 @@ public class ValidationErrorTranslator {
         // https://terasolunaorg.github.io/guideline/current/ja/ArchitectureInDetail/WebApplicationDetail/Validation.html#application-messages-properties
         return switch (errorMessage.getArguments()[0]) {
             case MessageSourceResolvable fieldMessage -> messageSource.getMessage(
-                    new FirstCodeAsDefaultMessageResolver(fieldMessage),
+                    new SelectableDefaultMessageResolver(fieldMessage),
                     locale);
             default -> "unknown field...";
         };
@@ -182,9 +182,15 @@ public class ValidationErrorTranslator {
     }
 
     @RequiredArgsConstructor
-    static class FirstCodeAsDefaultMessageResolver implements MessageSourceResolvable {
+    static class SelectableDefaultMessageResolver implements MessageSourceResolvable {
+
+        enum CodeType {
+            LONG,
+            SHORT
+        }
 
         private final MessageSourceResolvable original;
+        private final CodeType type;
 
         @Override
         public String[] getCodes() {
@@ -199,6 +205,13 @@ public class ValidationErrorTranslator {
         @Override
         public String getDefaultMessage() {
             String[] codes = getCodes();
+            if (codes == null) {
+                return original.getDefaultMessage();
+            }
+            // TODO ここから。
+            switch (type) {
+                case LONG -> { codes[0] != null ? codes[0] : original.getDefaultMessage()}
+            }
             return codes != null && codes[0] != null
                     ? codes[0] // フィールド名のpathが一番長いものをデフォルトにする
                     : original.getDefaultMessage();
