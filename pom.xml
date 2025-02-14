@@ -31,7 +31,6 @@
 		<module>test-lib</module>
 		<module>platform-core</module>
 		<module>platform-fw</module>
-		<module>platform-fw-test-lib</module>
 		<module>report-aggregate</module>
 	</modules>
 </project>

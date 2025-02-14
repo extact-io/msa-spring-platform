@@ -18,6 +18,7 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 import io.extact.msa.spring.platform.fw.exception.response.SimpleErrorMessage;
 import io.extact.msa.spring.platform.fw.exception.response.ValidationErrorItem;
 import io.extact.msa.spring.platform.fw.exception.response.ValidationErrorMessage;
+import io.extact.msa.spring.platform.fw.infrastructure.framework.validator.ValidationErrorTranslator.SelectableDefaultMessageResolver.CodeType;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -37,7 +38,7 @@ public class ValidationErrorTranslator {
     public ValidationErrorMessage from(BindingResult result, String errorReason, Locale locale) {
 
         Stream<ValidationErrorItem> fieldErrors = result.getFieldErrors().stream().map(error -> {
-            String fieldName = resovleFieldName(error, locale);
+            String fieldName = resovleFieldName(error, CodeType.LONG, locale);
             String message = messageSource.getMessage(error, locale);
             message = messageSource.getMessage(error, locale);
             return new ValidationErrorItem(fieldName, message);
@@ -69,15 +70,18 @@ public class ValidationErrorTranslator {
     // @Validated以外(@NotNullなど)の入力チェックエラー
     public ValidationErrorMessage from(HandlerMethodValidationException e, Locale locale) {
 
-        // MethodValidationResult
-        //   -> ParameterValidationResult x n
-        //      -> MessageSourceResolvable x n を1次元にflat化する
+        /*
+         * MethodValidationResultの2次元配列イメージをflat化する
+         *  - MethodValidationResult
+         *  - -> ParameterValidationResult x n
+         *  - -> MessageSourceResolvable x n を1次元にflat化する
+         */
         List<MessageSourceResolvable> errors = e.getAllValidationResults().stream()
                 .flatMap(result -> result.getResolvableErrors().stream())
                 .toList();
 
         List<ValidationErrorItem> parameterErrors = errors.stream().map(error -> {
-            String fieldName = resovleFieldName(error, locale);
+            String fieldName = resovleFieldName(error, CodeType.DEFAULT, locale);
             String message = messageSource.getMessage(error, locale);
             return new ValidationErrorItem(fieldName, message);
         }).toList();
@@ -135,13 +139,13 @@ public class ValidationErrorTranslator {
         return messageSource.getMessage(PARAMETER_ERROR_MESSAGE, null, locale);
     }
 
-    private String resovleFieldName(MessageSourceResolvable errorMessage, Locale locale) {
+    private String resovleFieldName(MessageSourceResolvable errorMessage, CodeType codeType, Locale locale) {
 
         // MessageSourceResolvable#getArgumentsの0番目はエラーとなったフィールド固定
         // https://terasolunaorg.github.io/guideline/current/ja/ArchitectureInDetail/WebApplicationDetail/Validation.html#application-messages-properties
         return switch (errorMessage.getArguments()[0]) {
             case MessageSourceResolvable fieldMessage -> messageSource.getMessage(
-                    new SelectableDefaultMessageResolver(fieldMessage),
+                    new SelectableDefaultMessageResolver(fieldMessage, codeType),
                     locale);
             default -> "unknown field...";
         };
@@ -186,7 +190,7 @@ public class ValidationErrorTranslator {
 
         enum CodeType {
             LONG,
-            SHORT
+            DEFAULT // こっちはDEFAULTにして、origin.getDefaultMessage()でいい気がする。Longが特別なので
         }
 
         private final MessageSourceResolvable original;
@@ -208,13 +212,10 @@ public class ValidationErrorTranslator {
             if (codes == null) {
                 return original.getDefaultMessage();
             }
-            // TODO ここから。
-            switch (type) {
-                case LONG -> { codes[0] != null ? codes[0] : original.getDefaultMessage()}
-            }
-            return codes != null && codes[0] != null
-                    ? codes[0] // フィールド名のpathが一番長いものをデフォルトにする
-                    : original.getDefaultMessage();
+            return switch (type) {
+                case LONG -> codes[0];
+                case DEFAULT -> original.getDefaultMessage();
+            };
         }
     }
 }

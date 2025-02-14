@@ -26,7 +26,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -73,7 +72,6 @@ import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
  * Controller -> RestClient間のエラーハンドリングの結合テスト
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@TestPropertySource(properties = "spring.main.banner-mode=off")
 class ExceptionErrorHandlerIntegrationTest {
 
     private static final String PARAMETER_ERROR_MESSAGE = "ex.ParameterErrorException.message";

@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
@@ -19,7 +19,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.AbstractPersonRepositoryTest;
-import io.extact.msa.spring.platform.fw.infrastructure.persistence.file.PersonFileRepositoryTest.TestConfig;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.file.io.FileOperator;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.file.io.LoadPathDeriver;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonRepository;
@@ -28,15 +27,14 @@ import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.PersonId
 import io.extact.msa.spring.platform.fw.stub.server.person.infrastructure.file.PersonFileRepository;
 import io.extact.msa.spring.platform.fw.stub.server.person.infrastructure.file.PersonFileRepositoryConfig;
 import io.extact.msa.spring.test.spring.NopTransactionManager;
-import io.extact.msa.spring.test.spring.SelfRootContext;
 
-@SpringBootTest(classes = { SelfRootContext.class, TestConfig.class }, webEnvironment = WebEnvironment.NONE)
+@SpringBootTest(webEnvironment = WebEnvironment.NONE)
 @ActiveProfiles("file")
 class PersonFileRepositoryTest extends AbstractPersonRepositoryTest {
 
     private PersonRepository repository;
 
-    @TestConfiguration(proxyBeanMethods = false)
+    @Configuration(proxyBeanMethods = false)
     @Import(PersonFileRepositoryConfig.class)
     static class TestConfig {
 
