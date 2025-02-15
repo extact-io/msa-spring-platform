@@ -1,7 +1,9 @@
 package io.extact.msa.spring.platform.core.health.client;
 
 import java.io.IOException;
+import java.net.URI;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestClient;
@@ -39,7 +41,7 @@ public class ReadinessProbeRestClientFactoryImpl implements ReadinessProbeRestCl
         }
 
         @Override
-        public void handleError(ClientHttpResponse response) throws IOException {
+        public void handleError(URI url, HttpMethod method, ClientHttpResponse response) throws IOException {
             // nop
         }
     }

@@ -1,12 +1,14 @@
 package io.extact.msa.spring.platform.fw.infrastructure.external;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
 import org.springframework.beans.TypeMismatchException;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -58,7 +60,7 @@ public class RestClientErrorHandler implements ResponseErrorHandler {
     }
 
     @Override
-    public void handleError(ClientHttpResponse response) throws IOException {
+    public void handleError(URI url, HttpMethod method, ClientHttpResponse response) throws IOException {
 
         String className = response.getHeaders().getFirst(RMS_EXCEPTION_HEAD);
         int statusCode = response.getStatusCode().value();

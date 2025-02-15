@@ -3,8 +3,6 @@ package io.extact.msa.spring.platform.fw.infrastructure.framework.profile;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
-
 public enum PersistenceProfileType {
 
     JPA("-jpa"),
@@ -20,7 +18,8 @@ public enum PersistenceProfileType {
 
     public Optional<String> resolveEntityName(String profileName) {
         if (this.matchesType(profileName)) {
-            String entityName = StringUtils.removeEnd(profileName, this.profileSuffix);
+
+            String entityName = removeSuffix(profileName, this.profileSuffix);
             return Optional.of(entityName);
         }
         return Optional.empty();
@@ -34,4 +33,10 @@ public enum PersistenceProfileType {
         return profileName.endsWith(this.profileSuffix);
     }
 
+    String removeSuffix(String input, String suffix) {
+        if (input != null && suffix != null && input.endsWith(suffix)) {
+            return input.substring(0, input.length() - suffix.length());
+        }
+        return input;
+    }
 }

@@ -16,7 +16,7 @@
 		<repository>
 			<id>github</id>
 			<name>GitHub Apache Maven Packages</name>
-			<url>https://maven.pkg.github.com/extact-io/msa-spring-parent</url>
+			<url>https://maven.pkg.github.com/extact-io/msa-spring-platform</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>

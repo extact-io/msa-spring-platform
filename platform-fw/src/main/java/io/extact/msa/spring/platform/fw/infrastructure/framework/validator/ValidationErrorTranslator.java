@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
@@ -76,7 +75,7 @@ public class ValidationErrorTranslator {
          *  - -> ParameterValidationResult x n
          *  - -> MessageSourceResolvable x n を1次元にflat化する
          */
-        List<MessageSourceResolvable> errors = e.getAllValidationResults().stream()
+        List<MessageSourceResolvable> errors = e.getParameterValidationResults().stream()
                 .flatMap(result -> result.getResolvableErrors().stream())
                 .toList();
 
@@ -179,7 +178,7 @@ public class ValidationErrorTranslator {
     }
 
     private static <T> T getLastElement(T[] array) {
-        if (ArrayUtils.isEmpty(array)) {
+        if (array == null || array.length == 0) {
             return null;
         }
         return array[array.length - 1];

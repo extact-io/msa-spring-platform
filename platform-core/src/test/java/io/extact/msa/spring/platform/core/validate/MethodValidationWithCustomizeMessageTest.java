@@ -65,7 +65,7 @@ class MethodValidationWithCustomizeMessageTest {
 
         // 1チェック項目に複数エラーが発生する可能性があるためParameterValidationResultは
         // チェック項目 x 発生エラーの2次元配列の構造になってるので1次元のエラーメッセージにflatしている
-        List<ErrorItem> errors = actual.getAllValidationResults().stream()
+        List<ErrorItem> errors = actual.getParameterValidationResults().stream()
                 .map(paramResult -> {
 
                     // メソッド引数自体がListやMapの場合はそのindexが項目名に入っていないので
