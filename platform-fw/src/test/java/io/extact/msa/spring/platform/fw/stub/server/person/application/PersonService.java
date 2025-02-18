@@ -12,7 +12,7 @@ import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonCreator;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonRepository;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.Person;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.PersonId;
-import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.PersonReference;
+import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.PersonModelView;
 
 @Transactional
 public class PersonService {
@@ -29,7 +29,7 @@ public class PersonService {
         this.support = new ApplicationCrudSupport<>(duplicateChecker, repository);
     }
 
-    public List<PersonReference> getAll() {
+    public List<PersonModelView> getAll() {
         return new ArrayList<>(support.getAll()); // 型をReferenceに制限するため変換
     }
 
@@ -37,11 +37,11 @@ public class PersonService {
         return support.getById(id);
     }
 
-    public PersonReference add(PersonAddCommand command) {
+    public PersonModelView add(PersonAddCommand command) {
         return support.add(() -> this.createModel(command));
     }
 
-    public PersonReference update(PersonUpdateCommand command) {
+    public PersonModelView update(PersonUpdateCommand command) {
         return support.update(command.id(), person -> this.editModel(person, command));
     }
 

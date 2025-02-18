@@ -1,26 +1,20 @@
 package io.extact.msa.spring.platform.fw.stub.client.person.domain.model;
 
-import io.extact.msa.spring.platform.fw.domain.model.EntityModel;
-import io.extact.msa.spring.platform.fw.domain.model.ModelPropertySupport;
-import io.extact.msa.spring.platform.fw.domain.model.ModelPropertySupportFactory;
+import io.extact.msa.spring.platform.fw.domain.model.AbstractEntityModel;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.constraint.PersonName;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.ToString;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "id", callSuper = false)
 @Getter
-public class ExternalPerson implements EntityModel {
+public class ExternalPerson extends AbstractEntityModel {
 
     private @NonNull ExternalPersonId id;
     private @NonNull @PersonName String name;
-
-    @ToString.Exclude
-    private ModelPropertySupport modelSupport;
 
     ExternalPerson(ExternalPersonId id, String name) {
             this.id = id;
@@ -28,12 +22,14 @@ public class ExternalPerson implements EntityModel {
     }
 
     public void editName(String newName) {
-        modelSupport.setPropertyWithValidation("name", newName);
+        applyName(newName);
     }
 
-    @Override
-    public void configureSupport(ModelPropertySupportFactory factory) {
-        this.modelSupport = factory.create(ExternalPerson::new, this);
+    private void applyName(String newName) {
+        ExternalPerson test = new ExternalPerson();
+        test.name = newName;
+        validator().validateField(test, "name");
+        this.name = newName;
     }
 
     public interface ExternalPersonCreatable {

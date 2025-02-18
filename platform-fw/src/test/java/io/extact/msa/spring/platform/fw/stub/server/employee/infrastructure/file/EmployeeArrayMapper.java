@@ -1,6 +1,6 @@
 package io.extact.msa.spring.platform.fw.stub.server.employee.infrastructure.file;
 
-import io.extact.msa.spring.platform.fw.domain.model.ModelPropertySupportFactory;
+import io.extact.msa.spring.platform.fw.domain.model.ModelValidator;
 import io.extact.msa.spring.platform.fw.exception.RmsSystemException;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.file.ModelArrayMapper;
 import io.extact.msa.spring.platform.fw.stub.server.employee.domain.model.Employee;
@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EmployeeArrayMapper implements ModelArrayMapper<Employee>, EmployeeCreatable {
 
-    private final ModelPropertySupportFactory modelSupportFactory;
+    private final ModelValidator validator;
 
     @Override
     public Employee toModel(String[] attributes) throws RmsSystemException {
@@ -19,7 +19,7 @@ public class EmployeeArrayMapper implements ModelArrayMapper<Employee>, Employee
         String name = attributes[1];
         String deptName = attributes[2];
         Employee employee = newInstance(new EmployeeId(id), name, deptName);
-        employee.configureSupport(modelSupportFactory);
+        employee.configure(validator);
         return employee;
     }
 

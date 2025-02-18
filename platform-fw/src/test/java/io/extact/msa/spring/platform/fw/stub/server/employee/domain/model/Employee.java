@@ -1,26 +1,20 @@
 package io.extact.msa.spring.platform.fw.stub.server.employee.domain.model;
 
-import io.extact.msa.spring.platform.fw.domain.model.EntityModel;
-import io.extact.msa.spring.platform.fw.domain.model.ModelPropertySupport;
-import io.extact.msa.spring.platform.fw.domain.model.ModelPropertySupportFactory;
+import io.extact.msa.spring.platform.fw.domain.model.AbstractEntityModel;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.ToString;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "id", callSuper = false)
 @Getter
-public class Employee implements EntityModel, EmployeeReference {
+public class Employee extends AbstractEntityModel implements EmployeeModelView {
 
     private @NonNull EmployeeId id;
     private @NonNull String name;
     private @NonNull String deptName;
-
-    @ToString.Exclude
-    private ModelPropertySupport modelSupport;
 
     Employee(EmployeeId id, String name, String deptName) {
         this.id = id;
@@ -29,13 +23,22 @@ public class Employee implements EntityModel, EmployeeReference {
     }
 
     public void editEmployee(String newName, String newDeptName) {
-        modelSupport.setPropertyWithValidation("name", newName);
-        modelSupport.setPropertyWithValidation("deptName", newDeptName);
+        applyName(newName);
+        applyDeptName(newDeptName);
     }
 
-    @Override
-    public void configureSupport(ModelPropertySupportFactory factory) {
-        this.modelSupport = factory.create(Employee::new, this);
+    private void applyName(String newName) {
+        Employee test = new Employee();
+        test.name = newName;
+        validator().validateField(test, "name");
+        this.name = newName;
+    }
+
+    private void applyDeptName(String newDeptName) {
+        Employee test = new Employee();
+        test.deptName = newDeptName;
+        validator().validateField(test, "deptName");
+        this.deptName = newDeptName;
     }
 
     public interface EmployeeCreatable {

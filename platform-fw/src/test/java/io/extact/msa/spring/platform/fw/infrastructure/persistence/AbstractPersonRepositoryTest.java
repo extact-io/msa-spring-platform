@@ -8,7 +8,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.method.MethodValidationException;
 
 import io.extact.msa.spring.platform.fw.exception.RmsPersistenceException;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonRepository;
@@ -63,13 +62,6 @@ public abstract class AbstractPersonRepositoryTest {
     }
 
     @Test
-    void testUpdateOnValidationError() {
-        Throwable thrown = catchThrowable(
-                () -> repository().update(testCreator.newInstance(new PersonId(4), "123456"))); // 5文字より大きい
-        assertThat(thrown).isInstanceOf(MethodValidationException.class);
-    }
-
-    @Test
     void testUpdateOnDuplicate() {
         // 重複チェックは上位で行うので正常に処理できることを確認
         assertThatCode(() -> repository().update(testCreator.newInstance(new PersonId(2), "name3")))
@@ -90,12 +82,6 @@ public abstract class AbstractPersonRepositoryTest {
     }
 
     @Test
-    void testAddOnValidationError() {
-        Throwable thrown = catchThrowable(() -> repository().add(testCreator.newInstance(new PersonId(5), "123456"))); // 5文字より大きい
-        assertThat(thrown).isInstanceOf(MethodValidationException.class);
-    }
-
-    @Test
     void testAddOnDuplicateError() {
         // 重複チェックは上位で行うので正常に処理できることを確認
         assertThatCode(() -> repository().add(testCreator.newInstance(new PersonId(5), "name3")))
@@ -107,13 +93,6 @@ public abstract class AbstractPersonRepositoryTest {
         Person deleted = testCreator.newInstance(new PersonId(1), "dummy");
         repository().delete(deleted);
         assertThat(repository().find(new PersonId(1))).isNotPresent();
-    }
-
-    @Test
-    void testDeleteOnValidationError() {
-        Throwable thrown = catchThrowable(
-                () -> repository().delete(testCreator.newInstance(new PersonId(1), "123456"))); // 5文字より大きい
-        assertThat(thrown).isInstanceOf(MethodValidationException.class);
     }
 
     @Test

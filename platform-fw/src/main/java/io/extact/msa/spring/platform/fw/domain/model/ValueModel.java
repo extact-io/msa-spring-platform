@@ -1,5 +1,5 @@
 package io.extact.msa.spring.platform.fw.domain.model;
 
-public interface ValueModel extends DomainModel, Transformable {
+public interface ValueModel extends DomainModel {
 
 }

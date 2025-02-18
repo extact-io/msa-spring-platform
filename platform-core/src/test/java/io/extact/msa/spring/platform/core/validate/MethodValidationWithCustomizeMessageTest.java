@@ -1,6 +1,6 @@
 package io.extact.msa.spring.platform.core.validate;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import java.util.Map;
@@ -54,18 +54,18 @@ class MethodValidationWithCustomizeMessageTest {
                 List.of(new Detail(null), new Detail(null)),
                 Map.of("No.1", new Detail(null)));
 
-        MethodValidationException actual = catchThrowableOfType(
-                () -> testBean.validate(
-                        null,
-                        List.of(new Detail(null), new Detail(null)),
-                        null,
-                        entity,
-                        List.of(entity)),
-                MethodValidationException.class);
+        MethodValidationException thrown = assertThrows(MethodValidationException.class, () -> {
+            testBean.validate(
+                    null,
+                    List.of(new Detail(null), new Detail(null)),
+                    null,
+                    entity,
+                    List.of(entity));
+        });
 
         // 1チェック項目に複数エラーが発生する可能性があるためParameterValidationResultは
         // チェック項目 x 発生エラーの2次元配列の構造になってるので1次元のエラーメッセージにflatしている
-        List<ErrorItem> errors = actual.getParameterValidationResults().stream()
+        List<ErrorItem> errors = thrown.getParameterValidationResults().stream()
                 .map(paramResult -> {
 
                     // メソッド引数自体がListやMapの場合はそのindexが項目名に入っていないので

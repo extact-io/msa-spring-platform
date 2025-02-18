@@ -5,10 +5,12 @@ import org.springframework.boot.autoconfigure.context.MessageSourceAutoConfigura
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.validation.SmartValidator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
 import io.extact.msa.spring.platform.core.message.CustomLocalValidatorFactoryBean;
+import io.extact.msa.spring.platform.fw.domain.model.ModelValidator;
 
 /**
  * BeanValidationのコンフィグレーション。
@@ -52,5 +54,10 @@ public class ValidatorConfig {
     @Bean
     ValidationErrorTranslator validationErrorTranslator(MessageSource source) {
         return new ValidationErrorTranslator(source);
+    }
+
+    @Bean
+    ModelValidator modelValidator(SmartValidator validator, ValidationErrorTranslator translator) {
+        return new SpringModelValidatorAdapter(validator, translator);
     }
 }

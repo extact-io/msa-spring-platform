@@ -4,13 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import jakarta.validation.Valid;
-import jakarta.validation.groups.Default;
 
-import org.springframework.validation.annotation.Validated;
-
-import io.extact.msa.spring.platform.fw.domain.constraint.ValidationGroups.Add;
-import io.extact.msa.spring.platform.fw.domain.constraint.ValidationGroups.Delete;
-import io.extact.msa.spring.platform.fw.domain.constraint.ValidationGroups.Update;
 import io.extact.msa.spring.platform.fw.domain.model.EntityModel;
 import io.extact.msa.spring.platform.fw.domain.model.Identity;
 
@@ -19,7 +13,6 @@ import io.extact.msa.spring.platform.fw.domain.model.Identity;
  *
  * @param <M> ドメインモデルの型
  */
-@Validated // メソッドバリデーションを有効にするための@Validated
 public interface GenericRepository<M extends EntityModel> {
 
     /**
@@ -43,8 +36,7 @@ public interface GenericRepository<M extends EntityModel> {
      *
      * @param model エンティティ
      */
-    @Validated({ Default.class, Add.class }) // グループを指定するための@Validated
-    void add(@Valid M model); // 引数にバリデーションを掛けるための@Valid(この@Validがないとバリデーションは実行されない)
+    void add(M model);
 
     /**
      * エンティティを更新する。
@@ -53,14 +45,12 @@ public interface GenericRepository<M extends EntityModel> {
      * @param model 更新内容
      * @return 更新後エンティティ。更新対象が存在しない場合はnull
      */
-    @Validated({ Default.class, Update.class })
-    void update(@Valid M model);
+    void update(M model);
 
     /**
      * エンティティを削除する。
      *
      * @param model 削除エンティティ
      */
-    @Validated({ Default.class, Delete.class })
-    void delete(@Valid M model);
+    void delete(M model);
 }

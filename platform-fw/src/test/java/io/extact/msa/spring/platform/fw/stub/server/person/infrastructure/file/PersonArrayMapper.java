@@ -1,6 +1,6 @@
 package io.extact.msa.spring.platform.fw.stub.server.person.infrastructure.file;
 
-import io.extact.msa.spring.platform.fw.domain.model.ModelPropertySupportFactory;
+import io.extact.msa.spring.platform.fw.domain.model.ModelValidator;
 import io.extact.msa.spring.platform.fw.exception.RmsSystemException;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.file.ModelArrayMapper;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.Person;
@@ -11,14 +11,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PersonArrayMapper implements ModelArrayMapper<Person>, PersonCreatable {
 
-    private final ModelPropertySupportFactory modelSupportFactory;
+    private final ModelValidator validator;
 
     @Override
     public Person toModel(String[] attributes) throws RmsSystemException {
         Integer id = Integer.parseInt(attributes[0]);
         String name = attributes[1];
         Person person = newInstance(new PersonId(id), name);
-        person.configureSupport(modelSupportFactory);
+        person.configure(validator);
         return person;
     }
 

@@ -1,8 +1,8 @@
 package io.extact.msa.spring.platform.fw.stub.server.employee.domain.model;
 
-import io.extact.msa.spring.platform.fw.domain.model.EntityModelReference;
+import io.extact.msa.spring.platform.fw.domain.model.EntityModelView;
 
-public interface EmployeeReference extends EntityModelReference {
+public interface EmployeeModelView extends EntityModelView {
 
     EmployeeId getId();
     String getName();

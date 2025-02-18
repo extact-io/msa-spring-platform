@@ -1,7 +1,6 @@
 package io.extact.msa.spring.platform.fw.stub.server.person.domain;
 
 import io.extact.msa.spring.platform.fw.domain.model.ModelCreator;
-import io.extact.msa.spring.platform.fw.domain.model.ModelPropertySupportFactory;
 import io.extact.msa.spring.platform.fw.domain.model.ModelValidator;
 import io.extact.msa.spring.platform.fw.domain.service.IdentityGenerator;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.Person;
@@ -14,7 +13,6 @@ public class PersonCreator implements ModelCreator<Person, String> {
 
     private final IdentityGenerator idGenerator;
     private final ModelValidator validator;
-    private final ModelPropertySupportFactory modelSupportFactory;
     private final PersonCreatable constructorProxy = new PersonCreatable() {};
 
     public Person create(String name) {
@@ -22,7 +20,7 @@ public class PersonCreator implements ModelCreator<Person, String> {
         PersonId id = new PersonId(idGenerator.nextIdentity());
         Person person = constructorProxy.newInstance(id, name);
 
-        person.configureSupport(modelSupportFactory);
+        person.configure(validator);
         validator.validateModel(person);
 
         return person;

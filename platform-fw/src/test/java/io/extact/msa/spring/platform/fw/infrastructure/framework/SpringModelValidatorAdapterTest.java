@@ -20,14 +20,13 @@ import org.springframework.context.annotation.Import;
 import io.extact.msa.spring.platform.fw.domain.constraint.RmsId;
 import io.extact.msa.spring.platform.fw.domain.constraint.ValidationGroups.Add;
 import io.extact.msa.spring.platform.fw.domain.constraint.ValidationGroups.Update;
-import io.extact.msa.spring.platform.fw.domain.model.EntityModel;
-import io.extact.msa.spring.platform.fw.domain.model.EntityModelReference;
+import io.extact.msa.spring.platform.fw.domain.model.AbstractEntityModel;
+import io.extact.msa.spring.platform.fw.domain.model.EntityModelView;
 import io.extact.msa.spring.platform.fw.domain.model.Identity;
-import io.extact.msa.spring.platform.fw.domain.model.ModelPropertySupportFactory;
 import io.extact.msa.spring.platform.fw.domain.model.ModelValidator;
 import io.extact.msa.spring.platform.fw.domain.model.ValueModel;
 import io.extact.msa.spring.platform.fw.exception.RmsValidationException;
-import io.extact.msa.spring.platform.fw.infrastructure.framework.model.ModelConfig;
+import io.extact.msa.spring.platform.fw.infrastructure.framework.validator.ValidatorConfig;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.EqualPairFields;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.EqualPairFields.EqualPairFieldsValidatable;
 import lombok.AllArgsConstructor;
@@ -41,7 +40,7 @@ class SpringModelValidatorAdapterTest {
     private ModelValidator validator;
 
     @Configuration(proxyBeanMethods = false)
-    @Import(ModelConfig.class)
+    @Import(ValidatorConfig.class)
     static class TestConfig {
     }
 
@@ -573,7 +572,7 @@ class SpringModelValidatorAdapterTest {
     // ---------------------------------------------------------------------------- Model clssses for Test
 
     @AllArgsConstructor
-    static class TestModel implements TestModelReference, EntityModel {
+    static class TestModel extends AbstractEntityModel implements TestModelView {
 
         TestModel() {
         }
@@ -596,10 +595,6 @@ class SpringModelValidatorAdapterTest {
         @NotNull
         @Valid
         private NestModel nest;
-
-        @Override
-        public void configureSupport(ModelPropertySupportFactory modeSupportFactory) {
-        }
     }
 
     static record TestId(
@@ -617,7 +612,7 @@ class SpringModelValidatorAdapterTest {
         private final String pair2;
     }
 
-    interface TestModelReference extends EntityModelReference {
+    interface TestModelView extends EntityModelView {
         TestId getId();
 
         int getNo();
@@ -640,7 +635,7 @@ class SpringModelValidatorAdapterTest {
     // ---------------------------------------------------------------------------- Model for Group clssses Test
 
     @AllArgsConstructor
-    static class TestModelForGroup implements EntityModel {
+    static class TestModelForGroup extends AbstractEntityModel {
 
         TestModelForGroup() {
         }
@@ -664,10 +659,6 @@ class SpringModelValidatorAdapterTest {
         @NotNull
         @Valid
         private NestModelForGroup nest;
-
-        @Override
-        public void configureSupport(ModelPropertySupportFactory modeSupportFactory) {
-        }
     }
 
 

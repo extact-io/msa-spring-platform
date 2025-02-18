@@ -1,6 +1,7 @@
 package io.extact.msa.spring.platform.core.validate;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
@@ -46,41 +47,34 @@ class MethodValidationTest {
 
         TestEntity entity = new TestEntity(0, 0, 0);
 
-        ConstraintViolationException actual = catchThrowableOfType(() ->
-            testBean.noneGroupValidate(entity),
-            ConstraintViolationException.class
-        );
-        assertThat(actual.getConstraintViolations()).hasSize(2);
+        ConstraintViolationException thrown = assertThrows(ConstraintViolationException.class, () -> {
+            testBean.noneGroupValidate(entity);
+        });
+        assertThat(thrown.getConstraintViolations()).hasSize(2);
 
-        actual = catchThrowableOfType(() ->
-            testBean.defaultGroupValidate(entity),
-            ConstraintViolationException.class
-        );
-        assertThat(actual.getConstraintViolations()).hasSize(2);
+        thrown = assertThrows(ConstraintViolationException.class, () -> {
+            testBean.defaultGroupValidate(entity);
+        });
+        assertThat(thrown.getConstraintViolations()).hasSize(2);
 
-        actual = catchThrowableOfType(() ->
-            testBean.addGroupValidate(entity),
-            ConstraintViolationException.class
-        );
-        assertThat(actual.getConstraintViolations()).hasSize(1);
+        thrown = assertThrows(ConstraintViolationException.class, () -> {
+            testBean.addGroupValidate(entity);
+        });
+        assertThat(thrown.getConstraintViolations()).hasSize(1);
 
-        actual = catchThrowableOfType(() ->
-            testBean.updateGroupValidate(entity),
-            ConstraintViolationException.class
-        );
-        assertThat(actual.getConstraintViolations()).hasSize(1);
+        thrown = assertThrows(ConstraintViolationException.class, () -> {
+            testBean.updateGroupValidate(entity);
+        });
+        assertThat(thrown.getConstraintViolations()).hasSize(1);
 
-        actual = catchThrowableOfType(() ->
-            testBean.deleteGroupValidate(entity),
-            ConstraintViolationException.class
-        );
-        assertThat(actual).isNull();;
+        assertThatCode(() -> {
+            testBean.deleteGroupValidate(entity);
+        }).doesNotThrowAnyException();
 
-        actual = catchThrowableOfType(() ->
-            testBean.addAndDefaultGroupValidate(entity),
-            ConstraintViolationException.class
-        );
-        assertThat(actual.getConstraintViolations()).hasSize(3);
+        thrown = assertThrows(ConstraintViolationException.class, () -> {
+            testBean.addAndDefaultGroupValidate(entity);
+        });
+        assertThat(thrown.getConstraintViolations()).hasSize(3);
     }
 
     @Test
@@ -88,17 +82,14 @@ class MethodValidationTest {
 
         TestEntity entity = new TestEntity(0, 0, 0);
 
-        ConstraintViolationException actual = catchThrowableOfType(() ->
-            groupAnnoteTestBean.applyTypeDefValidate(entity),
-            ConstraintViolationException.class
-        );
-        assertThat(actual.getConstraintViolations()).hasSize(1);
+        ConstraintViolationException thrown = assertThrows(ConstraintViolationException.class, () -> {
+            groupAnnoteTestBean.applyTypeDefValidate(entity);
+        });
+        assertThat(thrown.getConstraintViolations()).hasSize(1);
 
-        actual = catchThrowableOfType(() ->
-            groupAnnoteTestBean.defineTypeDiffGroupValidate(entity),
-            ConstraintViolationException.class
-        );
-        assertThat(actual).isNull();
+        assertThatCode(() -> {
+            groupAnnoteTestBean.defineTypeDiffGroupValidate(entity);
+        }).doesNotThrowAnyException();
     }
 
 

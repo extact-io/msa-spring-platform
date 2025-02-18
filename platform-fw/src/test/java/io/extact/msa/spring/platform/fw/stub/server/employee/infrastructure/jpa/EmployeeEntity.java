@@ -6,7 +6,7 @@ import jakarta.persistence.Access;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
-import io.extact.msa.spring.platform.fw.domain.model.ModelPropertySupportFactory;
+import io.extact.msa.spring.platform.fw.domain.model.ModelValidator;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa.TableEntity;
 import io.extact.msa.spring.platform.fw.stub.server.employee.domain.model.Employee;
 import io.extact.msa.spring.platform.fw.stub.server.employee.domain.model.Employee.EmployeeCreatable;
@@ -35,9 +35,9 @@ public class EmployeeEntity implements TableEntity<Employee>, EmployeeCreatable 
     }
 
     @Override
-    public Employee toModel(ModelPropertySupportFactory factory) {
+    public Employee toModel(ModelValidator validator) {
         Employee employee = newInstance(new EmployeeId(this.id), this.name, this.deptName);
-        employee.configureSupport(factory);
+        employee.configure(validator);
         return employee;
     }
 }

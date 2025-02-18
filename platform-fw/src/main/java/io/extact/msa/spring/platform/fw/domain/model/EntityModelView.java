@@ -8,9 +8,5 @@ package io.extact.msa.spring.platform.fw.domain.model;
  * ただし、状態を変更する操作を持たない{@link ValueModel}は公開することによりデメリットは
  * ないため、そのまま公開して良いものとする。
  */
-public interface EntityModelReference extends Identifiable, Transformable, Comparable<EntityModelReference> {
-    @Override
-    default int compareTo(EntityModelReference other) {
-        return getId().compareTo(other.getId());
-    }
+public interface EntityModelView extends Identifiable, Transformable {
 }
