@@ -1,6 +1,5 @@
 package io.extact.msa.spring.platform.fw;
 
-
 import static com.tngtech.archunit.core.domain.JavaClass.Predicates.*;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.*;
 
@@ -21,16 +20,22 @@ class FwDependencyArchUnitTest {
      * Java標準以外に依存しないクリーナ状態であること
      */
     @ArchTest
-    static final ArchRule test_applicaiton_domain_exceptionで依存してOKなライブラリの定義 =
-        classes()
+    static final ArchRule test_applicaiton_domain_exceptionで依存してOKなライブラリの定義 = classes()
             .that().resideInAnyPackage(
-                "..application..",
-                "..domain..",
-                "..exception..")
-            .should().onlyDependOnClassesThat(
-                resideInAnyPackage(
+                    "..application..",
+                    "..domain..",
+                    "..exception..")
+            .should().onlyDependOnClassesThat(resideInAnyPackage(
                     "io.extact.msa.spring.platform.core..",
                     "io.extact.msa.spring.platform.fw..",
                     "java..",
-                    "jakarta.validation.."));
+                    "jakarta.validation..",
+                    "lombok..")
+                            // Springへの依存はNGだが@Transactionalだけは許容
+                            .or(type(org.springframework.transaction.annotation.Transactional.class))
+                            .or(type(org.springframework.transaction.annotation.Propagation.class))
+                            .or(type(org.springframework.transaction.annotation.Isolation.class))
+                            .or(type(org.springframework.core.annotation.AliasFor.class))
+
+            );
 }

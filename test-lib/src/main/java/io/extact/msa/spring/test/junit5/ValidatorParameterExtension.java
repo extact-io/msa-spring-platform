@@ -20,8 +20,7 @@ public class ValidatorParameterExtension implements ParameterResolver {
     }
 
     @Override
-    public Validator resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
-            throws ParameterResolutionException {
+    public Validator resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
         var store = getValidatorStore(extensionContext);
         var validator = store.get(Validator.class, Validator.class);
         if (validator != null) {

@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import io.extact.msa.spring.platform.fw.application.ApplicationCrudSupport;
+import io.extact.msa.spring.platform.fw.application.ApplicationService;
 import io.extact.msa.spring.platform.fw.domain.service.DuplicateChecker;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonCreator;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonRepository;
@@ -14,7 +13,7 @@ import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.Person;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.PersonId;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.PersonModelView;
 
-@Transactional
+@ApplicationService
 public class PersonService {
 
     private final PersonCreator modelCreator;

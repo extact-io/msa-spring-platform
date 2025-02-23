@@ -106,6 +106,7 @@ class CoreDependencyArchUnitTest {
                     "jakarta.validation..",
                     "org.springframework..",
                     "org.slf4j..",
-                    "org.aspectj..")
+                    "org.aspectj..",
+                    "lombok..")
                 .or(type(PostConstruct.class)));
 }
