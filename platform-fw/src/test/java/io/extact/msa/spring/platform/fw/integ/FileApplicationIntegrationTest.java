@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw;
+package io.extact.msa.spring.platform.fw.integ;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;

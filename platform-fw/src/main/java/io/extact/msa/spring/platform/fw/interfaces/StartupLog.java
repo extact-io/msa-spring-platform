@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw;
+package io.extact.msa.spring.platform.fw.interfaces;
 
 import io.extact.msa.spring.platform.core.env.ActiveProfileResolver;
 import io.extact.msa.spring.platform.core.env.MainModuleInformation;

@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.web;
+package io.extact.msa.spring.platform.fw.interfaces.webapi;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

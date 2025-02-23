@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.web;
+package io.extact.msa.spring.platform.fw.interfaces.webapi;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;

@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.core.env.Environment;
 
-import io.extact.msa.spring.platform.core.utils.LogingUtils;
+import io.extact.msa.spring.platform.core.utils.LoggingUtils;
 
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(ConfigDumpProperties.class)
@@ -19,7 +19,7 @@ public class DebugConfig {
     @Bean
     @ConditionalOnProperty(prefix = "rms.debug.configdump", name = "enable", havingValue = "true")
     ConfigDump configDump(Environment env, ConfigDumpProperties dumpProps, LoggingSystem loggingSystem) {
-        LogingUtils.forceLogEnable(loggingSystem, "ConfigDump", LogLevel.DEBUG);
+        LoggingUtils.forceLogEnable(loggingSystem, "ConfigDump", LogLevel.DEBUG);
         return new ConfigDump(env, dumpProps);
     }
 

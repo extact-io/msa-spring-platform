@@ -2,7 +2,6 @@ package io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa;
 
 import io.extact.msa.spring.platform.fw.domain.model.EntityModel;
 import io.extact.msa.spring.platform.fw.domain.repository.GenericRepository;
-import io.extact.msa.spring.platform.fw.infrastructure.persistence.ModelEntityMapper;
 
 public class DefaultJpaRepository<M extends EntityModel, E extends TableEntity<M>>
     extends AbstractJpaRepository<M, E> implements GenericRepository<M> {

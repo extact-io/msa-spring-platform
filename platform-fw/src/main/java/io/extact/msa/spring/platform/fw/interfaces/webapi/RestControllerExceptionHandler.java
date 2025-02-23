@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.web;
+package io.extact.msa.spring.platform.fw.interfaces.webapi;
 
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;

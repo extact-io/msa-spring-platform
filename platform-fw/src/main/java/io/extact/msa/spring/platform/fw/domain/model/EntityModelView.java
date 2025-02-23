@@ -1,5 +1,7 @@
 package io.extact.msa.spring.platform.fw.domain.model;
 
+import io.extact.msa.spring.platform.core.generic.Transformable;
+
 /**
  * Domainクラスのinterface層公開用インタフェース。
  * interface層からDomainクラスへの参照はモデル変換を不要とするため許容しているが

@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.infrastructure.persistence;
+package io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa;
 
 public interface ModelEntityMapper<M, E> {
 

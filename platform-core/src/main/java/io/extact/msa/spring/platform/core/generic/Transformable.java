@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.domain.model;
+package io.extact.msa.spring.platform.core.generic;
 
 import java.util.function.Function;
 

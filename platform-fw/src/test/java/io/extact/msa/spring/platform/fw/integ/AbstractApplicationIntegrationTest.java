@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw;
+package io.extact.msa.spring.platform.fw.integ;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;

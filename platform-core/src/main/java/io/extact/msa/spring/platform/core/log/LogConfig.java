@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
 
 import ch.qos.logback.access.tomcat.LogbackValve;
-import io.extact.msa.spring.platform.core.utils.LogingUtils;
+import io.extact.msa.spring.platform.core.utils.LoggingUtils;
 
 @Configuration(proxyBeanMethods = false)
 public class LogConfig {
@@ -30,7 +30,7 @@ public class LogConfig {
     CommonsRequestLoggingFilter logFilter(LoggingSystem loggingSystem) {
 
         String loggerName = CommonsRequestLoggingFilter.class.getName();
-        LogingUtils.forceLogEnable(loggingSystem, loggerName, LogLevel.DEBUG);
+        LoggingUtils.forceLogEnable(loggingSystem, loggerName, LogLevel.DEBUG);
 
         CommonsRequestLoggingFilter filter = new CommonsRequestLoggingFilter();
         filter.setIncludeQueryString(true);

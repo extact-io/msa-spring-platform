@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.web;
+package io.extact.msa.spring.platform.fw.interfaces.webapi;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;

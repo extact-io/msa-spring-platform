@@ -4,7 +4,6 @@ import java.util.function.Function;
 
 import io.extact.msa.spring.platform.fw.domain.model.EntityModel;
 import io.extact.msa.spring.platform.fw.domain.model.ModelValidator;
-import io.extact.msa.spring.platform.fw.infrastructure.persistence.ModelEntityMapper;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
