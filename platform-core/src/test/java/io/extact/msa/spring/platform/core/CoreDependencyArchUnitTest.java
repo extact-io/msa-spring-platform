@@ -13,6 +13,7 @@ import com.tngtech.archunit.lang.ArchRule;
 @AnalyzeClasses(packages = "io.extact.msa.spring.platform.core", importOptions = ImportOption.DoNotIncludeTests.class)
 class CoreDependencyArchUnitTest {
 
+
     // ---------------------------------------------------------------------
     // platform.coreパッケージ内部の依存関係の定義
     // ---------------------------------------------------------------------
@@ -23,17 +24,15 @@ class CoreDependencyArchUnitTest {
      * ・jose4jとAuth0へはprovider.impljパッケージでしか依存していないこと
      * </pre>
      */
-    // @formatter:off
     @ArchTest
-    static final ArchRule test_JWT実装への依存はimplパッケージのみの定義 =
+    static final ArchRule test_JWT実装への依存はimplパッケージのみの定義 = //
             noClasses()
-                .that()
+                    .that()
                     .resideOutsideOfPackage("..jwt.encode.impl..")
-                .should().dependOnClassesThat()
+                    .should().dependOnClassesThat()
                     .resideInAnyPackage(
-                        "org.jose4j..",
-                        "com.auth0.jwt..");
-    // @formatter:on
+                            "org.jose4j..",
+                            "com.auth0.jwt..");
 
     /**
      * jwtパッケージの依存関係の定義
@@ -41,20 +40,15 @@ class CoreDependencyArchUnitTest {
      * ・jwtパッケージ直下のクラスはjwtの実装依存のimplパッケージに依存してないこと
      * </pre>
      */
-    // @formatter:off
     @ArchTest
-    static final ArchRule test_jwtパッケージ内部の依存関係の定義 =
+    static final ArchRule test_jwtパッケージ内部の依存関係の定義 = //
             noClasses()
-                .that()
+                    .that()
                     .resideInAPackage("..jwt.encode")
-                        .and()
-                        .resideOutsideOfPackage("..jwt.encode.impl..")
-                        .and()
-                        .doNotHaveSimpleName("JwtEncodeConfig")
-                .should()
-                    .dependOnClassesThat()
-                        .resideInAnyPackage("..jwt.encode.impl..");
-    // @formatter:on
+                    .and().resideOutsideOfPackage("..jwt.encode.impl..")
+                    .and().doNotHaveSimpleName("JwtEncodeConfig")
+                    .should().dependOnClassesThat()
+                    .resideInAnyPackage("..jwt.encode.impl..");
 
     /**
      * jakarta.servletへの依存はcore.authパッケージのみの定義
@@ -62,16 +56,13 @@ class CoreDependencyArchUnitTest {
      * ・servletへはcore.authjパッケージでしか依存していないこと
      * </pre>
      */
-    // @formatter:off
     @ArchTest
-    static final ArchRule test_servletへの依存はauthパッケージのみの定義 =
+    static final ArchRule test_servletへの依存はauthパッケージのみの定義 = //
             noClasses()
-                .that()
+                    .that()
                     .resideOutsideOfPackage("..auth..")
-                .should()
-                    .dependOnClassesThat()
+                    .should().dependOnClassesThat()
                     .resideInAnyPackage("jakarta.servlet..");
-    // @formatter:on
 
     /**
      * Logback-Accessへの依存はcore.logパッケージのみの定義
@@ -79,34 +70,32 @@ class CoreDependencyArchUnitTest {
      * ・Logback-Accessへはcore.logパッケージでしか依存していないこと
      * </pre>
      */
-    // @formatter:off
     @ArchTest
-    static final ArchRule test_logbackaccessへの依存はauthパッケージのみの定義 =
+    static final ArchRule test_logbackaccessへの依存はauthパッケージのみの定義 = //
             noClasses()
-                .that()
+                    .that()
                     .resideOutsideOfPackage("..log..")
-                .should().dependOnClassesThat()
+                    .should().dependOnClassesThat()
                     .resideInAnyPackage("ch.qos.logback.access.tomcat..");
-    // @formatter:on
 
     /**
      * coreで依存OKなライブラリの定義。
      */
     @ArchTest
-    static final ArchRule test_coreで依存してOKなライブラリの定義 =
-        classes()
-            .that().resideOutsideOfPackages(
-                "..jwt.encode.impl..",
-                "..auth..",
-                "..log..")
-            .should().onlyDependOnClassesThat(
-                resideInAnyPackage(
-                    "io.extact.msa.spring.platform.core..",
-                    "java..",
-                    "jakarta.validation..",
-                    "org.springframework..",
-                    "org.slf4j..",
-                    "org.aspectj..",
-                    "lombok..")
-                .or(type(PostConstruct.class)));
+    static final ArchRule test_coreで依存してOKなライブラリの定義 = //
+            classes()
+                    .that().resideOutsideOfPackages(
+                            "..jwt.encode.impl..",
+                            "..auth..",
+                            "..log..")
+                    .should().onlyDependOnClassesThat(
+                            resideInAnyPackage(
+                                    "io.extact.msa.spring.platform.core..",
+                                    "java..",
+                                    "jakarta.validation..",
+                                    "org.springframework..",
+                                    "org.slf4j..",
+                                    "org.aspectj..",
+                                    "lombok..")
+                                            .or(type(PostConstruct.class)));
 }
