@@ -1,20 +1,13 @@
 package io.extact.msa.spring.platform.fw.feature.validator;
 
-import java.beans.Introspector;
 import java.io.Serializable;
-import java.lang.invoke.SerializedLambda;
-import java.lang.reflect.Method;
-import java.util.Objects;
 import java.util.function.Supplier;
 
-import org.springframework.beans.PropertyAccessor;
-import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.SmartValidator;
 
 import io.extact.msa.spring.platform.fw.domain.model.DomainModel;
 import io.extact.msa.spring.platform.fw.domain.model.ModelValidator;
-import io.extact.msa.spring.platform.fw.exception.RmsSystemException;
 import io.extact.msa.spring.platform.fw.exception.RmsValidationException;
 import io.extact.msa.spring.platform.fw.exception.message.ValidationErrorMessage;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +43,7 @@ public class SpringModelValidatorAdapter implements ModelValidator {
                 model.getClass().getSimpleName());
 
         Object fieldValue = getter.get();
-        String fieldName = extractPropertyName(getter);
+        String fieldName = ValidatorPropertyUtils.extractPropertyName(getter);
 
         validator.validateValue(
                 model.getClass(),
@@ -77,42 +70,6 @@ public class SpringModelValidatorAdapter implements ModelValidator {
             throw new RmsValidationException(message);
         }
 
-    }
-
-    private String extractPropertyName(Serializable lambda) {
-        try {
-            Method writeReplace = lambda.getClass().getDeclaredMethod("writeReplace");
-            writeReplace.setAccessible(true);
-            SerializedLambda serializedLambda = (SerializedLambda) writeReplace.invoke(lambda);
-            String getterName = serializedLambda.getImplMethodName();
-
-            return getterToPropertyName(getterName);
-
-        } catch (ReflectiveOperationException e) {
-            throw new RmsSystemException("failed to extract method name.", e);
-        }
-    }
-
-    private String getterToPropertyName(String getterName) {
-
-        Objects.requireNonNull(getterName);
-
-        String rawName;
-        if (getterName.startsWith("get") && getterName.length() > 3) {
-            rawName = getterName.substring(3);
-        } else if (getterName.startsWith("is") && getterName.length() > 2) {
-            rawName = getterName.substring(2);
-        } else {
-            throw new RmsSystemException("not a valid getter method name: " + getterName);
-        }
-
-        return Introspector.decapitalize(rawName);
-    }
-
-    public Object getFieldValue(Object target, String field) {
-        // 可能なアクセスパスはJava Bean、つまりpublicなgetterアクセスのみ
-        PropertyAccessor accessor = PropertyAccessorFactory.forBeanPropertyAccess(target);
-        return accessor.getPropertyValue(field);
     }
 
     @FunctionalInterface
