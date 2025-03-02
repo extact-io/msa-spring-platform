@@ -33,7 +33,7 @@ public class Person extends AbstractEntityModel implements PersonModelView {
     private void applyName(String newName) {
         Person test = new Person();
         test.name = newName;
-        validator().validateField(test, "name");
+        validator().validateField(test, test::getName);
         this.name = newName;
     }
 

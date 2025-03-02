@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.infrastructure.framework;
+package io.extact.msa.spring.platform.fw.feature.validator;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -16,7 +16,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import io.extact.msa.spring.platform.fw.feature.validator.ValidatorConfig;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.EqualPairFields;
 import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.EqualPairFields.EqualPairFieldsValidatable;
 

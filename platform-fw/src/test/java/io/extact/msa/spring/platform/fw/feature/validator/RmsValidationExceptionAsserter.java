@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.infrastructure.framework;
+package io.extact.msa.spring.platform.fw.feature.validator;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -8,7 +8,6 @@ import java.util.Map;
 import io.extact.msa.spring.platform.fw.exception.RmsValidationException;
 import io.extact.msa.spring.platform.fw.exception.message.ValidationErrorMessage;
 import io.extact.msa.spring.platform.fw.exception.message.ValidationErrorMessage.MessageItem;
-import io.extact.msa.spring.platform.fw.feature.validator.SpringModelValidatorAdapter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

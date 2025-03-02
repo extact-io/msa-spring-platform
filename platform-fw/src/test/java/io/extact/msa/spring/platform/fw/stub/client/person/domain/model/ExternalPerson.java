@@ -28,7 +28,7 @@ public class ExternalPerson extends AbstractEntityModel {
     private void applyName(String newName) {
         ExternalPerson test = new ExternalPerson();
         test.name = newName;
-        validator().validateField(test, "name");
+        validator().validateField(test, test::getName);
         this.name = newName;
     }
 

@@ -2,6 +2,8 @@ package io.extact.msa.spring.platform.fw.domain.model;
 
 import jakarta.validation.groups.Default;
 
+import io.extact.msa.spring.platform.fw.feature.validator.SpringModelValidatorAdapter.SerializableSupplier;
+
 /**
  * {@link EntityModel}に対するバリデーションインターフェース。
  * バリデーションエラーが発生した場合はエラー情報を設定した{@code} RmsValidationException}を返す。
@@ -28,35 +30,36 @@ public interface ModelValidator {
     }
 
     /**
-     * 引数で指定された{@link EntityModel} のフィールドに対してのみバリデーションを行う。
+     * 引数のgetterで指定された{@link EntityModel} のフィールドに対してのみバリデーションを行う。
      *
      * validateFieldはvalidateModelと違い、ネストオブジェクトのフィールドを再帰的にvalidateしていく
      * ことはなしない。よって、フィールドに@Validを付けている場合も、ネストオブジェクトのフィールドも
      * 以下のように明示的にvalidateする必要がある。
      *
      * <pre>
-     * validator.validateField(model, "nestObject");
-     * validator.validateField(model, "nestObject.field1");
-     * validator.validateField(model, "nestObject.field2");
+     * validator.validateField(model, model::getNestObject);
+     * validator.validateField(model, model::getField1);
+     * validator.validateField(model, model::getField2);
      * </pre>
      *
      * またvalidateはエラーを最初に検知したvalidateメソッドで例外が送出され中断されるためvalidateFieldで
      * 複数項目に対してエラーが発生することはない
      *
      * @param model モデル
-     * @param targetField バリデーションするフィールド名
+     * @param getter バリデーションするフィールドに対するgetterメソッド
      * @param groups バリデーショングループ
      */
-    void validateField(DomainModel model, String targetField, Object... groups);
+    void validateField(DomainModel model, SerializableSupplier<Object> getter, Object... groups);
 
     /**
-     * 引数で指定された{@link EntityModel} のフィールドに対してのみバリデーションを行う。
+     * 引数のgetterで指定された{@link EntityModel} のフィールドに対してのみバリデーションを行う。
      *
      * @param model モデル
-     * @param targetField バリデーションするフィールド名
+     * @param getter バリデーションするフィールドに対するgetterメソッド
      * @param groups バリデーショングループ
      */
-    default void validateField(DomainModel model, String targetField) {
-        this.validateField(model, targetField, Default.class);
+    default void validateField(DomainModel model, SerializableSupplier<Object> getter) {
+        this.validateField(model, getter, Default.class);
     }
+
 }

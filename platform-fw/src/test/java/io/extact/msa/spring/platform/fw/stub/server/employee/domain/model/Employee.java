@@ -30,14 +30,14 @@ public class Employee extends AbstractEntityModel implements EmployeeModelView {
     private void applyName(String newName) {
         Employee test = new Employee();
         test.name = newName;
-        validator().validateField(test, "name");
+        validator().validateField(test, this::getName);
         this.name = newName;
     }
 
     private void applyDeptName(String newDeptName) {
         Employee test = new Employee();
         test.deptName = newDeptName;
-        validator().validateField(test, "deptName");
+        validator().validateField(test, test::getDeptName);
         this.deptName = newDeptName;
     }
 
