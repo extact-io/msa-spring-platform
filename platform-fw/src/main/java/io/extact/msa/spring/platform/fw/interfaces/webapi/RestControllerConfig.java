@@ -5,8 +5,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import io.extact.msa.spring.platform.fw.infrastructure.framework.validator.ValidationErrorTranslator;
-import io.extact.msa.spring.platform.fw.infrastructure.framework.validator.ValidatorConfig;
+import io.extact.msa.spring.platform.fw.feature.validator.ValidationErrorTranslator;
+import io.extact.msa.spring.platform.fw.feature.validator.ValidatorConfig;
 
 @Configuration(proxyBeanMethods = false)
 @Import(ValidatorConfig.class)

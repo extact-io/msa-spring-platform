@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.infrastructure.framework.validator;
+package io.extact.msa.spring.platform.fw.feature.validator;
 
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -8,7 +8,7 @@ import org.springframework.validation.SmartValidator;
 import io.extact.msa.spring.platform.fw.domain.model.DomainModel;
 import io.extact.msa.spring.platform.fw.domain.model.ModelValidator;
 import io.extact.msa.spring.platform.fw.exception.RmsValidationException;
-import io.extact.msa.spring.platform.fw.exception.response.ValidationErrorMessage;
+import io.extact.msa.spring.platform.fw.exception.message.ValidationErrorMessage;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -27,10 +27,10 @@ public class SpringModelValidatorAdapter implements ModelValidator {
         validator.validate(model, errors, groups);
 
         if (errors.hasErrors()) {
-            ValidationErrorMessage errorMessage = translator.from(
+            ValidationErrorMessage message = translator.from(
                     errors,
                     SpringModelValidatorAdapter.class.getSimpleName());
-            throw new RmsValidationException(errorMessage);
+            throw new RmsValidationException(message);
         }
     }
 
@@ -62,10 +62,10 @@ public class SpringModelValidatorAdapter implements ModelValidator {
         }
 
         if (errors.hasErrors()) {
-            ValidationErrorMessage errorMessage = translator.from(
+            ValidationErrorMessage message = translator.from(
                     errors,
                     SpringModelValidatorAdapter.class.getSimpleName());
-            throw new RmsValidationException(errorMessage);
+            throw new RmsValidationException(message);
         }
     }
 

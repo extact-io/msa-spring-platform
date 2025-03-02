@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.infrastructure.framework.profile;
+package io.extact.msa.spring.platform.fw.feature.profile;
 
 import java.util.Optional;
 import java.util.stream.Stream;

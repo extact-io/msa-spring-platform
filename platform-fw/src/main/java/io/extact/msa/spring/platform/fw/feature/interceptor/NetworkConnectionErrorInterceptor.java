@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.infrastructure.framework.interceptor;
+package io.extact.msa.spring.platform.fw.feature.interceptor;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;

@@ -17,9 +17,9 @@ import io.extact.msa.spring.platform.core.condition.SkipRegistration;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.RmsServiceUnavailableException;
 import io.extact.msa.spring.platform.fw.exception.RmsSystemException;
-import io.extact.msa.spring.platform.fw.exception.response.SimpleErrorMessage;
-import io.extact.msa.spring.platform.fw.exception.response.ValidationErrorMessage;
-import io.extact.msa.spring.platform.fw.infrastructure.framework.validator.ValidationErrorTranslator;
+import io.extact.msa.spring.platform.fw.exception.message.SimpleErrorMessage;
+import io.extact.msa.spring.platform.fw.exception.message.ValidationErrorMessage;
+import io.extact.msa.spring.platform.fw.feature.validator.ValidationErrorTranslator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

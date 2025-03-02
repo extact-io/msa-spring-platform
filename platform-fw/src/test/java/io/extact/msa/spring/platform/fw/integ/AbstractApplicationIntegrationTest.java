@@ -123,7 +123,7 @@ abstract class AbstractApplicationIntegrationTest {
         });
 
         // then
-        assertThat(thrown.getErrorMessage().validationErrorItems()).hasSize(1);
+        assertThat(thrown.getErrorMessage().messageItems()).hasSize(1);
         assertThat(thrown.getDetailMessage()).contains("名前");
     }
 
@@ -191,7 +191,7 @@ abstract class AbstractApplicationIntegrationTest {
         });
 
         // then
-        assertThat(thrown.getErrorMessage().validationErrorItems()).hasSize(1);
+        assertThat(thrown.getErrorMessage().messageItems()).hasSize(1);
         assertThat(thrown.getDetailMessage()).contains("名前");
     }
 

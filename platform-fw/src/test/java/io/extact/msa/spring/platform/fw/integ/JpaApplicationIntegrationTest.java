@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.validation.method.MethodValidationException;
 
-import io.extact.msa.spring.platform.fw.infrastructure.framework.sqlinit.ProfileBasedDbInitializerConfig;
+import io.extact.msa.spring.platform.fw.feature.sqlinit.ProfileBasedDbInitializerConfig;
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.ExternalPersonCreator;
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.ExternalPerson;
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.ExternalPersonId;

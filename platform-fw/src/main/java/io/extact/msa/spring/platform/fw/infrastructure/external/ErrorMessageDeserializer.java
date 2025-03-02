@@ -12,9 +12,9 @@ import org.springframework.http.client.ClientHttpResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.extact.msa.spring.platform.fw.exception.response.ErrorMessage;
-import io.extact.msa.spring.platform.fw.exception.response.SimpleErrorMessage;
-import io.extact.msa.spring.platform.fw.exception.response.ValidationErrorMessage;
+import io.extact.msa.spring.platform.fw.exception.message.ErrorMessage;
+import io.extact.msa.spring.platform.fw.exception.message.SimpleErrorMessage;
+import io.extact.msa.spring.platform.fw.exception.message.ValidationErrorMessage;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -70,7 +70,7 @@ public class ErrorMessageDeserializer {
         ErrorMessage errorMessage;
 
         if (ValidationErrorMessage.class.isAssignableFrom(responseType)) {
-            errorMessage = new ValidationErrorMessage(new SimpleErrorMessage(reason, message), Collections.emptyList());
+            errorMessage = new ValidationErrorMessage(reason, message, Collections.emptyList());
         } else if (SimpleErrorMessage.class.isAssignableFrom(responseType)) {
             errorMessage = new SimpleErrorMessage(reason, message);
         } else {

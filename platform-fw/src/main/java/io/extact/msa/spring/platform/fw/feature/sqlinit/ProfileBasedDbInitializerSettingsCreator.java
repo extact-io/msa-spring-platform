@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.infrastructure.framework.sqlinit;
+package io.extact.msa.spring.platform.fw.feature.sqlinit;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -8,7 +8,7 @@ import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.core.env.Environment;
 
 import io.extact.msa.spring.platform.core.env.ActiveProfileResolver;
-import io.extact.msa.spring.platform.fw.infrastructure.framework.profile.PersistenceActiveProfile;
+import io.extact.msa.spring.platform.fw.feature.profile.PersistenceActiveProfile;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

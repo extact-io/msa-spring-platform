@@ -1,7 +1,10 @@
 package io.extact.msa.spring.platform.fw;
 
+import static com.tngtech.archunit.base.DescribedPredicate.*;
 import static com.tngtech.archunit.core.domain.JavaClass.Predicates.*;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.*;
+import static com.tngtech.archunit.library.Architectures.*;
+import static io.extact.msa.spring.test.archunit.ArchUnitUtils.*;
 
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
@@ -12,21 +15,55 @@ import com.tngtech.archunit.lang.ArchRule;
 class FwDependencyArchUnitTest {
 
     // ---------------------------------------------------------------------
+    // アーキテクチャールールの検証
+    // ---------------------------------------------------------------------
+
+    /**
+     * オニオンアーキテクチャが遵守されているかの検証。
+     * @see https://www.archunit.org/userguide/html/000_Index.html#_onion_architecture
+     */
+    @ArchTest
+    static final ArchRule architecture_respect_onion = onionArchitecture()
+            .domainModels(
+                    "..domain.model..",
+                    "..domain.constraint..",
+                    "..exception..")
+            .domainServices(
+                    "..domain.service..",
+                    "..domain.repository..")
+            .applicationServices(
+                    "..application..")
+            // それぞれのapapterは独立し、相互に依存関係がないこともチェックされる
+            .adapter("interface-webapi", "..interfaces", "..interfaces.webapi..")
+            .adapter("persistence-file", "..infrastructure.persistence.file..")
+            .adapter("persistence-jpa", "..infrastructure.persistence.jpa..")
+            .adapter("external", "..infrastructure.external..")
+            // Cofigurationクラスからの依存はすべて無視する
+            // featureパッケージからdomainへの依存は許容
+            .ensureAllClassesAreContainedInArchitectureIgnoring(configurationClasses())
+            .ensureAllClassesAreContainedInArchitectureIgnoring(resideInAnyPackage("..feature.."))
+            .ignoreDependency(configurationClasses(), alwaysTrue())
+            .ignoreDependency(resideInAnyPackage("..feature.."),
+                    resideInAnyPackage("..domain.model..", "..exception.."));
+
+    // ---------------------------------------------------------------------
     // platform.fwパッケージ内部の依存関係の定義
     // ---------------------------------------------------------------------
 
     /**
-     * application, domain, exceptionパッケージで依存OKなライブラリの定義。
-     * Java標準以外に依存しないクリーナ状態であること
+     * アプリケーションコア(application, domain, exceptionパッケージ)で依存OKなライブラリの定義。
+     * Java標準以外に依存しないクリーンな状態であること。
+     * なお、{@link #architecture_respect_onion} でfw内の不要な他のパッケージに依存していないことが
+     * 確認されていることを前提に検証している。また、core.genericパッケージもクリーンになっている
      */
     @ArchTest
-    static final ArchRule test_applicaiton_domain_exceptionで依存してOKなライブラリの定義 = classes()
+    static final ArchRule dependency_application_core = classes()
             .that().resideInAnyPackage(
                     "..application..",
                     "..domain..",
                     "..exception..")
             .should().onlyDependOnClassesThat(resideInAnyPackage(
-                    "io.extact.msa.spring.platform.core..",
+                    "io.extact.msa.spring.platform.core.generic..",
                     "io.extact.msa.spring.platform.fw..",
                     "java..",
                     "jakarta.validation..",
@@ -37,5 +74,105 @@ class FwDependencyArchUnitTest {
                             .or(type(org.springframework.transaction.annotation.Isolation.class))
                             .or(type(org.springframework.core.annotation.AliasFor.class))
 
+            );
+
+    /**
+     * interfacesパッケージから依存してOKなモジュールの検証
+     */
+    @ArchTest
+    static final ArchRule dependency_fw_interfaces = classes()
+            .that().resideInAnyPackage("..interfaces..").and(not(configurationClasses()))
+            .should().onlyDependOnClassesThat(resideInAnyPackage(
+                    "io.extact.msa.spring.platform.core.generic..",
+                    "io.extact.msa.spring.platform.core.env..",
+                    "io.extact.msa.spring.platform.core.condition..",
+                    "io.extact.msa.spring.platform.core.stopbugs..",
+                    "io.extact.msa.spring.platform.fw.exception..",
+                    "io.extact.msa.spring.platform.fw.feature.validator..",
+                    "io.extact.msa.spring.platform.fw.interfaces..",
+                    "org.springframework.core..",
+                    "org.springframework.beans..",
+                    "org.springframework.context..",
+                    "org.springframework.http..",
+                    "org.springframework.web..",
+                    "java..",
+                    "jakarta.validation..",
+                    "org.slf4j..",
+                    "lombok..") //
+            );
+
+    /**
+     * persistence.fileパッケージから依存してOKなモジュールの検証
+     */
+    @ArchTest
+    static final ArchRule dependency_fw_dependency_persistence_file = classes()
+            .that().resideInAnyPackage("..infrastructure.persistence.file..").and(not(configurationClasses()))
+            .should().onlyDependOnClassesThat(resideInAnyPackage(
+                    "io.extact.msa.spring.platform.core.generic..",
+                    "io.extact.msa.spring.platform.fw.domain..",
+                    "io.extact.msa.spring.platform.fw.exception..",
+                    "io.extact.msa.spring.platform.fw.infrastructure.persistence.file..",
+                    "org.springframework.core..",
+                    "org.springframework.beans..",
+                    "org.springframework.context..",
+                    "java..",
+                    "org.apache.commons.csv..", // CSV形式で可能のするのでOK
+                    "org.slf4j..",
+                    "lombok..") //
+            );
+
+    /**
+     * persistence.jpaパッケージから依存してOKなモジュールの検証
+     */
+    @ArchTest
+    static final ArchRule dependency_fw_dependency_persistence_jpa = classes()
+            .that().resideInAnyPackage("..infrastructure.persistence.jpa..")
+            .and().resideOutsideOfPackage("..infrastructure.persistence.jpa.hibernate..")
+            .and(not(configurationClasses()))
+            .should().onlyDependOnClassesThat(resideInAnyPackage(
+                    "io.extact.msa.spring.platform.core.generic..",
+                    "io.extact.msa.spring.platform.fw.domain..",
+                    "io.extact.msa.spring.platform.fw.exception..",
+                    "io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa..",
+                    "org.springframework.core..",
+                    "org.springframework.beans..",
+                    "org.springframework.context..",
+                    "org.springframework.data..", // Spring dataなのでOK
+                    "org.springframework.util..",
+                    "java..",
+                    "jakarta.persistence..",
+                    "org.slf4j..",
+                    "lombok..") //
+            );
+    /**
+     * Hibernateへはpersistence.jpa.hibernateパッケージでしか依存していないこと
+     * ・persistence.jpa.hibernateパッケージ以外にhibernateに依存しているクラスがないこと
+     */
+    @ArchTest
+    static final ArchRule dependency_hibernate = noClasses()
+            .that()
+            .resideOutsideOfPackage("..infrastructure.persistence.jpa.hibernate..")
+            .should().dependOnClassesThat()
+            .resideInAnyPackage("org.hibernate..");
+
+    /**
+     * featureパッケージから依存してOKなモジュールの検証
+     * ・featureパッケージで依存してOKなOSSはSpringのみであること
+     */
+    @ArchTest
+    static final ArchRule dependency_fw_feature = classes()
+            .that().resideInAnyPackage("..feature..")
+            .and(not(configurationClasses()))
+            .should().onlyDependOnClassesThat(resideInAnyPackage(
+                    "io.extact.msa.spring.platform.core.env..",
+                    "io.extact.msa.spring.platform.fw.domain..",
+                    "io.extact.msa.spring.platform.fw.exception..",
+                    "io.extact.msa.spring.platform.fw.feature..",
+                    "org.springframework..",    // Spring
+                    "org.aspectj..",            // for Interceptor
+                    "java..",
+                    "javax.sql..",
+                    "org.slf4j..",
+                    "lombok..") //
             );
 }

@@ -17,11 +17,11 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
+import io.extact.msa.spring.platform.fw.exception.message.SimpleErrorMessage;
+import io.extact.msa.spring.platform.fw.exception.message.ValidationErrorMessage;
 import io.extact.msa.spring.platform.fw.exception.RmsServiceUnavailableException;
 import io.extact.msa.spring.platform.fw.exception.RmsSystemException;
 import io.extact.msa.spring.platform.fw.exception.RmsValidationException;
-import io.extact.msa.spring.platform.fw.exception.response.SimpleErrorMessage;
-import io.extact.msa.spring.platform.fw.exception.response.ValidationErrorMessage;
 
 public class RestClientErrorHandler implements ResponseErrorHandler {
 
@@ -74,24 +74,24 @@ public class RestClientErrorHandler implements ResponseErrorHandler {
     }
 
     private BusinessFlowException throwBusinessFlowException(ClientHttpResponse response) {
-        SimpleErrorMessage error = deserializer.deserializeResponse(response, SimpleErrorMessage.class);
-        CauseType causeType = CauseType.valueOf(error.errorReason());
-        throw new BusinessFlowException(error.errorMessage(), causeType);
+        SimpleErrorMessage body = deserializer.deserializeResponse(response, SimpleErrorMessage.class);
+        CauseType causeType = CauseType.valueOf(body.errorReason());
+        throw new BusinessFlowException(body.errorMessage(), causeType);
     }
 
     private RmsServiceUnavailableException throwRmsServiceUnavailableException(ClientHttpResponse response) {
-        SimpleErrorMessage error = deserializer.deserializeResponse(response, SimpleErrorMessage.class);
-        throw new RmsServiceUnavailableException(error.errorMessage());
+        SimpleErrorMessage body = deserializer.deserializeResponse(response, SimpleErrorMessage.class);
+        throw new RmsServiceUnavailableException(body.errorMessage());
     }
 
     private RmsValidationException throwRmsValidationException(ClientHttpResponse response) {
-        ValidationErrorMessage error = deserializer.deserializeResponse(response, ValidationErrorMessage.class);
-        throw new RmsValidationException(error.errorMessage(), error);
+        ValidationErrorMessage body = deserializer.deserializeResponse(response, ValidationErrorMessage.class);
+        throw new RmsValidationException(body);
     }
 
     private RmsSystemException throwRmsSystemException(ClientHttpResponse response) {
-        SimpleErrorMessage error = deserializer.deserializeResponse(response, SimpleErrorMessage.class);
-        throw new RmsSystemException(error.errorMessage());
+        SimpleErrorMessage body = deserializer.deserializeResponse(response, SimpleErrorMessage.class);
+        throw new RmsSystemException(body.errorMessage());
     }
 
     private SecurityConstraintException throwSecurityConstraintException(ClientHttpResponse response) {
@@ -99,8 +99,8 @@ public class RestClientErrorHandler implements ResponseErrorHandler {
     }
 
     private RmsSystemException fallbackHandler(ClientHttpResponse response) {
-        SimpleErrorMessage error = deserializer.deserializeResponse(response, SimpleErrorMessage.class);
-        throw new RmsSystemException(error.errorMessage());
+        SimpleErrorMessage body = deserializer.deserializeResponse(response, SimpleErrorMessage.class);
+        throw new RmsSystemException(body.errorMessage());
     }
 
     private <K, V> Optional<V> getOptional(Map<K, V> map, K key) {

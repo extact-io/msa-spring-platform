@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.infrastructure.framework.validator;
+package io.extact.msa.spring.platform.fw.feature.validator;
 
 import java.util.List;
 import java.util.Locale;
@@ -14,10 +14,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
-import io.extact.msa.spring.platform.fw.exception.response.SimpleErrorMessage;
-import io.extact.msa.spring.platform.fw.exception.response.ValidationErrorItem;
-import io.extact.msa.spring.platform.fw.exception.response.ValidationErrorMessage;
-import io.extact.msa.spring.platform.fw.infrastructure.framework.validator.ValidationErrorTranslator.SelectableDefaultMessageResolver.CodeType;
+import io.extact.msa.spring.platform.fw.exception.message.ValidationErrorMessage;
+import io.extact.msa.spring.platform.fw.exception.message.ValidationErrorMessage.MessageItem;
+import io.extact.msa.spring.platform.fw.feature.validator.ValidationErrorTranslator.SelectableDefaultMessageResolver.CodeType;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -36,26 +35,25 @@ public class ValidationErrorTranslator {
     // @Validatedに対する入力チェックエラー
     public ValidationErrorMessage from(BindingResult result, String errorReason, Locale locale) {
 
-        Stream<ValidationErrorItem> fieldErrors = result.getFieldErrors().stream().map(error -> {
+        Stream<MessageItem> fieldErrors = result.getFieldErrors().stream().map(error -> {
             String fieldName = resovleFieldName(error, CodeType.LONG, locale);
             String message = messageSource.getMessage(error, locale);
             message = messageSource.getMessage(error, locale);
-            return new ValidationErrorItem(fieldName, message);
+            return new MessageItem(fieldName, message);
         });
 
-        Stream<ValidationErrorItem> globalErrors = result.getGlobalErrors().stream().map(error -> {
+        Stream<MessageItem> globalErrors = result.getGlobalErrors().stream().map(error -> {
             String globalName = resovleObjectName(error, locale);
             String message = messageSource.getMessage(error, locale);
-            return new ValidationErrorItem(globalName, message);
+            return new MessageItem(globalName, message);
         });
 
-        ValidationErrorMessage validationMessage = new ValidationErrorMessage(
-                new SimpleErrorMessage(
-                        errorReason,
-                        parameterErrorMessage(locale)),
+        ValidationErrorMessage errorMessage = new ValidationErrorMessage(
+                errorReason,
+                parameterErrorMessage(locale),
                 Stream.concat(fieldErrors, globalErrors).toList());
 
-        return validationMessage;
+        return errorMessage;
     }
 
     public ValidationErrorMessage from(MethodArgumentNotValidException e, Locale locale) {
@@ -79,19 +77,18 @@ public class ValidationErrorTranslator {
                 .flatMap(result -> result.getResolvableErrors().stream())
                 .toList();
 
-        List<ValidationErrorItem> parameterErrors = errors.stream().map(error -> {
+        List<MessageItem> parameterErrors = errors.stream().map(error -> {
             String fieldName = resovleFieldName(error, CodeType.DEFAULT, locale);
             String message = messageSource.getMessage(error, locale);
-            return new ValidationErrorItem(fieldName, message);
+            return new MessageItem(fieldName, message);
         }).toList();
 
-        ValidationErrorMessage validationMessage = new ValidationErrorMessage(
-                new SimpleErrorMessage(
-                        e.getClass().getSimpleName(),
-                        parameterErrorMessage(locale)),
+        ValidationErrorMessage errorMessage = new ValidationErrorMessage(
+                e.getClass().getSimpleName(),
+                parameterErrorMessage(locale),
                 parameterErrors);
 
-        return validationMessage;
+        return errorMessage;
     }
 
     // @ReqestParameterに対するパラメータなしエラー
@@ -103,13 +100,12 @@ public class ValidationErrorTranslator {
                 null,
                 defaultLocale());
 
-        ValidationErrorItem errorItem = new ValidationErrorItem(fieldName, message);
+        MessageItem item = new MessageItem(fieldName, message);
 
         return new ValidationErrorMessage(
-                new SimpleErrorMessage(
-                        e.getClass().getSimpleName(),
-                        parameterErrorMessage(locale)),
-                List.of(errorItem));
+                e.getClass().getSimpleName(),
+                parameterErrorMessage(locale),
+                List.of(item));
     }
 
     // 入力のコンバートエラー
@@ -123,13 +119,12 @@ public class ValidationErrorTranslator {
                 new Object[] { requiredType },
                 defaultLocale());
 
-        ValidationErrorItem errorItem = new ValidationErrorItem(fieldName, message);
+        MessageItem item = new MessageItem(fieldName, message);
 
         return new ValidationErrorMessage(
-                new SimpleErrorMessage(
-                        e.getClass().getSimpleName(),
-                        parameterErrorMessage(locale)),
-                List.of(errorItem));
+                e.getClass().getSimpleName(),
+                parameterErrorMessage(locale),
+                List.of(item));
     }
 
     // -------------------------------------------------------- private methods
@@ -189,7 +184,7 @@ public class ValidationErrorTranslator {
 
         enum CodeType {
             LONG,
-            DEFAULT // こっちはDEFAULTにして、origin.getDefaultMessage()でいい気がする。Longが特別なので
+            DEFAULT
         }
 
         private final MessageSourceResolvable original;

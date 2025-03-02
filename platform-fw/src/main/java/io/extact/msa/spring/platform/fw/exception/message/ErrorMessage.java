@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.exception.response;
+package io.extact.msa.spring.platform.fw.exception.message;
 
 public interface ErrorMessage {
     String errorReason();
