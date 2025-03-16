@@ -4,7 +4,7 @@ import io.extact.msa.spring.platform.fw.domain.constraint.RmsId;
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.ExternalPerson;
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.ExternalPerson.ExternalPersonCreatable;
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.ExternalPersonId;
-import io.extact.msa.spring.platform.fw.stub.server.person.domain.constraint.PersonName;
+import io.extact.msa.spring.platform.fw.stub.apps.person.domain.constraint.PersonName;
 
 public record ExternalPersonResponse(
         @RmsId //

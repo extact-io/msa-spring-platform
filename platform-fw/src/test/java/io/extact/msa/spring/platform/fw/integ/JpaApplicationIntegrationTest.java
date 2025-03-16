@@ -16,7 +16,7 @@ import io.extact.msa.spring.platform.fw.feature.sqlinit.ProfileBasedDbInitialize
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.ExternalPersonCreator;
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.ExternalPerson;
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.ExternalPersonId;
-import io.extact.msa.spring.platform.fw.stub.server.person.infrastructure.jpa.PersonJpaRepositoryConfig;
+import io.extact.msa.spring.platform.fw.stub.apps.person.infrastructure.jpa.PersonJpaRepositoryConfig;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("person-jpa")

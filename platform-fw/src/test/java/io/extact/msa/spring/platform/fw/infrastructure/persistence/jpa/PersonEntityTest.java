@@ -4,10 +4,10 @@ import static org.assertj.core.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.Person;
-import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.Person.PersonCreatable;
-import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.PersonId;
-import io.extact.msa.spring.platform.fw.stub.server.person.infrastructure.jpa.PersonEntity;
+import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.Person;
+import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.Person.PersonCreatable;
+import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.PersonId;
+import io.extact.msa.spring.platform.fw.stub.apps.person.infrastructure.jpa.PersonEntity;
 
 class PersonEntityTest {
 

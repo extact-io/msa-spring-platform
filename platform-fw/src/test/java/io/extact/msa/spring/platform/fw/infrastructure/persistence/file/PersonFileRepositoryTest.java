@@ -21,11 +21,11 @@ import org.springframework.transaction.PlatformTransactionManager;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.AbstractPersonRepositoryTest;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.file.io.FileOperator;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.file.io.LoadPathDeriver;
-import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonRepository;
-import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.Person;
-import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.PersonId;
-import io.extact.msa.spring.platform.fw.stub.server.person.infrastructure.file.PersonFileRepository;
-import io.extact.msa.spring.platform.fw.stub.server.person.infrastructure.file.PersonFileRepositoryConfig;
+import io.extact.msa.spring.platform.fw.stub.apps.person.domain.PersonRepository;
+import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.Person;
+import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.PersonId;
+import io.extact.msa.spring.platform.fw.stub.apps.person.infrastructure.file.PersonFileRepository;
+import io.extact.msa.spring.platform.fw.stub.apps.person.infrastructure.file.PersonFileRepositoryConfig;
 import io.extact.msa.spring.test.spring.NopTransactionManager;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)

@@ -28,10 +28,6 @@ public class ValidationErrorTranslator {
 
     private final MessageSource messageSource;
 
-    public ValidationErrorMessage from(TypeMismatchException e) {
-        return from(e, defaultLocale());
-    }
-
     // @Validatedに対する入力チェックエラー
     public ValidationErrorMessage from(BindingResult result, String errorReason, Locale locale) {
 
@@ -56,8 +52,8 @@ public class ValidationErrorTranslator {
         return errorMessage;
     }
 
-    public ValidationErrorMessage from(MethodArgumentNotValidException e, Locale locale) {
-        return from(e.getBindingResult(), e.getClass().getSimpleName(), locale);
+    public ValidationErrorMessage from(MethodArgumentNotValidException thrown, Locale locale) {
+        return from(thrown.getBindingResult(), thrown.getClass().getSimpleName(), locale);
     }
 
     public ValidationErrorMessage from(BindingResult bindingResult, String errorReason) {
@@ -65,7 +61,7 @@ public class ValidationErrorTranslator {
     }
 
     // @Validated以外(@NotNullなど)の入力チェックエラー
-    public ValidationErrorMessage from(HandlerMethodValidationException e, Locale locale) {
+    public ValidationErrorMessage from(HandlerMethodValidationException thrown, Locale locale) {
 
         /*
          * MethodValidationResultの2次元配列イメージをflat化する
@@ -73,7 +69,7 @@ public class ValidationErrorTranslator {
          *  - -> ParameterValidationResult x n
          *  - -> MessageSourceResolvable x n を1次元にflat化する
          */
-        List<MessageSourceResolvable> errors = e.getParameterValidationResults().stream()
+        List<MessageSourceResolvable> errors = thrown.getParameterValidationResults().stream()
                 .flatMap(result -> result.getResolvableErrors().stream())
                 .toList();
 
@@ -84,7 +80,7 @@ public class ValidationErrorTranslator {
         }).toList();
 
         ValidationErrorMessage errorMessage = new ValidationErrorMessage(
-                e.getClass().getSimpleName(),
+                thrown.getClass().getSimpleName(),
                 parameterErrorMessage(locale),
                 parameterErrors);
 
@@ -92,9 +88,9 @@ public class ValidationErrorTranslator {
     }
 
     // @ReqestParameterに対するパラメータなしエラー
-    public ValidationErrorMessage from(MissingServletRequestParameterException e, Locale locale) {
+    public ValidationErrorMessage from(MissingServletRequestParameterException thrown, Locale locale) {
 
-        String fieldName = e.getParameterName();
+        String fieldName = thrown.getParameterName();
         String message = messageSource.getMessage(
                 REQUEST_PARAMETER_NONE_MESSAGE,
                 null,
@@ -103,16 +99,16 @@ public class ValidationErrorTranslator {
         MessageItem item = new MessageItem(fieldName, message);
 
         return new ValidationErrorMessage(
-                e.getClass().getSimpleName(),
+                thrown.getClass().getSimpleName(),
                 parameterErrorMessage(locale),
                 List.of(item));
     }
 
     // 入力のコンバートエラー
-    public ValidationErrorMessage from(TypeMismatchException e, Locale locale) {
+    public ValidationErrorMessage from(TypeMismatchException thrown, Locale locale) {
 
-        String fieldName = e.getPropertyName();
-        String requiredType = e.getRequiredType().getSimpleName();
+        String fieldName = thrown.getPropertyName();
+        String requiredType = thrown.getRequiredType().getSimpleName();
 
         String message = messageSource.getMessage(
                 CONVERT_ERROR_MESSAGE,
@@ -122,10 +118,11 @@ public class ValidationErrorTranslator {
         MessageItem item = new MessageItem(fieldName, message);
 
         return new ValidationErrorMessage(
-                e.getClass().getSimpleName(),
+                thrown.getClass().getSimpleName(),
                 parameterErrorMessage(locale),
                 List.of(item));
     }
+
 
     // -------------------------------------------------------- private methods
 
@@ -178,6 +175,9 @@ public class ValidationErrorTranslator {
         }
         return array[array.length - 1];
     }
+
+
+    // -------------------------------------------------------- inner classes.
 
     @RequiredArgsConstructor
     static class SelectableDefaultMessageResolver implements MessageSourceResolvable {

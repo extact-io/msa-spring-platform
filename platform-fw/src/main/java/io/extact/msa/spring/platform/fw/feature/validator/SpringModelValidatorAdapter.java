@@ -75,5 +75,4 @@ public class SpringModelValidatorAdapter implements ModelValidator {
     @FunctionalInterface
     public interface SerializableSupplier<T> extends Supplier<T>, Serializable {
     }
-
 }

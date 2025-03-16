@@ -1,7 +1,7 @@
 package io.extact.msa.spring.platform.fw.stub.client.person.domain.model;
 
 import io.extact.msa.spring.platform.fw.domain.model.AbstractEntityModel;
-import io.extact.msa.spring.platform.fw.stub.server.person.domain.constraint.PersonName;
+import io.extact.msa.spring.platform.fw.stub.apps.person.domain.constraint.PersonName;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

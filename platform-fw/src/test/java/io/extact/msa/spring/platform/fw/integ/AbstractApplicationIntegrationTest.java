@@ -24,9 +24,9 @@ import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.External
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.ExternalPerson.ExternalPersonCreatable;
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.ExternalPersonId;
 import io.extact.msa.spring.platform.fw.stub.client.person.infrastructure.ExternalPersonClientConfig;
-import io.extact.msa.spring.platform.fw.stub.server.person.application.PersonServiceConfig;
-import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonDomainConfig;
-import io.extact.msa.spring.platform.fw.stub.server.person.web.PersonControllerConfig;
+import io.extact.msa.spring.platform.fw.stub.apps.person.application.PersonServiceConfig;
+import io.extact.msa.spring.platform.fw.stub.apps.person.domain.PersonDomainConfig;
+import io.extact.msa.spring.platform.fw.stub.apps.person.web.PersonControllerConfig;
 import io.extact.msa.spring.test.assertj.ToStringAssert;
 import io.extact.msa.spring.test.spring.EnableAutoConfigurationWithoutSecurity;
 

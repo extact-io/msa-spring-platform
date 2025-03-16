@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
-import io.extact.msa.spring.platform.fw.stub.server.person.infrastructure.file.PersonFileRepositoryConfig;
+import io.extact.msa.spring.platform.fw.stub.apps.person.infrastructure.file.PersonFileRepositoryConfig;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("file")

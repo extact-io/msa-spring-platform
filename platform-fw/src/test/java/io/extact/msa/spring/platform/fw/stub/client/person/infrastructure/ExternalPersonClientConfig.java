@@ -1,7 +1,7 @@
 package io.extact.msa.spring.platform.fw.stub.client.person.infrastructure;
 
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientAdapter;
@@ -12,7 +12,7 @@ import io.extact.msa.spring.platform.fw.infrastructure.external.RestClientErrorH
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.ExternalPersonClient;
 import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
 
-@TestConfiguration(proxyBeanMethods = false)
+@Configuration(proxyBeanMethods = false)
 public class ExternalPersonClientConfig {
 
     @Bean

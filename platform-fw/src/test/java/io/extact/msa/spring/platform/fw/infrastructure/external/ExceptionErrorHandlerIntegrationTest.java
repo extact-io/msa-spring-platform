@@ -63,8 +63,8 @@ import io.extact.msa.spring.platform.fw.feature.validator.ValidatorConfig;
 import io.extact.msa.spring.platform.fw.interfaces.webapi.ExceptionHandled;
 import io.extact.msa.spring.platform.fw.interfaces.webapi.RestControllerConfig;
 import io.extact.msa.spring.platform.fw.interfaces.webapi.RestControllerExceptionHandler;
-import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.EqualPairFields;
-import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.EqualPairFields.EqualPairFieldsValidatable;
+import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.EqualPairFields;
+import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.EqualPairFields.EqualPairFieldsValidatable;
 import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
 
 /**

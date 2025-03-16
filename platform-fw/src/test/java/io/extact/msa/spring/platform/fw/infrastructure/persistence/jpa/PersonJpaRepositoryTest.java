@@ -11,8 +11,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import io.extact.msa.spring.platform.fw.feature.sqlinit.ProfileBasedDbInitializerConfig;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.AbstractPersonRepositoryTest;
-import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonRepository;
-import io.extact.msa.spring.platform.fw.stub.server.person.infrastructure.jpa.PersonJpaRepositoryConfig;
+import io.extact.msa.spring.platform.fw.stub.apps.person.domain.PersonRepository;
+import io.extact.msa.spring.platform.fw.stub.apps.person.infrastructure.jpa.PersonJpaRepositoryConfig;
 
 @DataJpaTest
 @ActiveProfiles("person-jpa")

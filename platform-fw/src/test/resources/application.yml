@@ -17,6 +17,10 @@ spring:
       ddl-auto: none
     properties:
       javax.persistence.validation.mode: NONE
+  mvc:
+    format:
+      date: ${rms.rest.controller.format.date}
+      date-time: ${rms.rest.controller.format.date-time}
 
 management:
   endpoints:
@@ -70,4 +74,12 @@ rms:
       sql:
         schema-locations: classpath:sql/person-schema.sql
         data-locations: classpath:sql/person-data.sql
-
+  rest:
+    controller:
+      format:
+        date: yyyyMMdd
+        date-time: yyyyMMdd HH:mm
+    client:
+      format:
+        date: yyyyMMdd
+        date-time: yyyyMMdd HH:mm

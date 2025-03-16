@@ -1,0 +1,10 @@
+package io.extact.msa.spring.platform.fw.stub.apps.person.infrastructure.jpa;
+
+import java.util.Optional;
+
+import io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa.JpaRepositoryDelegator;
+
+public interface PersonJpaRepositoryDelegator extends JpaRepositoryDelegator<PersonEntity> {
+
+    Optional<PersonEntity> findByName(String name);
+}

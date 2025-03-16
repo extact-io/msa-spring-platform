@@ -16,18 +16,18 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.extact.msa.spring.platform.fw.domain.repository.GenericRepository;
-import io.extact.msa.spring.platform.fw.stub.server.employee.domain.EmployeeRepository;
-import io.extact.msa.spring.platform.fw.stub.server.employee.domain.model.Employee;
-import io.extact.msa.spring.platform.fw.stub.server.employee.domain.model.Employee.EmployeeCreatable;
-import io.extact.msa.spring.platform.fw.stub.server.employee.domain.model.EmployeeId;
-import io.extact.msa.spring.platform.fw.stub.server.employee.infrastructure.file.EmployeeFileRepositoryConfig;
-import io.extact.msa.spring.platform.fw.stub.server.employee.infrastructure.jpa.EmployeeJpaRepositoryConfig;
-import io.extact.msa.spring.platform.fw.stub.server.person.domain.PersonRepository;
-import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.Person;
-import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.Person.PersonCreatable;
-import io.extact.msa.spring.platform.fw.stub.server.person.domain.model.PersonId;
-import io.extact.msa.spring.platform.fw.stub.server.person.infrastructure.file.PersonFileRepositoryConfig;
-import io.extact.msa.spring.platform.fw.stub.server.person.infrastructure.jpa.PersonJpaRepositoryConfig;
+import io.extact.msa.spring.platform.fw.stub.apps.employee.domain.EmployeeRepository;
+import io.extact.msa.spring.platform.fw.stub.apps.employee.domain.model.Employee;
+import io.extact.msa.spring.platform.fw.stub.apps.employee.domain.model.Employee.EmployeeCreatable;
+import io.extact.msa.spring.platform.fw.stub.apps.employee.domain.model.EmployeeId;
+import io.extact.msa.spring.platform.fw.stub.apps.employee.infrastructure.file.EmployeeFileRepositoryConfig;
+import io.extact.msa.spring.platform.fw.stub.apps.employee.infrastructure.jpa.EmployeeJpaRepositoryConfig;
+import io.extact.msa.spring.platform.fw.stub.apps.person.domain.PersonRepository;
+import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.Person;
+import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.Person.PersonCreatable;
+import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.PersonId;
+import io.extact.msa.spring.platform.fw.stub.apps.person.infrastructure.file.PersonFileRepositoryConfig;
+import io.extact.msa.spring.platform.fw.stub.apps.person.infrastructure.jpa.PersonJpaRepositoryConfig;
 
 /**
  * 複数エンティティを扱った永続化テスト。

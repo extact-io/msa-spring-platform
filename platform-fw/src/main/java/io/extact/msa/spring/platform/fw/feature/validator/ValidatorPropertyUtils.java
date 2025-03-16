@@ -7,8 +7,12 @@ import java.lang.reflect.Method;
 import java.util.Objects;
 
 import io.extact.msa.spring.platform.fw.exception.RmsSystemException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 class ValidatorPropertyUtils {
+
 
     static String extractPropertyName(Serializable lambda) {
         try {
