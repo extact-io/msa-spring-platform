@@ -16,10 +16,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.extact.msa.spring.platform.fw.stub.apps.converter.ConverterController;
-
 @WebMvcTest
-class ConverterControllerTest {
+class ControllerConverterTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -37,8 +35,8 @@ class ConverterControllerTest {
                     .build();
         }
         @Bean
-        ConverterController converterController() {
-            return new ConverterController();
+        StubController converterController() {
+            return new StubController();
         }
     }
 

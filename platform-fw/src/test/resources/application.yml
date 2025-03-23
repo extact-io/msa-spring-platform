@@ -2,7 +2,7 @@ debug: false
 logging.level:
   org.springframework:
     transaction: info
-    security: trace
+    security: info
   ConfigDump: debug
 
 spring:
@@ -19,8 +19,8 @@ spring:
       javax.persistence.validation.mode: NONE
   mvc:
     format:
-      date: ${rms.rest.controller.format.date}
-      date-time: ${rms.rest.controller.format.date-time}
+      date: yyyyMMdd
+      date-time: yyyyMMdd HH:mm
 
 management:
   endpoints:
@@ -77,8 +77,8 @@ rms:
   rest:
     controller:
       format:
-        date: yyyyMMdd
-        date-time: yyyyMMdd HH:mm
+        date: ${spring.mvc.format.date}
+        date-time: ${spring.mvc.format.date-time}
     client:
       format:
         date: yyyyMMdd

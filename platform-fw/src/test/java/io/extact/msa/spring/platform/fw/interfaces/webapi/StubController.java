@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.stub.apps.converter;
+package io.extact.msa.spring.platform.fw.interfaces.webapi;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,10 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import io.extact.msa.spring.platform.fw.interfaces.webapi.RmsRestController;
-
 @RmsRestController("/convert")
-public class ConverterController {
+public class StubController {
 
     @GetMapping("/date/{date}")
     public String pathLocalDate(

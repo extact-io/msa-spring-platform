@@ -27,12 +27,12 @@ import io.extact.msa.spring.platform.core.utils.EnvironmentUtils;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnPrefixedProperty("rms.rest.controller.format")
-public class ConverterConfig {
+public class ControllerConverterConfig {
 
     private Optional<String> datePattern;
     private Optional<String> dateTimePattern;
 
-    ConverterConfig(Environment env) {
+    ControllerConverterConfig(Environment env) {
         this.datePattern = EnvironmentUtils
                 .getOptionalProperty(env, "rms.rest.controller.format.date");
         this.dateTimePattern = EnvironmentUtils

@@ -7,12 +7,12 @@ import org.springframework.context.annotation.Import;
 
 import io.extact.msa.spring.platform.fw.feature.validator.ValidationErrorTranslator;
 import io.extact.msa.spring.platform.fw.feature.validator.ValidatorConfig;
-import io.extact.msa.spring.platform.fw.interfaces.webapi.converter.ConverterConfig;
+import io.extact.msa.spring.platform.fw.interfaces.webapi.converter.ControllerConverterConfig;
 
 @Configuration(proxyBeanMethods = false)
 @Import({
         ValidatorConfig.class,
-        ConverterConfig.class })
+        ControllerConverterConfig.class })
 public class RestControllerConfig {
 
     // デフォルト有効化でenable=falseが設定された場合のみ無効化

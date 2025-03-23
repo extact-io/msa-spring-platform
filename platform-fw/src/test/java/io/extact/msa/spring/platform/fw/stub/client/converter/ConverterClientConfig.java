@@ -7,6 +7,7 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
+import io.extact.msa.spring.platform.fw.infrastructure.external.converter.ConverterClientApi;
 import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
 
 @Configuration(proxyBeanMethods = false)
