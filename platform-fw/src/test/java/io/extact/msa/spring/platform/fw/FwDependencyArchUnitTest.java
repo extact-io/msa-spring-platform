@@ -29,6 +29,7 @@ class FwDependencyArchUnitTest {
                     "..domain.constraint..",
                     "..exception..")
             .domainServices(
+                    "..domain.event..",
                     "..domain.service..",
                     "..domain.repository..")
             .applicationServices(
@@ -42,9 +43,16 @@ class FwDependencyArchUnitTest {
             // featureパッケージからdomainへの依存は許容
             .ensureAllClassesAreContainedInArchitectureIgnoring(configurationClasses())
             .ensureAllClassesAreContainedInArchitectureIgnoring(resideInAnyPackage("..feature.."))
-            .ignoreDependency(configurationClasses(), alwaysTrue())
-            .ignoreDependency(resideInAnyPackage("..feature.."),
-                    resideInAnyPackage("..domain.model..", "..exception.."));
+            .ignoreDependency(
+            		configurationClasses(), 
+            		alwaysTrue())
+            .ignoreDependency(
+            		resideInAnyPackage("..feature.."),
+                    resideInAnyPackage(
+                    		"..application..", 
+                    		"..domain.event..", 
+                    		"..domain.model..", 
+                    		"..exception.."));
 
     // ---------------------------------------------------------------------
     // platform.fwパッケージ内部の依存関係の定義
@@ -165,6 +173,7 @@ class FwDependencyArchUnitTest {
             .and(not(configurationClasses()))
             .should().onlyDependOnClassesThat(resideInAnyPackage(
                     "io.extact.msa.spring.platform.core.env..",
+                    "io.extact.msa.spring.platform.fw.application..",
                     "io.extact.msa.spring.platform.fw.domain..",
                     "io.extact.msa.spring.platform.fw.exception..",
                     "io.extact.msa.spring.platform.fw.feature..",
