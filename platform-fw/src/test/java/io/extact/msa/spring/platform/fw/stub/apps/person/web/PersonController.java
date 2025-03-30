@@ -33,7 +33,7 @@ public class PersonController {
     }
 
     @GetMapping("/{id}")
-    public PersonResponse get(@RmsId @PathVariable("id") Integer personId) {
+    public PersonResponse get(@PathVariable("id") @RmsId Integer personId) {
         return service
                 .getById(new PersonId(personId))
                 .map(PersonResponse::from)
@@ -41,21 +41,21 @@ public class PersonController {
     }
 
     @PostMapping
-    public PersonResponse add(@Valid @RequestBody PersonAddRequest request) {
+    public PersonResponse add(@RequestBody @Valid PersonAddRequest request) {
         return service
                 .add(request.toCommand())
                 .transform(PersonResponse::from);
     }
 
     @PutMapping
-    public PersonResponse update(@Valid @RequestBody PersonUpdateRequest request) {
+    public PersonResponse update(@RequestBody @Valid PersonUpdateRequest request) {
         return service
                 .update(request.toCommand())
                 .transform(PersonResponse::from);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@RmsId @PathVariable("id") Integer personId) {
+    public void delete(@PathVariable("id") @RmsId Integer personId) {
         service.delete(new PersonId(personId));
     }
 }
