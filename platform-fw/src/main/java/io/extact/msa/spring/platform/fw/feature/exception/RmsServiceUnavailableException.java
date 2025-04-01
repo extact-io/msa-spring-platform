@@ -1,4 +1,6 @@
-package io.extact.msa.spring.platform.fw.exception;
+package io.extact.msa.spring.platform.fw.feature.exception;
+
+import io.extact.msa.spring.platform.fw.exception.RentalReservationServiceException;
 
 public class RmsServiceUnavailableException extends RentalReservationServiceException {
 

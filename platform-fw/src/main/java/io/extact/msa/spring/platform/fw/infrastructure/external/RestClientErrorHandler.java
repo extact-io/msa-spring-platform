@@ -17,11 +17,12 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
+import io.extact.msa.spring.platform.fw.exception.RmsSystemException;
 import io.extact.msa.spring.platform.fw.exception.message.SimpleErrorMessage;
 import io.extact.msa.spring.platform.fw.exception.message.ValidationErrorMessage;
-import io.extact.msa.spring.platform.fw.exception.RmsServiceUnavailableException;
-import io.extact.msa.spring.platform.fw.exception.RmsSystemException;
-import io.extact.msa.spring.platform.fw.exception.RmsValidationException;
+import io.extact.msa.spring.platform.fw.feature.exception.RmsRequestCheckException;
+import io.extact.msa.spring.platform.fw.feature.exception.RmsServiceUnavailableException;
+import io.extact.msa.spring.platform.fw.feature.exception.RmsValidationException;
 
 public class RestClientErrorHandler implements ResponseErrorHandler {
 
@@ -39,6 +40,7 @@ public class RestClientErrorHandler implements ResponseErrorHandler {
         execptionHandlerMap = new HashMap<>();
         execptionHandlerMap.put(BusinessFlowException.class.getSimpleName(), this::throwBusinessFlowException);
         execptionHandlerMap.put(RmsServiceUnavailableException.class.getSimpleName(), this::throwRmsServiceUnavailableException);
+        execptionHandlerMap.put(RmsRequestCheckException.class.getSimpleName(), this::throwRmsRequestCheckException);
         execptionHandlerMap.put(TypeMismatchException.class.getSimpleName(), this::throwRmsValidationException);
         execptionHandlerMap.put(MethodArgumentNotValidException.class.getSimpleName(), this::throwRmsValidationException);
         execptionHandlerMap.put(HandlerMethodValidationException.class.getSimpleName(), this::throwRmsValidationException);
@@ -82,6 +84,11 @@ public class RestClientErrorHandler implements ResponseErrorHandler {
     private RmsServiceUnavailableException throwRmsServiceUnavailableException(ClientHttpResponse response) {
         SimpleErrorMessage body = deserializer.deserializeResponse(response, SimpleErrorMessage.class);
         throw new RmsServiceUnavailableException(body.errorMessage());
+    }
+    
+    private RmsServiceUnavailableException throwRmsRequestCheckException(ClientHttpResponse response) {
+        SimpleErrorMessage body = deserializer.deserializeResponse(response, SimpleErrorMessage.class);
+        throw new RmsRequestCheckException(body.errorMessage());
     }
 
     private RmsValidationException throwRmsValidationException(ClientHttpResponse response) {

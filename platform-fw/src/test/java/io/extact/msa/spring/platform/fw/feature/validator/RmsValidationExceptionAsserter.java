@@ -5,9 +5,9 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.List;
 import java.util.Map;
 
-import io.extact.msa.spring.platform.fw.exception.RmsValidationException;
 import io.extact.msa.spring.platform.fw.exception.message.ValidationErrorMessage;
 import io.extact.msa.spring.platform.fw.exception.message.ValidationErrorMessage.MessageItem;
+import io.extact.msa.spring.platform.fw.feature.exception.RmsValidationException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

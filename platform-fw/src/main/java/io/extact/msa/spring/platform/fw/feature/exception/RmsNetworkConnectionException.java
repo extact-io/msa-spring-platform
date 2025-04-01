@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.exception;
+package io.extact.msa.spring.platform.fw.feature.exception;
 
 public class RmsNetworkConnectionException extends RmsServiceUnavailableException {
 

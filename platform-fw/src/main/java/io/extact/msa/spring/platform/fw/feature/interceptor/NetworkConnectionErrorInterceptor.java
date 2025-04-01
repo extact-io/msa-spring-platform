@@ -6,7 +6,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 
-import io.extact.msa.spring.platform.fw.exception.RmsNetworkConnectionException;
+import io.extact.msa.spring.platform.fw.feature.exception.RmsNetworkConnectionException;
 import lombok.extern.slf4j.Slf4j;
 
 @Aspect

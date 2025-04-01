@@ -1,5 +1,6 @@
-package io.extact.msa.spring.platform.fw.exception;
+package io.extact.msa.spring.platform.fw.feature.exception;
 
+import io.extact.msa.spring.platform.fw.exception.RentalReservationServiceException;
 import io.extact.msa.spring.platform.fw.exception.message.ValidationErrorMessage;
 
 public class RmsValidationException extends RentalReservationServiceException {

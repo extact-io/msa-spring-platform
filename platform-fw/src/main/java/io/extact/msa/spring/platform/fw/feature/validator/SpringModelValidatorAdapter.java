@@ -8,8 +8,8 @@ import org.springframework.validation.SmartValidator;
 
 import io.extact.msa.spring.platform.fw.domain.model.DomainModel;
 import io.extact.msa.spring.platform.fw.domain.model.ModelValidator;
-import io.extact.msa.spring.platform.fw.exception.RmsValidationException;
 import io.extact.msa.spring.platform.fw.exception.message.ValidationErrorMessage;
+import io.extact.msa.spring.platform.fw.feature.exception.RmsValidationException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

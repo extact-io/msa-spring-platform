@@ -9,7 +9,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.util.ClassUtils;
 
-import io.extact.msa.spring.platform.fw.exception.RmsPersistenceException;
+import io.extact.msa.spring.platform.fw.feature.exception.RmsPersistenceException;
 
 public class DefaultSequenceGenerator implements SequenceGenerator {
 

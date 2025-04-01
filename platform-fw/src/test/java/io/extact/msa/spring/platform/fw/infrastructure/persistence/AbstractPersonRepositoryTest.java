@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.extact.msa.spring.platform.fw.exception.RmsPersistenceException;
+import io.extact.msa.spring.platform.fw.feature.exception.RmsPersistenceException;
 import io.extact.msa.spring.platform.fw.stub.apps.person.domain.PersonRepository;
 import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.Person;
 import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.Person.PersonCreatable;

@@ -15,10 +15,11 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import io.extact.msa.spring.platform.core.condition.SkipRegistration;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
-import io.extact.msa.spring.platform.fw.exception.RmsServiceUnavailableException;
 import io.extact.msa.spring.platform.fw.exception.RmsSystemException;
 import io.extact.msa.spring.platform.fw.exception.message.SimpleErrorMessage;
 import io.extact.msa.spring.platform.fw.exception.message.ValidationErrorMessage;
+import io.extact.msa.spring.platform.fw.feature.exception.RmsRequestCheckException;
+import io.extact.msa.spring.platform.fw.feature.exception.RmsServiceUnavailableException;
 import io.extact.msa.spring.platform.fw.feature.validator.ValidationErrorTranslator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -61,6 +62,20 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
 
         return ResponseEntity
                 .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .header(RMS_EXCEPTION_HEAD, e.getClass().getSimpleName())
+                .body(message);
+    }
+
+    @ExceptionHandler(RmsRequestCheckException.class)
+    public ResponseEntity<SimpleErrorMessage> handleRequestCheckException(RmsRequestCheckException e,
+            WebRequest req) {
+
+        log.warn("exception occured. message={}", e.getMessage());
+
+        SimpleErrorMessage message = new SimpleErrorMessage(e.getClass().getSimpleName(), e.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
                 .header(RMS_EXCEPTION_HEAD, e.getClass().getSimpleName())
                 .body(message);
     }

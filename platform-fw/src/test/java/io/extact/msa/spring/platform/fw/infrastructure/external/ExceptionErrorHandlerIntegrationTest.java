@@ -54,11 +54,12 @@ import io.extact.msa.spring.platform.core.jwt.encode.JwtEncodeConfig;
 import io.extact.msa.spring.platform.core.jwt.encode.UserClaims;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
-import io.extact.msa.spring.platform.fw.exception.RmsServiceUnavailableException;
 import io.extact.msa.spring.platform.fw.exception.RmsSystemException;
-import io.extact.msa.spring.platform.fw.exception.RmsValidationException;
 import io.extact.msa.spring.platform.fw.exception.message.ValidationErrorMessage;
 import io.extact.msa.spring.platform.fw.exception.message.ValidationErrorMessage.MessageItem;
+import io.extact.msa.spring.platform.fw.feature.exception.RmsRequestCheckException;
+import io.extact.msa.spring.platform.fw.feature.exception.RmsServiceUnavailableException;
+import io.extact.msa.spring.platform.fw.feature.exception.RmsValidationException;
 import io.extact.msa.spring.platform.fw.feature.validator.ValidatorConfig;
 import io.extact.msa.spring.platform.fw.interfaces.webapi.ExceptionHandled;
 import io.extact.msa.spring.platform.fw.interfaces.webapi.RestControllerConfig;
@@ -198,6 +199,16 @@ class ExceptionErrorHandlerIntegrationTest {
                         RmsServiceUnavailableException.class,
                         e -> {
                             assertThat(e.getMessage()).contains("service unavailable");
+                        });
+    }
+
+    @Test
+    void occurRequestCheckExceptionTest() {
+        assertThatThrownBy(() -> client.occurRequestCheckException())
+                .isInstanceOfSatisfying(
+                        RmsRequestCheckException.class,
+                        e -> {
+                            assertThat(e.getMessage()).contains("request check error.");
                         });
     }
 
@@ -504,6 +515,9 @@ class ExceptionErrorHandlerIntegrationTest {
 
         @GetExchange("/occurServiceUnavailableException")
         void occurServiceUnavailableException();
+        
+        @GetExchange("/occurRmsRequestCheckException")
+        void occurRequestCheckException();
 
         @GetExchange("/occurSystemException")
         void occurSystemException();
@@ -617,6 +631,11 @@ class ExceptionErrorHandlerIntegrationTest {
         @GetMapping("/occurServiceUnavailableException")
         public void occurServiceUnavailableException() {
             throw new RmsServiceUnavailableException("service unavailable.");
+        }
+
+        @GetMapping("/occurRmsRequestCheckException")
+        public void occurRequestCheckException() {
+            throw new RmsRequestCheckException("request check error.");
         }
 
         @GetMapping("/occurSystemException")

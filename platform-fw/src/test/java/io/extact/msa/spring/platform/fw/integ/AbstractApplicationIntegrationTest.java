@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Import;
 
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
-import io.extact.msa.spring.platform.fw.exception.RmsValidationException;
+import io.extact.msa.spring.platform.fw.feature.exception.RmsValidationException;
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.ExternalPersonClient;
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.ExternalPersonCreator;
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.ExternalPersonDomainConfig;
