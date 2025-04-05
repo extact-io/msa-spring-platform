@@ -29,6 +29,7 @@ public @interface RmsId {
     String message() default "{bv.Generic.message}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
+    boolean required() default true;
 
     @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
     @Retention(RUNTIME)
