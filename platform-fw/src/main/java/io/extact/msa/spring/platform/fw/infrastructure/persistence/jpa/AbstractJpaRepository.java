@@ -15,8 +15,10 @@ import io.extact.msa.spring.platform.fw.domain.model.Identity;
 import io.extact.msa.spring.platform.fw.domain.repository.GenericRepository;
 import io.extact.msa.spring.platform.fw.domain.service.IdentityGenerator;
 import io.extact.msa.spring.platform.fw.feature.exception.RmsPersistenceException;
+import io.extact.msa.spring.platform.fw.infrastructure.persistence.ModelEntityMapper;
+import io.extact.msa.spring.platform.fw.infrastructure.persistence.PhysicalEntity;
 
-public abstract class AbstractJpaRepository<M extends EntityModel, E extends TableEntity<M>>
+public abstract class AbstractJpaRepository<M extends EntityModel, E extends PhysicalEntity<M>>
         implements GenericRepository<M>, IdentityGenerator, EnvironmentAware {
 
 

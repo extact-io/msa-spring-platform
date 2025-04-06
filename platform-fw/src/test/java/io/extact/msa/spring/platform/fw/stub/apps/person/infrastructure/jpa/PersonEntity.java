@@ -7,7 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
 import io.extact.msa.spring.platform.fw.domain.model.ModelValidator;
-import io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa.TableEntity;
+import io.extact.msa.spring.platform.fw.infrastructure.persistence.PhysicalEntity;
 import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.Person;
 import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.Person.PersonCreatable;
 import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.PersonId;
@@ -23,7 +23,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @Getter @Setter
 @ToString
-public class PersonEntity implements TableEntity<Person>, PersonCreatable {
+public class PersonEntity implements PhysicalEntity<Person>, PersonCreatable {
 
     @Id
     private Integer id;

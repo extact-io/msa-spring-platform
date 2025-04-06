@@ -7,7 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
 import io.extact.msa.spring.platform.fw.domain.model.ModelValidator;
-import io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa.TableEntity;
+import io.extact.msa.spring.platform.fw.infrastructure.persistence.PhysicalEntity;
 import io.extact.msa.spring.platform.fw.stub.apps.employee.domain.model.Employee;
 import io.extact.msa.spring.platform.fw.stub.apps.employee.domain.model.Employee.EmployeeCreatable;
 import io.extact.msa.spring.platform.fw.stub.apps.employee.domain.model.EmployeeId;
@@ -23,7 +23,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @Getter @Setter
 @ToString
-public class EmployeeEntity implements TableEntity<Employee>, EmployeeCreatable {
+public class EmployeeEntity implements PhysicalEntity<Employee>, EmployeeCreatable {
 
     @Id
     private Integer id;

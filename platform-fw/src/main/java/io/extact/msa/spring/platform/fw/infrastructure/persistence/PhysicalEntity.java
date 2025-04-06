@@ -1,9 +1,9 @@
-package io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa;
+package io.extact.msa.spring.platform.fw.infrastructure.persistence;
 
 import io.extact.msa.spring.platform.fw.domain.model.EntityModel;
 import io.extact.msa.spring.platform.fw.domain.model.ModelValidator;
 
-public interface TableEntity<M extends EntityModel> {
+public interface PhysicalEntity<M extends EntityModel> {
 
     default Integer getPk() {
         return getId();

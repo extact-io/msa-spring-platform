@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa;
+package io.extact.msa.spring.platform.fw.infrastructure.persistence;
 
 import java.util.function.Function;
 
@@ -7,7 +7,7 @@ import io.extact.msa.spring.platform.fw.domain.model.ModelValidator;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class DefaultModelEntityMapper<M extends EntityModel, E extends TableEntity<M>>
+public class DefaultModelEntityMapper<M extends EntityModel, E extends PhysicalEntity<M>>
         implements ModelEntityMapper<M, E> {
 
     private final Function<M, E> modelToEntityMapper;

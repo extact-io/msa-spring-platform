@@ -2,8 +2,8 @@ package io.extact.msa.spring.platform.fw.stub.apps.person.infrastructure.jpa;
 
 import java.util.Optional;
 
+import io.extact.msa.spring.platform.fw.infrastructure.persistence.ModelEntityMapper;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa.AbstractJpaRepository;
-import io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa.ModelEntityMapper;
 import io.extact.msa.spring.platform.fw.stub.apps.person.domain.PersonRepository;
 import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.Person;
 

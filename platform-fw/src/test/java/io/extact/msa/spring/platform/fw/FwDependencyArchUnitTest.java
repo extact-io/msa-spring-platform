@@ -10,6 +10,7 @@ import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
+import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition;
 
 @AnalyzeClasses(packages = "io.extact.msa.spring.platform.fw", importOptions = ImportOption.DoNotIncludeTests.class)
 class FwDependencyArchUnitTest {
@@ -36,8 +37,7 @@ class FwDependencyArchUnitTest {
                     "..application..")
             // それぞれのapapterは独立し、相互に依存関係がないこともチェックされる
             .adapter("interface-webapi", "..interfaces", "..interfaces.webapi..")
-            .adapter("persistence-file", "..infrastructure.persistence.file..")
-            .adapter("persistence-jpa", "..infrastructure.persistence.jpa..")
+            .adapter("persistence", "..infrastructure.persistence..") // さらにslicesで個別に独立性をチェック
             .adapter("external", "..infrastructure.external..")
             // Cofigurationクラスからの依存はすべて無視する
             // featureパッケージからdomainへの依存は許容
@@ -53,6 +53,16 @@ class FwDependencyArchUnitTest {
                     		"..domain.event..", 
                     		"..domain.model..", 
                     		"..exception.."));
+
+    /**
+     * persistence配下のパッケージ(file/jpa/remote)は独立し相互に依存していないこと。
+     * <p>
+     * ・fileパッケージがjpaパッケージを利用しているといったことがないこと
+     */
+    @ArchTest
+    static final ArchRule isolate_persistence_not_depend_on_each_other = SlicesRuleDefinition.slices()
+            .matching("..infrastructure.persistence.(*)..")
+            .should().notDependOnEachOther();
 
     // ---------------------------------------------------------------------
     // platform.fwパッケージ内部の依存関係の定義
@@ -143,6 +153,7 @@ class FwDependencyArchUnitTest {
                     "io.extact.msa.spring.platform.core.generic..",
                     "io.extact.msa.spring.platform.fw.domain..",
                     "io.extact.msa.spring.platform.fw.exception..",
+                    "io.extact.msa.spring.platform.fw.infrastructure.persistence", // 直下
                     "io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa..",
                     "io.extact.msa.spring.platform.fw.feature.exception..",
                     "org.springframework.core..",
