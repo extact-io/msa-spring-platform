@@ -9,6 +9,7 @@ import io.extact.msa.spring.platform.core.generic.Transformable;
  * よって、interface層からDomainクラス本体への参照は禁止とする。
  * ただし、状態を変更する操作を持たない{@link ValueModel}は公開することによりデメリットは
  * ないため、そのまま公開して良いものとする。
+ * 
  */
-public interface EntityModelView extends Identifiable, Transformable {
+public interface EntityModelView<T> extends Identifiable, Transformable, IsEqualable<T> {
 }

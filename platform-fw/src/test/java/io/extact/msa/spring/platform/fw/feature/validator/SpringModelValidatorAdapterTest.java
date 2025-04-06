@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Map;
+import java.util.Objects;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -611,7 +612,7 @@ class SpringModelValidatorAdapterTest {
         private final String pair2;
     }
 
-    interface TestModelView extends EntityModelView {
+    interface TestModelView extends EntityModelView<TestModelView> {
         TestId getId();
 
         int getNo();
@@ -619,6 +620,17 @@ class SpringModelValidatorAdapterTest {
         PairFields getPairFields();
 
         NestModel getNest();
+
+        @Override
+        default boolean isEqual(TestModelView other) {
+            if (other == null) {
+                return false;
+            }
+            return Objects.equals(getId(), other.getId())
+                    && getNo() == other.getNo()
+                    && Objects.equals(getPairFields(), other.getPairFields())
+                    && Objects.equals(getNest(), other.getNest());
+        }
     }
 
     @AllArgsConstructor
