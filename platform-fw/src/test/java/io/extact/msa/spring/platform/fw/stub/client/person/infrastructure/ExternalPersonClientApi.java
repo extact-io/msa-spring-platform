@@ -17,7 +17,7 @@ public interface ExternalPersonClientApi {
     List<ExternalPersonResponse> getAll();
 
     @GetExchange("/{id}")
-    ExternalPersonResponse get(@PathVariable("id") Integer id);
+    ExternalPersonResponse get(@PathVariable Integer id);
 
     @PostExchange
     ExternalPersonResponse add(@RequestBody ExternalPersonAddRequest req);

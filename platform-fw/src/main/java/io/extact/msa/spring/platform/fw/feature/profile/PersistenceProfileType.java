@@ -5,8 +5,9 @@ import java.util.stream.Stream;
 
 public enum PersistenceProfileType {
 
+    FILE("-file"),
     JPA("-jpa"),
-    FILE("-file");
+    REMOTE("-remote");
 
     private final String profileSuffix;
 

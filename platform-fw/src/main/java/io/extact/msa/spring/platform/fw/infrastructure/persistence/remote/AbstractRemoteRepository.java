@@ -3,9 +3,6 @@ package io.extact.msa.spring.platform.fw.infrastructure.persistence.remote;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.context.EnvironmentAware;
-import org.springframework.core.env.Environment;
-
 import io.extact.msa.spring.platform.fw.domain.model.EntityModel;
 import io.extact.msa.spring.platform.fw.domain.model.Identity;
 import io.extact.msa.spring.platform.fw.domain.repository.GenericRepository;
@@ -17,16 +14,11 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public abstract class AbstractRemoteRepository<M extends EntityModel, E extends PhysicalEntity<M>>
-        implements GenericRepository<M>, IdentityGenerator, EnvironmentAware {
+        implements GenericRepository<M>, IdentityGenerator {
 
 
     private final GenericClientApi<E> clientApi;
     private final ModelEntityMapper<M, E> modelEntityMapper;
-
-    @Override
-    public void setEnvironment(Environment env) {
-        // なにかあれば
-    }
 
     @Override
     public Optional<M> find(Identity id) {
