@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +24,8 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriBuilderFactory;
 
 import io.extact.msa.spring.platform.core.condition.EnableAutoConfigurationWithoutJpa;
+import io.extact.msa.spring.platform.fw.infrastructure.external.CustomUriBuilderFactory;
+import io.extact.msa.spring.platform.fw.infrastructure.external.ExternalProperties;
 import io.extact.msa.spring.platform.fw.infrastructure.external.converter.ConverterClientApi.DateTypeDto;
 import io.extact.msa.spring.platform.fw.infrastructure.external.converter.ConverterClientApi.StringTypeDto;
 
@@ -53,10 +56,16 @@ class RestClientConverterTest {
         }
 
         @Bean
-        RestClient converterClientApi(Environment env) {
+        @ConfigurationProperties("rms.persistence.person.remote")
+        ExternalProperties externalProperties() {
+            return new ExternalProperties();
+        }
+        
+        @Bean
+        RestClient converterClientApi(ExternalProperties prop, Environment env) {
 
             ConversionService conversionService = ConfigConversionServiceBuilder
-                    .builder(env)
+                    .builder(prop)
                     .build();
             UriBuilderFactory uriFactory = CustomUriBuilderFactory.newInstance()
                     .env(env)
@@ -64,7 +73,7 @@ class RestClientConverterTest {
                     .uriTemplate("http://localhost:${local.server.port}/converter")
                     .build();
             HttpMessageConverter<Object> converter = ConfigMessageConveterBuilder
-                    .builder(env)
+                    .builder(prop)
                     .build();
 
             return RestClient.builder()
@@ -76,8 +85,8 @@ class RestClientConverterTest {
 
     @BeforeAll
     static void beforeAll(
-            @Value("${rms.rest.client.format.date}") String datePattern,
-            @Value("${rms.rest.client.format.date-time}") String dateTimePattern) {
+            @Value("${rms.persistence.person.remote.format.date}") String datePattern,
+            @Value("${rms.persistence.person.remote.format.date-time}") String dateTimePattern) {
         dateFormatter = DateTimeFormatter.ofPattern(datePattern);
         dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimePattern);
     }

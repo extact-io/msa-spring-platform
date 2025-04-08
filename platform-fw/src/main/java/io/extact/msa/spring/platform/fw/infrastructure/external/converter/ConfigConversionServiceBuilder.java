@@ -4,21 +4,20 @@ import java.util.Optional;
 
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.ConfigurableConversionService;
-import org.springframework.core.env.Environment;
 import org.springframework.format.support.DefaultFormattingConversionService;
 
-import io.extact.msa.spring.platform.core.utils.EnvironmentUtils;
+import io.extact.msa.spring.platform.fw.infrastructure.external.ExternalProperties;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConfigConversionServiceBuilder {
 
-    private final Environment env;
+    private final ExternalProperties prop;
     private Optional<ConfigurableConversionService> customizedService = Optional.empty();
 
-    public static ConfigConversionServiceBuilder builder(Environment env) {
-        return new ConfigConversionServiceBuilder(env);
+    public static ConfigConversionServiceBuilder builder(ExternalProperties prop) {
+        return new ConfigConversionServiceBuilder(prop);
     }
 
     public ConfigConversionServiceBuilder customizedService(ConfigurableConversionService customizedService) {
@@ -28,19 +27,14 @@ public class ConfigConversionServiceBuilder {
 
     public ConversionService build() {
 
-        Optional<String> datePattern = EnvironmentUtils
-                .getOptionalProperty(env, "rms.rest.client.format.date");
-        Optional<String> dateTimePattern = EnvironmentUtils
-                .getOptionalProperty(env, "rms.rest.client.format.date-time");
-
         ConfigurableConversionService baseService = customizedService
                 .orElseGet(DefaultFormattingConversionService::new);
 
-        datePattern.ifPresent(pttn -> {
-            baseService.addConverter(new LocalDateToStringConverter(pttn));
+        prop.getOptinalDateFormat().ifPresent(fmt -> {
+            baseService.addConverter(new LocalDateToStringConverter(fmt));
         });
-        dateTimePattern.ifPresent(pttn -> {
-            baseService.addConverter(new LocalDateTimeToStringConverter(pttn));
+        prop.getOptinalDateTimeFormat().ifPresent(fmt -> {
+            baseService.addConverter(new LocalDateTimeToStringConverter(fmt));
         });
 
         return baseService;

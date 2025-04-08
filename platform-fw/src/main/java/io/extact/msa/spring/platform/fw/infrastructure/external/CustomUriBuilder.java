@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.infrastructure.external.converter;
+package io.extact.msa.spring.platform.fw.infrastructure.external;
 
 import java.net.URI;
 import java.util.Collection;

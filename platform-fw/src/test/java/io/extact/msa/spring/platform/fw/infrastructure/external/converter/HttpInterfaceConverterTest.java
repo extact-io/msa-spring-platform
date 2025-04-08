@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +26,7 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import org.springframework.web.util.UriBuilderFactory;
 
 import io.extact.msa.spring.platform.core.condition.EnableAutoConfigurationWithoutJpa;
+import io.extact.msa.spring.platform.fw.infrastructure.external.ExternalProperties;
 import io.extact.msa.spring.platform.fw.infrastructure.external.converter.ConverterClientApi.DateTypeDto;
 import io.extact.msa.spring.platform.fw.infrastructure.external.converter.ConverterClientApi.StringTypeDto;
 import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
@@ -54,9 +56,15 @@ class HttpInterfaceConverterTest {
         ConverterClientApiController converterClientApiController() {
             return new ConverterClientApiController();
         }
+        
+        @Bean
+        @ConfigurationProperties("rms.persistence.person.remote")
+        ExternalProperties externalProperties() {
+            return new ExternalProperties();
+        }
 
         @Bean
-        ConverterClientApi converterClientApi(Environment env) {
+        ConverterClientApi converterClientApi(ExternalProperties prop, Environment env) {
 
             /*
              * HttpInterfaceの型変換にはUriBuilderFactoryは使用されないため、
@@ -65,10 +73,10 @@ class HttpInterfaceConverterTest {
             UriBuilderFactory uriFactory = new LocalHostUriBuilderFactory(env);
 
             HttpMessageConverter<Object> converter = ConfigMessageConveterBuilder
-                    .builder(env)
+                    .builder(prop)
                     .build();
             ConversionService conversionService = ConfigConversionServiceBuilder
-                    .builder(env)
+                    .builder(prop)
                     .build();
 
             RestClient restClient = RestClient.builder()
@@ -88,8 +96,8 @@ class HttpInterfaceConverterTest {
 
     @BeforeAll
     static void beforeAll(
-            @Value("${rms.rest.client.format.date}") String datePattern,
-            @Value("${rms.rest.client.format.date-time}") String dateTimePattern) {
+            @Value("${rms.persistence.person.remote.format.date}") String datePattern,
+            @Value("${rms.persistence.person.remote.format.date-time}") String dateTimePattern) {
         dateFormatter = DateTimeFormatter.ofPattern(datePattern);
         dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimePattern);
     }

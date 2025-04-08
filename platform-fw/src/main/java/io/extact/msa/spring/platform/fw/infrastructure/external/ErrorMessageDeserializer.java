@@ -31,9 +31,7 @@ public class ErrorMessageDeserializer {
     }
 
     public <T extends ErrorMessage> T deserializeResponse(ClientHttpResponse response, Class<T> responseType) {
-
         String json = readBodyAsString(response);
-
         try {
             return objectMapper.readValue(json, responseType);
         } catch (Exception e) {
@@ -43,14 +41,12 @@ public class ErrorMessageDeserializer {
     }
 
     private String readBodyAsString(ClientHttpResponse response) {
-
         byte[] body = new byte[0];
         try (InputStream in = response.getBody()) {
             body = in.readAllBytes();
         } catch (IOException e) {
             log.warn(e.getMessage(), e);
         }
-
         return new String(body, resolveCharset(response));
     }
 
@@ -68,7 +64,6 @@ public class ErrorMessageDeserializer {
         String message = "json deserialize error. message:{%s} -> %s".formatted(e.getMessage(), json);
 
         ErrorMessage errorMessage;
-
         if (ValidationErrorMessage.class.isAssignableFrom(responseType)) {
             errorMessage = new ValidationErrorMessage(reason, message, Collections.emptyList());
         } else if (SimpleErrorMessage.class.isAssignableFrom(responseType)) {

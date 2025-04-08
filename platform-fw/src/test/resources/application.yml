@@ -74,12 +74,12 @@ rms:
       sql:
         schema-locations: classpath:sql/person-schema.sql
         data-locations: classpath:sql/person-data.sql
+      remote:
+        format:
+          date: ${spring.mvc.format.date}
+          date-time: ${spring.mvc.format.date-time}
   rest:
     controller:
       format:
         date: ${spring.mvc.format.date}
         date-time: ${spring.mvc.format.date-time}
-    client:
-      format:
-        date: yyyyMMdd
-        date-time: yyyyMMdd HH:mm
