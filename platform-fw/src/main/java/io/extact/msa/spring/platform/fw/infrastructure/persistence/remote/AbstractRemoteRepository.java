@@ -46,7 +46,7 @@ public abstract class AbstractRemoteRepository<M extends EntityModel, E extends 
     public void update(M model) {
         E entity = model.transform(modelEntityMapper::toEnity);
         boolean result = clientApi.update(entity);
-        if (result) {
+        if (!result) {
             throw new RmsPersistenceException("target does not exist for id:" + entity.getPk());
         }
     }
@@ -54,7 +54,7 @@ public abstract class AbstractRemoteRepository<M extends EntityModel, E extends 
     @Override
     public void delete(M model) {
         boolean result = clientApi.delete(model.getId().id());
-        if (result) {
+        if (!result) {
             throw new RmsPersistenceException("target does not exist for id:" + model.getId().id());
         }
     }
