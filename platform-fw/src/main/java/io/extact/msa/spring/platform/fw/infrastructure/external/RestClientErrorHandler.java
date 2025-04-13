@@ -5,7 +5,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpMethod;
@@ -28,10 +28,10 @@ public class RestClientErrorHandler implements ResponseErrorHandler {
 
     private static final String RMS_EXCEPTION_HEAD = "rms-exception";
 
-    private final Map<String, Function<ClientHttpResponse, RuntimeException>> execptionHandlerMap;
-    private final Map<Integer, Function<ClientHttpResponse, RuntimeException>> statusHandlerMap;
+    private final Map<String, Consumer<ClientHttpResponse>> execptionHandlerMap;
+    private final Map<Integer, Consumer<ClientHttpResponse>> statusHandlerMap;
 
-    private final Function<ClientHttpResponse, RuntimeException> fallbackHandler;
+    private final Consumer<ClientHttpResponse> fallbackHandler;
 
     private final ErrorMessageDeserializer deserializer;
 
@@ -67,45 +67,44 @@ public class RestClientErrorHandler implements ResponseErrorHandler {
         String className = response.getHeaders().getFirst(RMS_EXCEPTION_HEAD);
         int statusCode = response.getStatusCode().value();
 
-        Function<ClientHttpResponse, RuntimeException> handler =
-                getOptional(execptionHandlerMap, className)
+        Consumer<ClientHttpResponse> handler = getOptional(execptionHandlerMap, className)
                 .or(() -> getOptional(statusHandlerMap, statusCode))
                 .orElse(fallbackHandler);
 
-        handler.apply(response);
+        handler.accept(response);
     }
 
-    private BusinessFlowException throwBusinessFlowException(ClientHttpResponse response) {
+    private void throwBusinessFlowException(ClientHttpResponse response) {
         SimpleErrorMessage body = deserializer.deserializeResponse(response, SimpleErrorMessage.class);
         CauseType causeType = CauseType.valueOf(body.errorReason());
         throw new BusinessFlowException(body.errorMessage(), causeType);
     }
 
-    private RmsServiceUnavailableException throwRmsServiceUnavailableException(ClientHttpResponse response) {
+    private void throwRmsServiceUnavailableException(ClientHttpResponse response) {
         SimpleErrorMessage body = deserializer.deserializeResponse(response, SimpleErrorMessage.class);
         throw new RmsServiceUnavailableException(body.errorMessage());
     }
     
-    private RmsServiceUnavailableException throwRmsRequestCheckException(ClientHttpResponse response) {
+    private void throwRmsRequestCheckException(ClientHttpResponse response) {
         SimpleErrorMessage body = deserializer.deserializeResponse(response, SimpleErrorMessage.class);
         throw new RmsRequestCheckException(body.errorMessage());
     }
 
-    private RmsValidationException throwRmsValidationException(ClientHttpResponse response) {
+    private void throwRmsValidationException(ClientHttpResponse response) {
         ValidationErrorMessage body = deserializer.deserializeResponse(response, ValidationErrorMessage.class);
         throw new RmsValidationException(body);
     }
 
-    private RmsSystemException throwRmsSystemException(ClientHttpResponse response) {
+    private void throwRmsSystemException(ClientHttpResponse response) {
         SimpleErrorMessage body = deserializer.deserializeResponse(response, SimpleErrorMessage.class);
         throw new RmsSystemException(body.errorMessage());
     }
 
-    private SecurityConstraintException throwSecurityConstraintException(ClientHttpResponse response) {
+    private void throwSecurityConstraintException(ClientHttpResponse response) {
         throw new SecurityConstraintException(response);
     }
 
-    private RmsSystemException fallbackHandler(ClientHttpResponse response) {
+    private void fallbackHandler(ClientHttpResponse response) {
         SimpleErrorMessage body = deserializer.deserializeResponse(response, SimpleErrorMessage.class);
         throw new RmsSystemException(body.errorMessage());
     }

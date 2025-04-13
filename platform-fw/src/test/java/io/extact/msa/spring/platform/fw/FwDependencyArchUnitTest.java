@@ -44,15 +44,15 @@ class FwDependencyArchUnitTest {
             .ensureAllClassesAreContainedInArchitectureIgnoring(configurationClasses())
             .ensureAllClassesAreContainedInArchitectureIgnoring(resideInAnyPackage("..feature.."))
             .ignoreDependency(
-            		configurationClasses(), 
-            		alwaysTrue())
+                    configurationClasses(),
+                    alwaysTrue())
             .ignoreDependency(
-            		resideInAnyPackage("..feature.."),
+                    resideInAnyPackage("..feature.."),
                     resideInAnyPackage(
-                    		"..application..", 
-                    		"..domain.event..", 
-                    		"..domain.model..", 
-                    		"..exception.."));
+                            "..application..",
+                            "..domain.event..",
+                            "..domain.model..",
+                            "..exception.."));
 
     /**
      * persistence配下のパッケージ(file/jpa/remote)は独立し相互に依存していないこと。
@@ -166,6 +166,7 @@ class FwDependencyArchUnitTest {
                     "org.slf4j..",
                     "lombok..") //
             );
+
     /**
      * Hibernateへはpersistence.jpa.hibernateパッケージでしか依存していないこと
      * ・persistence.jpa.hibernateパッケージ以外にhibernateに依存しているクラスがないこと
@@ -176,6 +177,55 @@ class FwDependencyArchUnitTest {
             .resideOutsideOfPackage("..infrastructure.persistence.jpa.hibernate..")
             .should().dependOnClassesThat()
             .resideInAnyPackage("org.hibernate..");
+
+    /**
+     * persistence.remoteパッケージから依存してOKなモジュールの検証
+     */
+    @ArchTest
+    static final ArchRule dependency_fw_dependency_persistence_remote = classes()
+            .that().resideInAnyPackage("..infrastructure.persistence.remote..")
+            .and(not(configurationClasses()))
+            .should().onlyDependOnClassesThat(resideInAnyPackage(
+                    "io.extact.msa.spring.platform.core.generic..",
+                    "io.extact.msa.spring.platform.fw.domain..",
+                    "io.extact.msa.spring.platform.fw.exception..",
+                    "io.extact.msa.spring.platform.fw.infrastructure.persistence", // 直下
+                    "io.extact.msa.spring.platform.fw.infrastructure.persistence.remote..",
+                    "io.extact.msa.spring.platform.fw.feature.exception..",
+                    "org.springframework.core..",
+                    "org.springframework.beans..",
+                    "org.springframework.context..",
+                    "org.springframework.web..", // Spring webなのでOK
+                    "org.springframework.util..",
+                    "java..",
+                    "org.slf4j..",
+                    "lombok..") //
+            );
+
+    /**
+     * externalパッケージから依存してOKなモジュールの検証
+     */
+    @ArchTest
+    static final ArchRule dependency_fw_dependency_external = classes()
+            .that().resideInAnyPackage("..infrastructure.external..")
+            .and(not(configurationClasses()))
+            .should().onlyDependOnClassesThat(resideInAnyPackage(
+                    "io.extact.msa.spring.platform.core.generic..",
+                    "io.extact.msa.spring.platform.fw.domain..",
+                    "io.extact.msa.spring.platform.fw.exception..",
+                    "io.extact.msa.spring.platform.fw.infrastructure.external..",
+                    "io.extact.msa.spring.platform.fw.feature.exception..",
+                    "org.springframework.core..",
+                    "org.springframework.beans..",
+                    "org.springframework.context..",
+                    "org.springframework.web..", // Spring webなのでOK
+                    "org.springframework.http..", // Spring webなのでOK
+                    "org.springframework.util..",
+                    "com.fasterxml.jackson..",
+                    "java..",
+                    "org.slf4j..",
+                    "lombok..")
+                            .or(type(org.springframework.format.support.DefaultFormattingConversionService.class)));
 
     /**
      * featureパッケージから依存してOKなモジュールの検証
@@ -191,8 +241,8 @@ class FwDependencyArchUnitTest {
                     "io.extact.msa.spring.platform.fw.domain..",
                     "io.extact.msa.spring.platform.fw.exception..",
                     "io.extact.msa.spring.platform.fw.feature..",
-                    "org.springframework..",    // Spring
-                    "org.aspectj..",            // for Interceptor
+                    "org.springframework..", // Spring
+                    "org.aspectj..", // for Interceptor
                     "java..",
                     "javax.sql..",
                     "org.slf4j..",
