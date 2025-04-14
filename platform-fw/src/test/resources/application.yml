@@ -39,6 +39,9 @@ management:
       validate-group-membership: false # groupにindicatorが存在しない場合もエラーにしない設定
 
 rms:
+  log:
+    server:
+      enable: false
   debug:
     configdump:
       enable: false # change to true in the test class
@@ -75,6 +78,7 @@ rms:
         schema-locations: classpath:sql/person-schema.sql
         data-locations: classpath:sql/person-data.sql
       remote:
+        url: http://localhost:${local.server.port}
         format:
           date: ${spring.mvc.format.date}
           date-time: ${spring.mvc.format.date-time}
