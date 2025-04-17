@@ -1,19 +1,30 @@
 package io.extact.msa.spring.platform.fw.interfaces.webapi;
 
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
+import io.extact.msa.spring.platform.core.env.ActiveProfileResolver;
+import io.extact.msa.spring.platform.core.env.EnvConfig;
+import io.extact.msa.spring.platform.core.env.MainModuleInformation;
 import io.extact.msa.spring.platform.fw.feature.validator.ValidationErrorTranslator;
 import io.extact.msa.spring.platform.fw.feature.validator.ValidatorConfig;
 import io.extact.msa.spring.platform.fw.interfaces.webapi.converter.ControllerConverterConfig;
 
 @Configuration(proxyBeanMethods = false)
+@EnableAutoConfiguration
 @Import({
+        EnvConfig.class,
         ValidatorConfig.class,
         ControllerConverterConfig.class })
 public class RestControllerConfig {
+
+    @Bean
+    StartupLogRunner startupLogRunner(MainModuleInformation moduleInfo, ActiveProfileResolver profileResolver) {
+        return new StartupLogRunner(moduleInfo, profileResolver);
+    }
 
     // デフォルト有効化でenable=falseが設定された場合のみ無効化
     @Bean
