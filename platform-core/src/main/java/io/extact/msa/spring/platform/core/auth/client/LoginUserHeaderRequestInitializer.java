@@ -20,7 +20,7 @@ public class LoginUserHeaderRequestInitializer implements ClientHttpRequestIniti
             request.getHeaders().add("rms-userId", String.valueOf(rmsAuth.getLoginUser().getUserId()));
             request.getHeaders().add("rms-roles", rmsAuth.getLoginUser().getGroupsByStringValue());
         } else {
-            log.warn("unknown Authentication. auth=>{}", auth);
+            log.warn("unknown Authentication. auth -> {}", auth);
         }
     }
 }

@@ -3,6 +3,7 @@ package io.extact.msa.spring.platform.core.debug;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -14,6 +15,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.util.PlaceholderResolutionException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -61,7 +63,7 @@ public class ConfigDump {
         Predicate<String> containsKeyword = new ContainsKeyworkWithForwardMatch(filters);
         String configDump = allPropertyNames.stream()
                 .filter(containsKeyword)
-                .map(name -> name + "=" + Optional.ofNullable(env.getProperty(name)).orElse(""))
+                .map(name -> name + "=" + Optional.ofNullable(resolvePropertyValue(name)).orElse(""))
                 .sorted()
                 .collect(Collectors.joining(System.lineSeparator()));
 
@@ -84,6 +86,28 @@ public class ConfigDump {
                 })
                 .flatMap(source -> ((Map<String, ?>) source.getSource()).keySet().stream())
                 .collect(Collectors.toSet());
+    }
+
+    private String resolvePropertyValue(String name) {
+        try {
+            return env.getProperty(name);
+        } catch (PlaceholderResolutionException e) {
+            log.info("PlaceHolder could not be resolved. name -> {} ", name);
+            return getRawProperty(name);
+        }
+
+    }
+
+    private String getRawProperty(String key) {
+        if (!(env instanceof ConfigurableEnvironment configurableEnv)) {
+            return "Error! PlaceHolder could not be resolved";
+        }
+        return configurableEnv.getPropertySources().stream()
+                .map(propSource -> propSource.getProperty(key))
+                .filter(Predicate.not(Objects::isNull))
+                .findFirst()
+                .map(Object::toString)
+                .orElse(null);
     }
 
     static class ContainsKeyworkWithForwardMatch implements Predicate<String> {

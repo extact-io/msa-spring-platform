@@ -117,7 +117,10 @@ class FwDependencyArchUnitTest {
                     "java..",
                     "jakarta.validation..",
                     "org.slf4j..",
-                    "lombok..") //
+                    "lombok..")
+                    // org.springframework.boot 全体への依存は粗すぎるのでクラス指定
+                    .or(type(org.springframework.boot.CommandLineRunner.class))
+
             );
 
     /**
