@@ -1,7 +1,6 @@
 package io.extact.msa.spring.platform.fw.interfaces.webapi;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.assertj.core.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,10 +8,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import org.springframework.test.web.servlet.assertj.MvcTestResult;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -20,7 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 class ControllerConverterTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvcTester mockMvc;
     @Autowired
     private ObjectMapper mapper;
 
@@ -48,10 +49,14 @@ class ControllerConverterTest {
         // given
         String date = "20250305";
         // when
-        mockMvc.perform(get("/convert/date/{date}", date))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(content().string(date));
+        MvcTestResult result = mockMvc
+                .get()
+                .uri("/convert/date/{date}", date)
+                .exchange();
+        // then
+        assertThat(result)
+                .hasStatusOk()
+                .hasBodyTextEqualTo(date);
     }
 
     // ConversionServiceによるparseに失敗した場合、デフォルトでISO書式(LocalDate.parse(String))への
@@ -61,10 +66,14 @@ class ControllerConverterTest {
         // given
         String date = "2025-03-05"; // ISO書式
         // when
-        mockMvc.perform(get("/convert/date/{date}", date))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(content().string(date));
+        MvcTestResult result = mockMvc
+                .get()
+                .uri("/convert/date/{date}", date)
+                .exchange();
+        // then
+        assertThat(result)
+                .hasStatusOk()
+                .hasBodyTextEqualTo(date);
     }
 
     // ConversionServiceによるparseとISOへのフォールバックも失敗した場合はエラー
@@ -73,9 +82,13 @@ class ControllerConverterTest {
         // given
         String date = "2025.03.05";
         // when
-        mockMvc.perform(get("/convert/date/{date}", date))
-                // then
-                .andExpect(status().isBadRequest());
+        MvcTestResult result = mockMvc
+                .get()
+                .uri("/convert/date/{date}", date)
+                .exchange();
+        // then
+        assertThat(result)
+                .hasStatus(HttpStatus.BAD_REQUEST);
     }
 
     @Test
@@ -83,12 +96,15 @@ class ControllerConverterTest {
         // given
         String date = "2025.03.05";
         // when
-        mockMvc.perform(get("/convert/date/pattern/{date}", date))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(content().string(date));
+        MvcTestResult result = mockMvc
+                .get()
+                .uri("/convert/date/pattern/{date}", date)
+                .exchange();
+        // then
+        assertThat(result)
+                .hasStatusOk()
+                .hasBodyTextEqualTo(date);
     }
-
 
     // -------------------------------------------------- @PathVariable and LocalDateTime
 
@@ -97,10 +113,14 @@ class ControllerConverterTest {
         // given
         String dateTime = "20250305 10:20";
         // when
-        mockMvc.perform(get("/convert/datetime/{datetime}", dateTime))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(content().string(dateTime));
+        MvcTestResult result = mockMvc
+                .get()
+                .uri("/convert/datetime/{datetime}", dateTime)
+                .exchange();
+        // then
+        assertThat(result)
+                .hasStatusOk()
+                .hasBodyTextEqualTo(dateTime);
     }
 
     @Test
@@ -108,10 +128,14 @@ class ControllerConverterTest {
         // given
         String dateTime = "2025-03-05T10:20"; // ISO書式
         // when
-        mockMvc.perform(get("/convert/datetime/{datetime}", dateTime))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(content().string(dateTime));
+        MvcTestResult result = mockMvc
+                .get()
+                .uri("/convert/datetime/{datetime}", dateTime)
+                .exchange();
+        // then
+        assertThat(result)
+                .hasStatusOk()
+                .hasBodyTextEqualTo(dateTime);
     }
 
     @Test
@@ -119,9 +143,13 @@ class ControllerConverterTest {
         // given
         String dateTime = "2025.03.05 10:20";
         // when
-        mockMvc.perform(get("/convert/datetime/{date}", dateTime))
-                // then
-                .andExpect(status().isBadRequest());
+        MvcTestResult result = mockMvc
+                .get()
+                .uri("/convert/datetime/{datetime}", dateTime)
+                .exchange();
+        // then
+        assertThat(result)
+                .hasStatus(HttpStatus.BAD_REQUEST);
     }
 
     @Test
@@ -129,10 +157,14 @@ class ControllerConverterTest {
         // given
         String dateTime = "2025.03.05 10:20";
         // when
-        mockMvc.perform(get("/convert/datetime/pattern/{datetime}", dateTime))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(content().string(dateTime));
+        MvcTestResult result = mockMvc
+                .get()
+                .uri("/convert/datetime/pattern/{datetime}", dateTime)
+                .exchange();
+        // then
+        assertThat(result)
+                .hasStatusOk()
+                .hasBodyTextEqualTo(dateTime);
     }
 
 
@@ -143,11 +175,15 @@ class ControllerConverterTest {
         // given
         String date = "20250305";
         // when
-        mockMvc.perform(get("/convert/date")
-                .param("date", date))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(content().string(date));
+        MvcTestResult result = mockMvc
+                .get()
+                .uri("/convert/date")
+                .param("date", date)
+                .exchange();
+        // then
+        assertThat(result)
+                .hasStatusOk()
+                .hasBodyTextEqualTo(date);
     }
 
     @Test
@@ -155,11 +191,15 @@ class ControllerConverterTest {
         // given
         String date = "2025-03-05"; // ISO書式
         // when
-        mockMvc.perform(get("/convert/date")
-                .param("date", date))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(content().string(date));
+        MvcTestResult result = mockMvc
+                .get()
+                .uri("/convert/date")
+                .param("date", date)
+                .exchange();
+        // then
+        assertThat(result)
+                .hasStatusOk()
+                .hasBodyTextEqualTo(date);
     }
 
     // ConversionServiceによるparseとISOへのフォールバックも失敗した場合はエラー
@@ -168,10 +208,14 @@ class ControllerConverterTest {
         // given
         String date = "2025.03.05";
         // when
-        mockMvc.perform(get("/convert/date")
-                .param("date", date))
-                // then
-                .andExpect(status().isBadRequest());
+        MvcTestResult result = mockMvc
+                .get()
+                .uri("/convert/date")
+                .param("date", date)
+                .exchange();
+        // then
+        assertThat(result)
+                .hasStatus(HttpStatus.BAD_REQUEST);
     }
 
     @Test
@@ -179,11 +223,15 @@ class ControllerConverterTest {
         // given
         String date = "2025.03.05";
         // when
-        mockMvc.perform(get("/convert/date/pattern")
-                .param("date", date))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(content().string(date));
+        MvcTestResult result = mockMvc
+                .get()
+                .uri("/convert/date/pattern")
+                .param("date", date)
+                .exchange();
+        // then
+        assertThat(result)
+                .hasStatusOk()
+                .hasBodyTextEqualTo(date);
     }
 
 
@@ -194,11 +242,15 @@ class ControllerConverterTest {
         // given
         String dateTime = "20250305 10:20";
         // when
-        mockMvc.perform(get("/convert/datetime")
-                .param("datetime", dateTime))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(content().string(dateTime));
+        MvcTestResult result = mockMvc
+                .get()
+                .uri("/convert/datetime")
+                .param("datetime", dateTime)
+                .exchange();
+        // then
+        assertThat(result)
+                .hasStatusOk()
+                .hasBodyTextEqualTo(dateTime);
     }
 
     @Test
@@ -206,11 +258,15 @@ class ControllerConverterTest {
         // given
         String dateTime = "2025-03-05T10:20"; // ISO書式
         // when
-        mockMvc.perform(get("/convert/datetime")
-                .param("datetime", dateTime))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(content().string(dateTime));
+        MvcTestResult result = mockMvc
+                .get()
+                .uri("/convert/datetime")
+                .param("datetime", dateTime)
+                .exchange();
+        // then
+        assertThat(result)
+                .hasStatusOk()
+                .hasBodyTextEqualTo(dateTime);
     }
 
     @Test
@@ -218,10 +274,14 @@ class ControllerConverterTest {
         // given
         String dateTime = "2025.03.05 10:20";
         // when
-        mockMvc.perform(get("/convert/datetime")
-                .param("datetime", dateTime))
-                // then
-                .andExpect(status().isBadRequest());
+        MvcTestResult result = mockMvc
+                .get()
+                .uri("/convert/datetime")
+                .param("datetime", dateTime)
+                .exchange();
+        // then
+        assertThat(result)
+                .hasStatus(HttpStatus.BAD_REQUEST);
     }
 
     @Test
@@ -229,11 +289,15 @@ class ControllerConverterTest {
         // given
         String dateTime = "2025.03.05 10:20";
         // when
-        mockMvc.perform(get("/convert/datetime/pattern")
-                .param("datetime", dateTime))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(content().string(dateTime));
+        MvcTestResult result = mockMvc
+                .get()
+                .uri("/convert/datetime/pattern")
+                .param("datetime", dateTime)
+                .exchange();
+        // then
+        assertThat(result)
+                .hasStatusOk()
+                .hasBodyTextEqualTo(dateTime);
     }
 
 
@@ -246,13 +310,26 @@ class ControllerConverterTest {
         String body = mapper.writeValueAsString(dto);
 
         // when
-        mockMvc.perform(post("/convert")
+        MvcTestResult result = mockMvc
+                .post()
+                .uri("/convert")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(body))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.date").value(dto.date()))
-                .andExpect(jsonPath("$.dateTime").value(dto.dateTime()));
+                .content(body)
+                .exchange();
+
+        // then
+        assertThat(result)
+                .hasStatusOk()
+                .bodyJson()
+
+                /* ----
+                 * convertToでDTOにバインドもできるが、convertToが行うConverterとかも絡んでくる
+                 * Convereterとか例外ハンドリングとはTestRestTemplateやHttpInterfaceを使った統合テストでやるべき
+                 * それに対するものとしてControllerの単体なので、JSON文字列を検証するのが妥当と思うため
+                 * convertToは使わずJSONパスで生でデータを検証するようにしている
+                 */
+                .hasPathSatisfying("$.date", p -> p.assertThat().isEqualTo(dto.date()))
+                .hasPathSatisfying("$.dateTime", p -> p.assertThat().isEqualTo(dto.dateTime()));
     }
 
     @Test
@@ -262,11 +339,16 @@ class ControllerConverterTest {
         String body = mapper.writeValueAsString(dto);
 
         // when
-        mockMvc.perform(post("/convert")
+        MvcTestResult result = mockMvc
+                .post()
+                .uri("/convert")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(body))
-                // then
-                .andExpect(status().isBadRequest());
+                .content(body)
+                .exchange();
+
+        // then
+        assertThat(result)
+                .hasStatus(HttpStatus.BAD_REQUEST);
     }
 
     @Test
@@ -276,11 +358,16 @@ class ControllerConverterTest {
         String body = mapper.writeValueAsString(dto);
 
         // when
-        mockMvc.perform(post("/convert")
+        MvcTestResult result = mockMvc
+                .post()
+                .uri("/convert")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(body))
-                // then
-                .andExpect(status().isBadRequest());
+                .content(body)
+                .exchange();
+
+        // then
+        assertThat(result)
+                .hasStatus(HttpStatus.BAD_REQUEST);
     }
 
     static record DateStringDto(
