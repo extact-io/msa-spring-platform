@@ -1,6 +1,9 @@
 package io.extact.msa.spring.platform.fw.interfaces.webapi;
 
+import static org.springframework.core.Ordered.*;
+
 import org.springframework.beans.TypeMismatchException;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -13,7 +16,6 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import io.extact.msa.spring.platform.core.condition.SkipRegistration;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.RmsSystemException;
 import io.extact.msa.spring.platform.fw.exception.message.SimpleErrorMessage;
@@ -25,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestControllerAdvice(annotations = ExceptionHandled.class)
-@SkipRegistration
+@Order(LOWEST_PRECEDENCE)
 @RequiredArgsConstructor
 @Slf4j
 public class RestControllerExceptionHandler extends ResponseEntityExceptionHandler {
