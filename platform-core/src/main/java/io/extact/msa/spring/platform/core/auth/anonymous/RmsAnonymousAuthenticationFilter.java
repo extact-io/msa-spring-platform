@@ -1,36 +1,24 @@
 package io.extact.msa.spring.platform.core.auth.anonymous;
 
-import java.util.List;
-import java.util.UUID;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 
-import io.extact.msa.spring.platform.core.auth.LoginUser;
-import io.extact.msa.spring.platform.core.auth.UserIdPrincipal;
-
-import jakarta.servlet.http.HttpServletRequest;
+import io.extact.msa.spring.platform.core.auth.anonymous.RmsAnonymousAuthenticationToken.RmsAnonymousAuthenticationTokenBuilder;
 
 public class RmsAnonymousAuthenticationFilter extends AnonymousAuthenticationFilter {
 
-    private String key;
-    private Object principal;
-    private List<GrantedAuthority> authorities;
-    private LoginUser loginUser;
 
+    private RmsAnonymousAuthenticationTokenBuilder tokenBuilder;
     private AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource = new WebAuthenticationDetailsSource();
 
-    RmsAnonymousAuthenticationFilter(String key, Object principal, List<GrantedAuthority> authorities, LoginUser loginUser) {
-        super(key, principal, authorities);
-        this.key = key;
-        this.principal = principal;
-        this.authorities = authorities;
-        this.loginUser = loginUser;
+    RmsAnonymousAuthenticationFilter(RmsAnonymousAuthenticationTokenBuilder tokenBuilder) {
+        super(tokenBuilder.key(), tokenBuilder.principal(), tokenBuilder.authorities());
+        this.tokenBuilder = tokenBuilder;
     }
 
     public static RmsAnonymousAuthenticationFilterBuilder builder() {
@@ -46,8 +34,7 @@ public class RmsAnonymousAuthenticationFilter extends AnonymousAuthenticationFil
 
     @Override
     protected Authentication createAuthentication(HttpServletRequest request) {
-        AnonymousAuthenticationToken token = new RmsAnonymousAuthenticationToken(this.key, this.principal,
-                this.authorities, loginUser);
+        AnonymousAuthenticationToken token = tokenBuilder.build();
         token.setDetails(this.authenticationDetailsSource.buildDetails(request));
         return token;
     }
@@ -55,33 +42,24 @@ public class RmsAnonymousAuthenticationFilter extends AnonymousAuthenticationFil
 
     public static class RmsAnonymousAuthenticationFilterBuilder {
 
-        private static final LoginUser ANONYMOUS_USER = LoginUser.ANONYMOUS_USER;
-        private static final UserIdPrincipal PRINCIPAL = new UserIdPrincipal(ANONYMOUS_USER.getUserId());
-
-        private String key;
-        private List<GrantedAuthority> authorities;
+        private RmsAnonymousAuthenticationTokenBuilder tokenBuilder;
 
         RmsAnonymousAuthenticationFilterBuilder() {
-            defaultSetting();
-        }
-
-        private void defaultSetting() {
-            this.key = UUID.randomUUID().toString();
-            this.authorities = AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS");
+            this.tokenBuilder = RmsAnonymousAuthenticationToken.builder();
         }
 
         public RmsAnonymousAuthenticationFilterBuilder key(String key) {
-            this.key = key;
+            tokenBuilder.withKey(key);
             return this;
         }
 
         public RmsAnonymousAuthenticationFilterBuilder authorities(String...  authorities) {
-            this.authorities = AuthorityUtils.createAuthorityList(authorities);
+            tokenBuilder.withAuthorities(authorities);
             return this;
         }
 
         public RmsAnonymousAuthenticationFilter build() {
-            return new RmsAnonymousAuthenticationFilter(key, PRINCIPAL, authorities, ANONYMOUS_USER);
+            return new RmsAnonymousAuthenticationFilter(tokenBuilder);
         }
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 
 import io.extact.msa.spring.platform.core.auth.LoginUser;
+import io.extact.msa.spring.platform.core.auth.LoginUserCreator;
 import io.extact.msa.spring.platform.core.auth.RmsAuthentication;
 import io.extact.msa.spring.platform.core.auth.UserIdPrincipal;
 import lombok.ToString;
@@ -66,6 +67,7 @@ public class RmsClientAuthenticationToken extends AbstractAuthenticationToken im
         private String userId;
         private String bearerToken;
         private Set<String> groups;
+        private LoginUserCreator creator = LoginUserCreator.DEFAULT_CREATOR;
 
         public RmsClientAuthenticationTokenBuilder userId(String userId) {
             this.userId = userId;
@@ -78,7 +80,12 @@ public class RmsClientAuthenticationToken extends AbstractAuthenticationToken im
         }
 
         public RmsClientAuthenticationTokenBuilder groups(Set<String> groups) {
-            this.groups = groups;
+            this.groups = groups; // ROLE_は内部で追加される
+            return this;
+        }
+
+        public RmsClientAuthenticationTokenBuilder loginUserCreator(LoginUserCreator creator) {
+            this.creator = creator;
             return this;
         }
 
@@ -87,7 +94,9 @@ public class RmsClientAuthenticationToken extends AbstractAuthenticationToken im
             UserIdPrincipal principal = new UserIdPrincipal(userId);
             BearerTokenCredential credential = new BearerTokenCredential(bearerToken);
             List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(groups);
-            LoginUser loginUser = LoginUser.of(userId, groups);
+
+            LoginUser platformLoginUser = LoginUser.of(userId, groups);
+            LoginUser loginUser = creator.crete(platformLoginUser);
 
             return new RmsClientAuthenticationToken(principal, credential, authorities, loginUser);
         }

@@ -1,9 +1,22 @@
 package io.extact.msa.spring.platform.core.auth.context;
 
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import io.extact.msa.spring.platform.core.auth.LoginUser;
+import io.extact.msa.spring.platform.core.auth.RmsAuthentication;
 
 public interface LoginContext {
 
-    boolean isAuthenticated();
-    LoginUser getLoginUser();
+    default boolean isAuthenticated() {
+        RmsAuthentication auth = (RmsAuthentication) SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            return false;
+        }
+        return true;
+    }
+
+    default LoginUser getLoginUser() {
+        RmsAuthentication auth = (RmsAuthentication) SecurityContextHolder.getContext().getAuthentication();
+        return auth != null ? auth.getLoginUser() : null;
+    }
 }

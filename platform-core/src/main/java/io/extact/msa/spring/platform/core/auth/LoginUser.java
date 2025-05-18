@@ -26,6 +26,10 @@ public interface LoginUser {
                 .collect(Collectors.joining(","));
     }
 
+    default boolean isSameUserId(String userId) {
+        return getUserId() == Integer.parseInt(userId);
+    }
+
     static LoginUser of(int userId, Set<String> roles) {
         return new LoginUserImpl(userId, roles);
     }
