@@ -3,12 +3,8 @@ package io.extact.msa.spring.platform.core.auth;
 @FunctionalInterface
 public interface LoginUserCreator {
 
-    public static final LoginUserCreator DEFAULT_CREATOR = new LoginUserCreator() {
-        @Override
-        public LoginUser crete(LoginUser platformLoginUser) {
-            return platformLoginUser;
-        }
-    };
+    /** decorateは行わずそのままLoginUserをそのまま返す */
+    public static final LoginUserCreator DEFAULT_CREATOR = platformLoginUser -> platformLoginUser;
 
     LoginUser crete(LoginUser platformLoginUser);
 }
