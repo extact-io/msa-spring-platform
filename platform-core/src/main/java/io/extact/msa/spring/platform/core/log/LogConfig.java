@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
@@ -27,7 +28,7 @@ public class LogConfig {
 
     @Bean
     @ConditionalOnProperty(prefix = "rms.log.server", name = "enable", havingValue = "true")
-    CommonsRequestLoggingFilter logFilter(LoggingSystem loggingSystem) {
+    FilterRegistrationBean<CommonsRequestLoggingFilter> logFilter(LoggingSystem loggingSystem) {
 
         String loggerName = CommonsRequestLoggingFilter.class.getName();
         LoggingUtils.forceLogEnable(loggingSystem, loggerName, LogLevel.DEBUG);
@@ -39,6 +40,9 @@ public class LogConfig {
         filter.setIncludeHeaders(true);
         filter.setAfterMessagePrefix("REQUEST DATA : ");
 
-        return filter;
+        FilterRegistrationBean<CommonsRequestLoggingFilter> registrationBean = new FilterRegistrationBean<>();
+        registrationBean.setFilter(filter);
+        registrationBean.setOrder(-200); // Spring Securityより優先させる
+        return registrationBean;
     }
 }
