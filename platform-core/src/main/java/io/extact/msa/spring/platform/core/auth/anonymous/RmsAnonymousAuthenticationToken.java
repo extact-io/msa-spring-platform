@@ -80,7 +80,7 @@ public class RmsAnonymousAuthenticationToken extends AnonymousAuthenticationToke
         }
 
         public RmsAnonymousAuthenticationToken build() {
-            LoginUser loginUser = creator.crete(ANONYMOUS_USER);
+            LoginUser loginUser = creator.create(ANONYMOUS_USER);
             return new RmsAnonymousAuthenticationToken(key, PRINCIPAL, authorities, loginUser);
         }
     }

@@ -96,7 +96,7 @@ public class RmsClientAuthenticationToken extends AbstractAuthenticationToken im
             List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(groups);
 
             LoginUser platformLoginUser = LoginUser.of(userId, groups);
-            LoginUser loginUser = creator.crete(platformLoginUser);
+            LoginUser loginUser = creator.create(platformLoginUser);
 
             return new RmsClientAuthenticationToken(principal, credential, authorities, loginUser);
         }
