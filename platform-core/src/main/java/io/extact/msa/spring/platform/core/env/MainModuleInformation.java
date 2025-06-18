@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
  *       </execution>
  *     </executions>
  *   </plugin>
- *   <!-- generate /MEATA-INF/git.proeprties -->
+ *   <!-- generate /git.proeprties -->
  *   <plugin>
  *     <groupId>io.github.git-commit-id</groupId>
  *     <artifactId>git-commit-id-maven-plugin</artifactId>
