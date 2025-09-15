@@ -17,6 +17,9 @@ import org.springframework.context.annotation.Import;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
 import io.extact.msa.spring.platform.fw.feature.exception.RmsValidationException;
+import io.extact.msa.spring.platform.fw.stub.apps.person.application.PersonServiceConfig;
+import io.extact.msa.spring.platform.fw.stub.apps.person.domain.PersonDomainConfig;
+import io.extact.msa.spring.platform.fw.stub.apps.person.web.PersonControllerConfig;
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.ExternalPersonClient;
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.ExternalPersonCreator;
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.ExternalPersonDomainConfig;
@@ -24,11 +27,8 @@ import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.External
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.ExternalPerson.ExternalPersonCreatable;
 import io.extact.msa.spring.platform.fw.stub.client.person.domain.model.ExternalPersonId;
 import io.extact.msa.spring.platform.fw.stub.client.person.infrastructure.ExternalPersonClientConfig;
-import io.extact.msa.spring.platform.fw.stub.apps.person.application.PersonServiceConfig;
-import io.extact.msa.spring.platform.fw.stub.apps.person.domain.PersonDomainConfig;
-import io.extact.msa.spring.platform.fw.stub.apps.person.web.PersonControllerConfig;
 import io.extact.msa.spring.test.assertj.ToStringAssert;
-import io.extact.msa.spring.test.spring.EnableAutoConfigurationWithoutSecurity;
+import io.extact.msa.spring.test.spring.EnableAutoConfigurationWithoutSecurityAndActuator;
 
 /**
  * スタブのPersonアプリを使ってplatform.fwクラスをテストする。
@@ -52,7 +52,7 @@ abstract class AbstractApplicationIntegrationTest {
     protected ExternalPersonClient client;
 
     @Configuration(proxyBeanMethods = false)
-    @EnableAutoConfigurationWithoutSecurity // 認証チェックなし
+    @EnableAutoConfigurationWithoutSecurityAndActuator // 認証とactuatorを除外
     @Import({
             PersonDomainConfig.class,
             PersonServiceConfig.class,

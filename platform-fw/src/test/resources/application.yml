@@ -24,19 +24,18 @@ spring:
 
 management:
   endpoints:
-    web:
-      exposure:
-        include: "*"
-        exclude: "env,beans"
-  endpoint:
-    health:
-      show-details: always
-      probes:
-        enabled: true
-      group:
-        readiness:
-          include: "readinessState,db,dependentServers"
-      validate-group-membership: false # groupにindicatorが存在しない場合もエラーにしない設定
+    access:
+      default: none
+  otlp:
+    metrics:
+      export:
+        enabled: false
+    tracing:
+      export:
+        enabled: false
+    logging:
+      export:
+        enabled: false
 
 rms:
   log:

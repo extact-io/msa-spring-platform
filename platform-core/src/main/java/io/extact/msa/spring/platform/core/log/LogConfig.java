@@ -14,6 +14,8 @@ import org.springframework.web.filter.CommonsRequestLoggingFilter;
 
 import ch.qos.logback.access.tomcat.LogbackValve;
 import io.extact.msa.spring.platform.core.utils.LoggingUtils;
+import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.instrumentation.logback.appender.v1_0.OpenTelemetryAppender;
 
 @Configuration(proxyBeanMethods = false)
 public class LogConfig {
@@ -44,5 +46,12 @@ public class LogConfig {
         registrationBean.setFilter(filter);
         registrationBean.setOrder(-200); // Spring Securityより優先させる
         return registrationBean;
+    }
+
+    @Bean
+    @ConditionalOnClass(OpenTelemetryAppender.class)
+    @ConditionalOnProperty(name = "management.otlp.logging.export.enabled", havingValue = "true")
+    OpenTelemetryAppenderInitializer appenderInitializer(OpenTelemetry openTelemetry) {
+        return new OpenTelemetryAppenderInitializer(openTelemetry);
     }
 }

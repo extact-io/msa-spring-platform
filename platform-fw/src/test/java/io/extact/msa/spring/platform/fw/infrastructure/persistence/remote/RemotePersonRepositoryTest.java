@@ -22,11 +22,11 @@ import io.extact.msa.spring.platform.fw.interfaces.webapi.RestControllerConfig;
 import io.extact.msa.spring.platform.fw.stub.apps.person.domain.PersonRepository;
 import io.extact.msa.spring.platform.fw.stub.apps.person.infrastructure.remote.RemotePersonRepositoryConfig;
 import io.extact.msa.spring.platform.fw.stub.remote.RemotePersonStubController;
-import io.extact.msa.spring.test.spring.EnableAutoConfigurationWithoutSecurity;
+import io.extact.msa.spring.test.spring.EnableAutoConfigurationWithoutSecurityAndActuator;
 import io.extact.msa.spring.test.spring.NopTransactionManager;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@EnableAutoConfigurationWithoutSecurity // 認証チェックなし
+@EnableAutoConfigurationWithoutSecurityAndActuator // 認証とactuatorを除外
 @ActiveProfiles("person-remote")
 class RemotePersonRepositoryTest extends AbstractPersonRepositoryTest {
 
