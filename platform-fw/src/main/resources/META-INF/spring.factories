@@ -1,0 +1,4 @@
+# Add-on EnvironmentPostProcessor
+org.springframework.boot.env.EnvironmentPostProcessor=\
+io.extact.msa.spring.platform.fw.feature.environment.DefaultSettingsEnvPostProcessor
+

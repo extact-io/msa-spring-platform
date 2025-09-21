@@ -10,32 +10,12 @@ spring:
     banner-mode: off
   messages:
     basename: fw-messages,test-fw-messages
-    encoding: UTF-8
   jpa:
     open-in-view: false
     hibernate:
       ddl-auto: none
     properties:
       javax.persistence.validation.mode: NONE
-  mvc:
-    format:
-      date: yyyyMMdd
-      date-time: yyyyMMdd HH:mm
-
-management:
-  endpoints:
-    access:
-      default: none
-  otlp:
-    metrics:
-      export:
-        enabled: false
-    tracing:
-      export:
-        enabled: false
-    logging:
-      export:
-        enabled: false
 
 rms:
   log:
@@ -44,8 +24,8 @@ rms:
   debug:
     configdump:
       enable: false # change to true in the test class
-      #system-properties: on
-      #system-environment: on
+      #system-properties: true
+      #system-environment: true
     sleep:
       enable: false # change to true in the test class
       time: 1s
@@ -81,8 +61,3 @@ rms:
         format:
           date: ${spring.mvc.format.date}
           date-time: ${spring.mvc.format.date-time}
-  rest:
-    controller:
-      format:
-        date: ${spring.mvc.format.date}
-        date-time: ${spring.mvc.format.date-time}
