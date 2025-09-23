@@ -1,6 +1,7 @@
 package io.extact.msa.spring.platform.fw.feature.environment;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import org.springframework.boot.SpringApplication;
@@ -17,7 +18,7 @@ public class DefaultSettingsEnvPostProcessor implements EnvironmentPostProcessor
 
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-        try (var is = getClass().getResourceAsStream("/default-settings.yml")) {
+        try (InputStream is = getClass().getResourceAsStream("/default-settings.yml")) {
             if (is == null) {
                 return;
             }

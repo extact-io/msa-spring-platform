@@ -61,3 +61,13 @@ rms:
         format:
           date: ${spring.mvc.format.date}
           date-time: ${spring.mvc.format.date-time}
+  rest:
+    controller:
+      format:
+        date: ${spring.mvc.format.date} # for DefaultSettingsTest override
+---
+spring:
+  config:
+    activate:
+      on-profile: "env-import-test"
+    import: classpath:env-test/application-import.yml

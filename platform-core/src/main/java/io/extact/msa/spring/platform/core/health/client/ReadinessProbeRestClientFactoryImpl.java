@@ -13,10 +13,12 @@ import io.extact.msa.spring.platform.core.async.AsyncInvoker;
 
 public class ReadinessProbeRestClientFactoryImpl implements ReadinessProbeRestClientFactory {
 
-    private AsyncInvoker asyncInvoker;
+    private final AsyncInvoker asyncInvoker;
+    private final RestClient.Builder builder;
 
-    public ReadinessProbeRestClientFactoryImpl(AsyncInvoker asyncInvoker) {
+    public ReadinessProbeRestClientFactoryImpl(AsyncInvoker asyncInvoker, RestClient.Builder builder) {
         this.asyncInvoker = asyncInvoker;
+        this.builder = builder;
     }
 
     @Override
@@ -26,7 +28,7 @@ public class ReadinessProbeRestClientFactoryImpl implements ReadinessProbeRestCl
     }
 
     private RestClient createRestClient() {
-        return RestClient.builder()
+        return this.builder
                 .defaultStatusHandler(NopResponseErrorHandler.INSTANCE) // prevent error handling
                 .build();
     }

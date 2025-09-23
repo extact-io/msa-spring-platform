@@ -1,0 +1,5 @@
+rms:
+  rest:
+    controller:
+      format:
+        date: "profile" # for DefaultSettingsTest override

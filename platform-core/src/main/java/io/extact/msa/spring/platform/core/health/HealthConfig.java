@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.web.client.RestClient;
 
 import io.extact.msa.spring.platform.core.async.AsyncConfig;
 import io.extact.msa.spring.platform.core.async.AsyncInvoker;
@@ -20,8 +21,9 @@ import io.extact.msa.spring.platform.core.health.client.ReadinessProbeRestClient
 public class HealthConfig {
 
     @Bean
-    ReadinessProbeRestClientFactory readinessProbeRestClientFactory(AsyncInvoker asyncInvoker) {
-        return new ReadinessProbeRestClientFactoryImpl(asyncInvoker);
+    ReadinessProbeRestClientFactory readinessProbeRestClientFactory(AsyncInvoker asyncInvoker,
+            RestClient.Builder builder) {
+        return new ReadinessProbeRestClientFactoryImpl(asyncInvoker, builder);
     }
 
     @Bean
