@@ -1,3 +1,4 @@
+debug: false
 logging.level:
   org.springframework:
     boot.autoconfigure: info
@@ -10,8 +11,11 @@ spring:
   info:
     git:
       location: classpath:META-INF/git.properties # デフォルトの位置変更
-
-
+  threads:
+    virtual:
+      enabled: false
+      
+      
 management:
   endpoints:
     web:
