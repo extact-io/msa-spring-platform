@@ -4,19 +4,22 @@ import java.util.concurrent.Executor;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.task.DelegatingSecurityContextAsyncTaskExecutor;
 
-import lombok.RequiredArgsConstructor;
-
 @Configuration(proxyBeanMethods = false)
 @EnableAsync
-@RequiredArgsConstructor
+@Import(AsyncObservationConfig.class)
 public class AsyncConfig implements AsyncConfigurer {
 
     private final AsyncTaskExecutor taskExecutor;
+
+    public AsyncConfig(AsyncTaskExecutor taskExecutor) {
+        this.taskExecutor = taskExecutor;
+    }
 
     @Bean
     AsyncInvoker asyncInvoker() {
