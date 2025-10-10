@@ -94,6 +94,7 @@ class CoreDependencyArchUnitTest {
                             "org.springframework..",
                             "org.slf4j..",
                             "org.aspectj..",
+                            "io.micrometer..",
                             "lombok..")
                                     .or(type(PostConstruct.class)));
 
