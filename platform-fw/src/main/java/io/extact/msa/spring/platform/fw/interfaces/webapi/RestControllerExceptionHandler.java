@@ -85,7 +85,7 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
     @ExceptionHandler(RmsSystemException.class)
     public ResponseEntity<SimpleErrorMessage> handleRmsSystemException(RmsSystemException e, WebRequest req) {
 
-        log.warn("exception occured. message={}", e.getMessage());
+        log.warn("exception occured. message={}", e.getMessage(), e);
 
         SimpleErrorMessage message = new SimpleErrorMessage(e.getClass().getSimpleName(), e.getMessage());
 

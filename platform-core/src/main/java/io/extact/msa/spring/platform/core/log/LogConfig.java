@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
 
 import ch.qos.logback.access.tomcat.LogbackValve;
+import io.extact.msa.spring.platform.core.log.access.ServletAccessLoggingFilter;
 import io.extact.msa.spring.platform.core.utils.LoggingUtils;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.instrumentation.logback.appender.v1_0.OpenTelemetryAppender;
@@ -30,23 +31,38 @@ public class LogConfig {
 
     @Bean
     @ConditionalOnProperty(prefix = "rms.log.server", name = "enable", havingValue = "true")
-    FilterRegistrationBean<CommonsRequestLoggingFilter> logFilter(LoggingSystem loggingSystem) {
-
-        String loggerName = CommonsRequestLoggingFilter.class.getName();
-        LoggingUtils.forceLogEnable(loggingSystem, loggerName, LogLevel.DEBUG);
+    FilterRegistrationBean<CommonsRequestLoggingFilter> commonsRequestLoggingFilter(LoggingSystem loggingSystem) {
 
         CommonsRequestLoggingFilter filter = new CommonsRequestLoggingFilter();
+        String loggerName = filter.getClass().getName();
+        LoggingUtils.forceLogEnable(loggingSystem, loggerName, LogLevel.DEBUG);
+
         filter.setIncludeQueryString(true);
-        filter.setIncludePayload(true);
-        filter.setMaxPayloadLength(10000);
+        filter.setIncludePayload(false);
+        //filter.setMaxPayloadLength(10000);
         filter.setIncludeHeaders(true);
-        filter.setAfterMessagePrefix("REQUEST DATA : ");
+        filter.setBeforeMessagePrefix("[ACCESS:befor] ");
+        filter.setAfterMessagePrefix("[ACCESS:after] ");
 
         FilterRegistrationBean<CommonsRequestLoggingFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(filter);
         registrationBean.setOrder(-200); // Spring Securityより優先させる
         return registrationBean;
     }
+
+    @Bean
+    FilterRegistrationBean<ServletAccessLoggingFilter> servletAccessLoggingFilter(LoggingSystem loggingSystem) {
+
+        ServletAccessLoggingFilter filter = new ServletAccessLoggingFilter();
+        String loggerName = filter.getClass().getName();
+        LoggingUtils.forceLogEnable(loggingSystem, loggerName, LogLevel.DEBUG);
+
+        FilterRegistrationBean<ServletAccessLoggingFilter> registrationBean = new FilterRegistrationBean<>();
+        registrationBean.setFilter(filter);
+        registrationBean.setOrder(-300); // Spring Securityより優先させる
+        return registrationBean;
+    }
+
 
     @Bean
     @ConditionalOnClass(OpenTelemetryAppender.class)
