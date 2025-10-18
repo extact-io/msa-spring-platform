@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+    <appender name="ACCESS-LOG-CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[ACCESS] %msg%n</pattern>
+            <charset>${file.encoding:-UTF-8}</charset>
+        </encoder>
+    </appender>
+</included>

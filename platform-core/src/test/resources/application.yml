@@ -34,7 +34,7 @@ management:
 
 rms:
   log:
-    server:
+    access:
       enable: false
   debug:
     configdump:

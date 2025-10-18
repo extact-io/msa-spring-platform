@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+    <appender name="OTEL" class="io.opentelemetry.instrumentation.logback.appender.v1_0.OpenTelemetryAppender">
+        <captureExperimentalAttributes>true</captureExperimentalAttributes>
+        <captureMdcAttributes>!traceId,!spanId,*</captureMdcAttributes>
+    </appender>
+</included>

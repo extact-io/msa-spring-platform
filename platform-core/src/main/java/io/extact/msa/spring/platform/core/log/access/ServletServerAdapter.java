@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 class ServletServerAdapter implements ServerAdapter {
 
-    private final CountableServeletResponseWrapper response;
+    private final ContentLengthAwareResponse response;
     private final long requestStartTime;
 
     @Override
@@ -20,7 +20,7 @@ class ServletServerAdapter implements ServerAdapter {
 
     @Override
     public long getContentLength() {
-        return response.getContentSize();
+        return response.getContentLength();
     }
 
     @Override

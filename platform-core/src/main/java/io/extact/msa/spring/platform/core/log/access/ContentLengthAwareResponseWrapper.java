@@ -13,16 +13,17 @@ import jakarta.servlet.http.HttpServletResponseWrapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-class CountableServeletResponseWrapper extends HttpServletResponseWrapper {
+class ContentLengthAwareResponseWrapper extends HttpServletResponseWrapper implements ContentLengthAwareResponse {
 
     private CountableResponseOutputStream outputStream;
     private PrintWriter writer;
 
-    public CountableServeletResponseWrapper(HttpServletResponse response) {
+    public ContentLengthAwareResponseWrapper(HttpServletResponse response) {
         super(response);
     }
 
-    int getContentSize() {
+    @Override
+    public int getContentLength() {
         return Optional.ofNullable(outputStream)
                 .map(CountableResponseOutputStream::getCount)
                 .orElse(0);

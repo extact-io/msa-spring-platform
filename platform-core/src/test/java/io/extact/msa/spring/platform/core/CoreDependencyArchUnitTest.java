@@ -54,9 +54,9 @@ class CoreDependencyArchUnitTest {
      * </pre>
      */
     @ArchTest
-    static final ArchRule test_servletへの依存はauthパッケージのみの定義 = noClasses()
+    static final ArchRule test_servletへの依存はauthとlogaccessパッケージのみの定義 = noClasses()
             .that()
-            .resideOutsideOfPackage("..auth..")
+            .resideOutsideOfPackages("..auth..", "..log.access..")
             .should().dependOnClassesThat()
             .resideInAnyPackage("jakarta.servlet..");
 
@@ -67,7 +67,7 @@ class CoreDependencyArchUnitTest {
      * </pre>
      */
     @ArchTest
-    static final ArchRule test_logbackaccessへの依存はauthパッケージのみの定義 = noClasses()
+    static final ArchRule test_logbackaccessへの依存はlogaccessパッケージのみの定義 = noClasses()
             .that()
             .resideOutsideOfPackage("..log..")
             .should().dependOnClassesThat()
