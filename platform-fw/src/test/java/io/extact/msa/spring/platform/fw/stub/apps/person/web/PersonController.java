@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import io.extact.msa.spring.platform.fw.domain.constraint.RmsId;
-import io.extact.msa.spring.platform.fw.interfaces.webapi.RmsRestController;
+import io.extact.msa.spring.platform.fw.interfaces.webapi.ApiController;
 import io.extact.msa.spring.platform.fw.stub.apps.person.application.PersonService;
 import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.PersonId;
 import lombok.RequiredArgsConstructor;
 
-@RmsRestController("/persons")
+@ApiController("/persons")
 @RequiredArgsConstructor
 public class PersonController {
 

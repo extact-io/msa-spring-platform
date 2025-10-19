@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@RmsRestController("/convert")
+@ApiController("/convert")
 public class StubController {
 
     @GetMapping("/date/{date}")

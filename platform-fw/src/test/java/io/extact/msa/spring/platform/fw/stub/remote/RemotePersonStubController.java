@@ -15,13 +15,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import io.extact.msa.spring.platform.fw.interfaces.webapi.RmsRestController;
+import io.extact.msa.spring.platform.fw.interfaces.webapi.ApiController;
 import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.Person;
 import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.Person.PersonCreatable;
 import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.PersonId;
 import io.extact.msa.spring.platform.fw.stub.apps.person.infrastructure.remote.RemotePerson;
 
-@RmsRestController("/remote-persons")
+@ApiController("/remote-persons")
 public class RemotePersonStubController {
 
     private static final PersonCreatable testCreator = new PersonCreatable() {
