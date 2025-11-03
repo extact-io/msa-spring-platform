@@ -69,14 +69,14 @@ class PersonFileRepositoryTest extends AbstractPersonRepositoryTest {
     @Override
     protected void testNextIdentity() {
         // when
-        int firstTime = repository.nextIdentity();
-        repository.add(testCreator.newInstance(new PersonId(firstTime), "1st"));
-        int secondTime = repository.nextIdentity();
-        repository.add(testCreator.newInstance(new PersonId(secondTime), "2nd"));
-        int thirdTime = repository.nextIdentity();
-        repository.add(testCreator.newInstance(new PersonId(thirdTime), "3rd"));
+        PersonId firstTime = repository.nextIdentity();
+        repository.add(testCreator.newInstance(firstTime, "1st"));
+        PersonId secondTime = repository.nextIdentity();
+        repository.add(testCreator.newInstance(secondTime, "2nd"));
+        PersonId thirdTime = repository.nextIdentity();
+        repository.add(testCreator.newInstance(thirdTime, "3rd"));
         // then
-        assertThat(secondTime).isEqualTo(firstTime + 1);
-        assertThat(thirdTime).isEqualTo(secondTime + 1);
+        assertThat(secondTime.id()).isEqualTo(firstTime.id() + 1);
+        assertThat(thirdTime.id()).isEqualTo(secondTime.id() + 1);
     }
 }

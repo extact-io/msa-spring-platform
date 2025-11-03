@@ -11,14 +11,11 @@ import org.springframework.core.annotation.AliasFor;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.micrometer.observation.annotation.Observed;
-
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
 @Transactional
-@Observed
 public @interface ApplicationService {
     @AliasFor(annotation = Transactional.class)
     Propagation propagation() default Propagation.REQUIRED;

@@ -17,9 +17,9 @@ public class EmployeeDomainConfig {
 
     @Bean
     EmployeeCreator personnCreator(
-            EmployeeRepository idGenerator,
+            EmployeeRepository idProvider,
             ModelValidator validator) {
-        return new EmployeeCreator(idGenerator, validator);
+        return new EmployeeCreator(idProvider, validator);
     }
 
     @Bean

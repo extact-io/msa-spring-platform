@@ -120,7 +120,6 @@ class FwDependencyArchUnitTest {
                     "lombok..")
                     // org.springframework.boot 全体への依存は粗すぎるのでクラス指定
                     .or(type(org.springframework.boot.CommandLineRunner.class))
-
             );
 
     /**
@@ -133,6 +132,7 @@ class FwDependencyArchUnitTest {
                     "io.extact.msa.spring.platform.core.generic..",
                     "io.extact.msa.spring.platform.fw.domain..",
                     "io.extact.msa.spring.platform.fw.exception..",
+                    "io.extact.msa.spring.platform.fw.infrastructure.persistence", // 直下
                     "io.extact.msa.spring.platform.fw.infrastructure.persistence.file..",
                     "io.extact.msa.spring.platform.fw.feature.exception..",
                     "org.springframework.core..",
@@ -232,7 +232,7 @@ class FwDependencyArchUnitTest {
 
     /**
      * featureパッケージから依存してOKなモジュールの検証
-     * ・featureパッケージで依存してOKなOSSはSpringのみであること
+     * ・featureパッケージで依存してOKなOSSはSpringとMicrometerのみであること
      */
     @ArchTest
     static final ArchRule dependency_fw_feature = classes()
@@ -245,6 +245,7 @@ class FwDependencyArchUnitTest {
                     "io.extact.msa.spring.platform.fw.exception..",
                     "io.extact.msa.spring.platform.fw.feature..",
                     "org.springframework..", // Spring
+                    "io.micrometer..", // Micrometer
                     "org.aspectj..", // for Interceptor
                     "java..",
                     "javax.sql..",

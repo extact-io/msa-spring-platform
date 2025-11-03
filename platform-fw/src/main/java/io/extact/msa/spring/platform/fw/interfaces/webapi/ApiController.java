@@ -11,8 +11,6 @@ import org.springframework.core.annotation.AliasFor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.micrometer.observation.annotation.Observed;
-
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
@@ -20,7 +18,6 @@ import io.micrometer.observation.annotation.Observed;
 @RestController
 @ExceptionHandled
 @RequestMapping
-@Observed
 public @interface ApiController {
 
     @AliasFor(annotation = RequestMapping.class)

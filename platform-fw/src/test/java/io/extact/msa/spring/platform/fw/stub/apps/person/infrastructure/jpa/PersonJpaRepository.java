@@ -6,15 +6,16 @@ import io.extact.msa.spring.platform.fw.infrastructure.persistence.ModelEntityMa
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa.AbstractJpaRepository;
 import io.extact.msa.spring.platform.fw.stub.apps.person.domain.PersonRepository;
 import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.Person;
+import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.PersonId;
 
-public class PersonJpaRepository extends AbstractJpaRepository<Person, PersonEntity>
+public class PersonJpaRepository extends AbstractJpaRepository<Person, PersonId, PersonEntity>
         implements PersonRepository {
 
     private PersonJpaRepositoryDelegator springJpa;
     private ModelEntityMapper<Person, PersonEntity> entityMapper;
 
     public PersonJpaRepository(PersonJpaRepositoryDelegator jpa, ModelEntityMapper<Person, PersonEntity> entityMapper) {
-        super(jpa, entityMapper);
+        super(jpa, entityMapper, PersonId::new);
         this.springJpa = jpa;
         this.entityMapper = entityMapper;
     }

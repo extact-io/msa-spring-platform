@@ -15,8 +15,8 @@ import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.Person;
 public class PersonDomainConfig {
 
     @Bean
-    PersonCreator personnCreator(PersonRepository idGenerator, ModelValidator validator) {
-        return new PersonCreator(idGenerator, validator);
+    PersonCreator personnCreator(PersonRepository idProvider, ModelValidator validator) {
+        return new PersonCreator(idProvider, validator);
     }
 
     @Bean

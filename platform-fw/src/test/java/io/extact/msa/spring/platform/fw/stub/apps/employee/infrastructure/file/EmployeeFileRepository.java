@@ -7,13 +7,14 @@ import io.extact.msa.spring.platform.fw.infrastructure.persistence.file.ModelArr
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.file.io.FileOperator;
 import io.extact.msa.spring.platform.fw.stub.apps.employee.domain.EmployeeRepository;
 import io.extact.msa.spring.platform.fw.stub.apps.employee.domain.model.Employee;
+import io.extact.msa.spring.platform.fw.stub.apps.employee.domain.model.EmployeeId;
 
-public class EmployeeFileRepository extends AbstractFileRepository<Employee> implements EmployeeRepository {
+public class EmployeeFileRepository extends AbstractFileRepository<Employee, EmployeeId> implements EmployeeRepository {
 
     static final String FILE_ENTITY = "employee";
 
     public EmployeeFileRepository(FileOperator fileReadWriter, ModelArrayMapper<Employee> mapper) {
-        super(fileReadWriter, mapper);
+        super(fileReadWriter, mapper, EmployeeId::new);
     }
 
     @Override

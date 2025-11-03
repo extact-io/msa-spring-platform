@@ -16,27 +16,40 @@ import org.springframework.core.env.Environment;
 import io.extact.msa.spring.platform.fw.domain.model.EntityModel;
 import io.extact.msa.spring.platform.fw.domain.model.Identity;
 import io.extact.msa.spring.platform.fw.domain.repository.GenericRepository;
-import io.extact.msa.spring.platform.fw.domain.service.IdentityGenerator;
+import io.extact.msa.spring.platform.fw.domain.repository.IdProvider;
 import io.extact.msa.spring.platform.fw.feature.exception.RmsPersistenceException;
+import io.extact.msa.spring.platform.fw.infrastructure.persistence.IdCreator;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.file.io.FileOperator;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.file.io.IoSystemException;
 
-public abstract class AbstractFileRepository<M extends EntityModel>
-        implements GenericRepository<M>, IdentityGenerator, FileRepository, EnvironmentAware, InitializingBean {
+/**
+ * ファイルリポジトリの基底クラス。
+ *
+ * @param <M> モデルの型
+ * @param <I> モデルのID型
+ */
+public abstract class AbstractFileRepository<M extends EntityModel, I extends Identity>
+        implements GenericRepository<M>, IdProvider<I>, FileRepository, EnvironmentAware, InitializingBean {
 
     private final ReentrantLock lock = new ReentrantLock();
 
     private Environment env;
 
-    private FileOperator fileOperator;
-    private ModelArrayMapper<M> modelArrayMapper;
+    private final FileOperator fileOperator;
+    private final ModelArrayMapper<M> modelArrayMapper;
+    private final IdCreator<I> idCreator;
 
 
     // ----------------------------------------------------- constructor methods
 
-    public AbstractFileRepository(FileOperator fileOperator, ModelArrayMapper<M> mapper) {
+    public AbstractFileRepository(
+            FileOperator fileOperator,
+            ModelArrayMapper<M> mapper,
+            IdCreator<I> idCreator) {
+
         this.fileOperator = fileOperator;
         this.modelArrayMapper = mapper;
+        this.idCreator = idCreator;
     }
 
     @Override
@@ -104,8 +117,9 @@ public abstract class AbstractFileRepository<M extends EntityModel>
     }
 
     @Override
-    public int nextIdentity() {
-        return getNextSequence();
+    public I nextIdentity() {
+        int sequence = getNextSequence();
+        return idCreator.create(sequence);
     }
 
     @Override

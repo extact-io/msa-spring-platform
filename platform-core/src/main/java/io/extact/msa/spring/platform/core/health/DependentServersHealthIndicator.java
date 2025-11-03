@@ -46,7 +46,7 @@ public class DependentServersHealthIndicator implements HealthIndicator {
         // join thread
         final var finalTasks = tasks; // for lambda ref.
         CompletableFuture<Void> promise = CompletableFuture.allOf(futureArray);
-        List<ProbeResult> results = promise.thenApply(dummy -> {
+        List<ProbeResult> results = promise.thenApply(_ -> {
             return finalTasks.stream()
                     .map(ProbeTask::getResult)
                     .toList();

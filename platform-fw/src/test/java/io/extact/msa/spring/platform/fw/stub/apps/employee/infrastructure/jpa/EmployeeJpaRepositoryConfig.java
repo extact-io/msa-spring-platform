@@ -12,6 +12,7 @@ import io.extact.msa.spring.platform.fw.feature.validator.ValidatorConfig;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.DefaultModelEntityMapper;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa.DefaultJpaRepository;
 import io.extact.msa.spring.platform.fw.stub.apps.employee.domain.model.Employee;
+import io.extact.msa.spring.platform.fw.stub.apps.employee.domain.model.EmployeeId;
 
 @Configuration(proxyBeanMethods = false)
 @EntityScan(basePackageClasses = EmployeeEntity.class)
@@ -22,8 +23,10 @@ public class EmployeeJpaRepositoryConfig {
     @Bean
     GenericRepository<Employee> defaultJpaRepository(EmployeeJpaRepositoryDelegator delegator,
             ModelValidator validator) {
-        return new DefaultJpaRepository<Employee, EmployeeEntity>(
+
+        return new DefaultJpaRepository<Employee, EmployeeId, EmployeeEntity>(
                 delegator,
-                new DefaultModelEntityMapper<>(EmployeeEntity::from, validator));
+                new DefaultModelEntityMapper<>(EmployeeEntity::from, validator),
+                EmployeeId::new);
     }
 }

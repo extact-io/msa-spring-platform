@@ -7,14 +7,13 @@ import jakarta.validation.Valid;
 
 import io.extact.msa.spring.platform.fw.domain.model.EntityModel;
 import io.extact.msa.spring.platform.fw.domain.model.Identity;
-import io.micrometer.observation.annotation.Observed;
 
 /**
  * 永続先に依らないリポジトリの共通操作
  *
  * @param <M> ドメインモデルの型
+ * @param <I> ドメインモデルのIDの型
  */
-@Observed
 public interface GenericRepository<M extends EntityModel> {
 
     /**

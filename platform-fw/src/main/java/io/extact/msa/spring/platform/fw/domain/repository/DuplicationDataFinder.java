@@ -1,9 +1,9 @@
-package io.extact.msa.spring.platform.fw.domain.service;
+package io.extact.msa.spring.platform.fw.domain.repository;
 
 import java.util.Optional;
 
 import io.extact.msa.spring.platform.fw.domain.model.EntityModel;
 
-public interface DuplicationDataFinder<M extends EntityModel> extends DomainService {
+public interface DuplicationDataFinder<M extends EntityModel> {
     Optional<M> findDuplicationData(M checkModel);
 }

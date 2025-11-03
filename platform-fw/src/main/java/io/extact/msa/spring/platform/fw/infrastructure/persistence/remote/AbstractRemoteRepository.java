@@ -6,19 +6,27 @@ import java.util.Optional;
 import io.extact.msa.spring.platform.fw.domain.model.EntityModel;
 import io.extact.msa.spring.platform.fw.domain.model.Identity;
 import io.extact.msa.spring.platform.fw.domain.repository.GenericRepository;
-import io.extact.msa.spring.platform.fw.domain.service.IdentityGenerator;
+import io.extact.msa.spring.platform.fw.domain.repository.IdProvider;
 import io.extact.msa.spring.platform.fw.feature.exception.RmsPersistenceException;
+import io.extact.msa.spring.platform.fw.infrastructure.persistence.IdCreator;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.ModelEntityMapper;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.PhysicalEntity;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Remoteポジトリの基底クラス。
+ *
+ * @param <M> モデルの型
+ * @param <I> モデルのID型
+ * @param <E> リクエスト/レスポンスDTOの型
+ */
 @RequiredArgsConstructor
-public abstract class AbstractRemoteRepository<M extends EntityModel, E extends PhysicalEntity<M>>
-        implements GenericRepository<M>, IdentityGenerator {
-
+public abstract class AbstractRemoteRepository<M extends EntityModel, I extends Identity, E extends PhysicalEntity<M>>
+        implements GenericRepository<M>, IdProvider<I> {
 
     private final GenericClientApi<E> clientApi;
     private final ModelEntityMapper<M, E> modelEntityMapper;
+    private final IdCreator<I> idCreator;
 
     @Override
     public Optional<M> find(Identity id) {
@@ -60,7 +68,8 @@ public abstract class AbstractRemoteRepository<M extends EntityModel, E extends 
     }
 
     @Override
-    public int nextIdentity() {
-        return clientApi.nextIdentity();
+    public I nextIdentity() {
+        int sequence = clientApi.nextIdentity();
+        return idCreator.create(sequence);
     }
 }

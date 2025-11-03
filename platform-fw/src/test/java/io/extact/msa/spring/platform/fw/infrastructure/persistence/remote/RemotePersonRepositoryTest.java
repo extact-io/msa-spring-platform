@@ -20,6 +20,7 @@ import io.extact.msa.spring.platform.core.log.LogConfig;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.AbstractPersonRepositoryTest;
 import io.extact.msa.spring.platform.fw.interfaces.webapi.RestControllerConfig;
 import io.extact.msa.spring.platform.fw.stub.apps.person.domain.PersonRepository;
+import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.PersonId;
 import io.extact.msa.spring.platform.fw.stub.apps.person.infrastructure.remote.RemotePersonRepositoryConfig;
 import io.extact.msa.spring.platform.fw.stub.remote.RemotePersonStubController;
 import io.extact.msa.spring.test.spring.EnableAutoConfigurationWithoutSecurityAndActuator;
@@ -70,10 +71,10 @@ class RemotePersonRepositoryTest extends AbstractPersonRepositoryTest {
     @Override
     protected void testNextIdentity() {
         // given
-        int currentId = repository.findAll().size();
+        PersonId currentId = new PersonId(repository.findAll().size());
         // when
-        int nextId = repository.nextIdentity();
+        PersonId nextId = repository.nextIdentity();
         // then
-        assertThat(nextId).isEqualTo(currentId + 1);
+        assertThat(nextId.id()).isEqualTo(currentId.id() + 1);
     }
 }

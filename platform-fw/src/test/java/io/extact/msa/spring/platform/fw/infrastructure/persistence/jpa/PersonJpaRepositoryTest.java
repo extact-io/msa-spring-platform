@@ -12,6 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import io.extact.msa.spring.platform.fw.feature.sqlinit.ProfileBasedDbInitializerConfig;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.AbstractPersonRepositoryTest;
 import io.extact.msa.spring.platform.fw.stub.apps.person.domain.PersonRepository;
+import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.PersonId;
 import io.extact.msa.spring.platform.fw.stub.apps.person.infrastructure.jpa.PersonJpaRepositoryConfig;
 
 @DataJpaTest
@@ -37,11 +38,11 @@ class PersonJpaRepositoryTest extends AbstractPersonRepositoryTest {
     @Override
     protected void testNextIdentity() {
         // when
-        int firstTime = repository.nextIdentity();
-        int secondTime = repository.nextIdentity();
-        int thirdTime = repository.nextIdentity();
+        PersonId firstTime = repository.nextIdentity();
+        PersonId secondTime = repository.nextIdentity();
+        PersonId thirdTime = repository.nextIdentity();
         // then
-        assertThat(secondTime).isEqualTo(firstTime + 1);
-        assertThat(thirdTime).isEqualTo(secondTime + 1);
+        assertThat(secondTime.id()).isEqualTo(firstTime.id() + 1);
+        assertThat(thirdTime.id()).isEqualTo(secondTime.id() + 1);
     }
 }
