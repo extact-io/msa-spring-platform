@@ -12,6 +12,9 @@ spring:
     format:
       date: yyyyMMdd
       date-time: yyyyMMdd HH:mm
+  threads:
+    virtual:
+      enabled: true
       
 management:
   endpoints:
