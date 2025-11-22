@@ -5,8 +5,8 @@ import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
 
-import io.extact.msa.spring.platform.core.auth.LoginUser;
-import io.extact.msa.spring.platform.core.auth.RmsAuthentication;
+import io.extact.msa.spring.platform.core.auth.user.LoginUser;
+import io.extact.msa.spring.platform.core.auth.user.RmsAuthentication;
 import lombok.Builder;
 import lombok.Singular;
 

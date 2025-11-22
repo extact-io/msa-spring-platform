@@ -2,8 +2,8 @@ package io.extact.msa.spring.platform.core.auth.context;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import io.extact.msa.spring.platform.core.auth.LoginUser;
-import io.extact.msa.spring.platform.core.auth.RmsAuthentication;
+import io.extact.msa.spring.platform.core.auth.user.LoginUser;
+import io.extact.msa.spring.platform.core.auth.user.RmsAuthentication;
 
 public interface LoginContext {
 

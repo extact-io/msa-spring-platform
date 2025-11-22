@@ -14,15 +14,22 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.util.Assert;
 
+import io.extact.msa.spring.platform.core.auth.user.UserAttributes;
+import io.extact.msa.spring.platform.core.auth.user.UserAttributesProvider;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public class RmsHeaderConfigurer<H extends HttpSecurityBuilder<H>>
         extends AbstractHttpConfigurer<HttpBasicConfigurer<H>, H> {
+
+    private final UserAttributesProvider<UserAttributes> attributesProvider;
 
     private Optional<SecurityContextHolderStrategy> securityContextHolderStrategy = Optional.empty();
     private Optional<AuthenticationEntryPoint> authenticationEntryPoint = Optional.empty();
     private Optional<AuthenticationFailureHandler> authenticationFailureHandler = Optional.empty();
     private Optional<SecurityContextRepository> securityContextRepository = Optional.empty();
 
-    public RmsHeaderConfigurer<H> SecurityContextHolderStrategy(SecurityContextHolderStrategy strategy) {
+    public RmsHeaderConfigurer<H> securityContextHolderStrategy(SecurityContextHolderStrategy strategy) {
         Assert.notNull(strategy, "strategy cannot be null");
         this.securityContextHolderStrategy = Optional.of(strategy);
         return this;
@@ -48,7 +55,7 @@ public class RmsHeaderConfigurer<H extends HttpSecurityBuilder<H>>
 
     @Override
     public void init(H http) throws Exception {
-        http.authenticationProvider(new RmsHeaderAuthProvider());
+        http.authenticationProvider(new RmsHeaderAuthProvider(attributesProvider));
     }
 
     @Override

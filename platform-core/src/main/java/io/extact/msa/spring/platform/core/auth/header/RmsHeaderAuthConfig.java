@@ -13,6 +13,8 @@ import org.springframework.security.web.authentication.AnonymousAuthenticationFi
 import io.extact.msa.spring.platform.core.auth.anonymous.RmsAnonymousAuthConfig;
 import io.extact.msa.spring.platform.core.auth.configure.AuthorizeHttpRequestCustomizer;
 import io.extact.msa.spring.platform.core.auth.configure.AuthorizeRequestConfigure;
+import io.extact.msa.spring.platform.core.auth.user.UserAttributes;
+import io.extact.msa.spring.platform.core.auth.user.UserAttributesProvider;
 
 @Configuration(proxyBeanMethods = false)
 @Import(RmsAnonymousAuthConfig.class)
@@ -20,12 +22,15 @@ public class RmsHeaderAuthConfig {
 
     @Bean
     @ConditionalOnProperty(name = "rms.auth.multi", havingValue = "false", matchIfMissing = true)
-    SecurityFilterChain headerAuthFilterChain1(HttpSecurity http, AuthorizeHttpRequestCustomizer requestCustomizer,
+    SecurityFilterChain headerAuthFilterChain1(
+            HttpSecurity http,
+            AuthorizeHttpRequestCustomizer requestCustomizer,
+            UserAttributesProvider<UserAttributes> attributesProvider,
             AnonymousAuthenticationFilter anonymousFilter) throws Exception {
 
         return http
                 .authorizeHttpRequests(requestCustomizer)
-                .with(new RmsHeaderConfigurer<>(), Customizer.withDefaults())
+                .with(new RmsHeaderConfigurer<>(attributesProvider), Customizer.withDefaults())
                 .anonymous(anonymous -> anonymous.authenticationFilter(anonymousFilter))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exceptions -> exceptions
@@ -39,14 +44,16 @@ public class RmsHeaderAuthConfig {
 
     @Bean
     @ConditionalOnProperty(name = "rms.auth.multi", havingValue = "true")
-    SecurityFilterChain withQualifireHeaderAuthFilterChain(HttpSecurity http,
+    SecurityFilterChain withQualifireHeaderAuthFilterChain(
+            HttpSecurity http,
             @RmsHeaderAuth AuthorizeRequestConfigure requestConfigure,
+            UserAttributesProvider<UserAttributes> attributesProvider,
             AnonymousAuthenticationFilter anonymousFilter) throws Exception {
 
         return requestConfigure
                 .applySecurityMatcher(http)
                 .applyAuthorizeHttpRequests(http)
-                .with(new RmsHeaderConfigurer<>(), Customizer.withDefaults())
+                .with(new RmsHeaderConfigurer<>(attributesProvider), Customizer.withDefaults())
                 .anonymous(anonymous -> anonymous.authenticationFilter(anonymousFilter))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exceptions -> exceptions

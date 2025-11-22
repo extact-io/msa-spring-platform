@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.core.auth;
+package io.extact.msa.spring.platform.core.auth.user;
 
 @FunctionalInterface
 public interface LoginUserCreator {

@@ -8,10 +8,10 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 
-import io.extact.msa.spring.platform.core.auth.LoginUser;
-import io.extact.msa.spring.platform.core.auth.LoginUserCreator;
-import io.extact.msa.spring.platform.core.auth.RmsAuthentication;
-import io.extact.msa.spring.platform.core.auth.UserIdPrincipal;
+import io.extact.msa.spring.platform.core.auth.user.AuthUserId;
+import io.extact.msa.spring.platform.core.auth.user.LoginUser;
+import io.extact.msa.spring.platform.core.auth.user.LoginUserCreator;
+import io.extact.msa.spring.platform.core.auth.user.RmsAuthentication;
 import lombok.ToString;
 
 /**
@@ -22,14 +22,14 @@ import lombok.ToString;
 @ToString
 public class RmsClientAuthenticationToken extends AbstractAuthenticationToken implements RmsAuthentication {
 
-    private UserIdPrincipal principal;
+    private AuthUserId userId;
     private BearerTokenCredential credential;
     private LoginUser loginUser;
 
-    RmsClientAuthenticationToken(UserIdPrincipal principal, BearerTokenCredential credentials,
+    RmsClientAuthenticationToken(AuthUserId userId, BearerTokenCredential credentials,
             Collection<? extends GrantedAuthority> authorities, LoginUser loginUser) {
         super(authorities);
-        this.principal = principal;
+        this.userId = userId;
         this.credential = credentials;
         this.loginUser = loginUser;
         this.setAuthenticated(true);
@@ -42,7 +42,7 @@ public class RmsClientAuthenticationToken extends AbstractAuthenticationToken im
 
     @Override
     public Object getPrincipal() {
-        return principal;
+        return userId;
     }
 
     @Override
@@ -54,8 +54,8 @@ public class RmsClientAuthenticationToken extends AbstractAuthenticationToken im
         return credential;
     }
 
-    public UserIdPrincipal getUserIdPrincipal() {
-        return principal;
+    public AuthUserId getUserIdPrincipal() {
+        return userId;
     }
 
     public static RmsClientAuthenticationTokenBuilder builder() {
@@ -64,13 +64,13 @@ public class RmsClientAuthenticationToken extends AbstractAuthenticationToken im
 
     public static class RmsClientAuthenticationTokenBuilder {
 
-        private String userId;
+        private AuthUserId userId;
         private String bearerToken;
         private Set<String> groups;
         private LoginUserCreator creator = LoginUserCreator.DEFAULT_CREATOR;
 
         public RmsClientAuthenticationTokenBuilder userId(String userId) {
-            this.userId = userId;
+            this.userId = new AuthUserId(userId);
             return this;
         }
 
@@ -91,7 +91,6 @@ public class RmsClientAuthenticationToken extends AbstractAuthenticationToken im
 
         public RmsClientAuthenticationToken build() {
 
-            UserIdPrincipal principal = new UserIdPrincipal(userId);
             BearerTokenCredential credential = new BearerTokenCredential(bearerToken);
             List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(groups);
 

@@ -2,6 +2,11 @@ package io.extact.msa.spring.platform.core.auth.header;
 
 import java.io.IOException;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -18,14 +23,8 @@ import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import io.extact.msa.spring.platform.core.auth.InvalidUserIdException;
-import io.extact.msa.spring.platform.core.auth.LoginUser;
-import io.extact.msa.spring.platform.core.auth.UserIdPrincipal;
-
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import io.extact.msa.spring.platform.core.auth.user.AuthUserId;
+import io.extact.msa.spring.platform.core.auth.user.InvalidUserIdException;
 
 public class RmsHeaderAuthFilter extends OncePerRequestFilter {
 
@@ -85,22 +84,22 @@ public class RmsHeaderAuthFilter extends OncePerRequestFilter {
 
     private Authentication createAuthentication(HttpServletRequest req) {
 
-        String userId = req.getHeader("rms-userId");
-        if (userId == null) {
+        String headerUserId = req.getHeader("rms-userId");
+        if (headerUserId == null) {
             return null;
         }
 
-        UserIdPrincipal principal = new UserIdPrincipal(userId);
-        if (principal.userId() == LoginUser.ANONYMOUS_USER.getUserId()) {
+        AuthUserId userId = new AuthUserId(headerUserId);
+        if (userId.isAnonymousId()) {
             return null; // go to AnonymousAuthenticationFilter
         }
 
-        HeaderCredential credentials = new HeaderCredential(userId, req.getHeader("rms-roles"));
+        HeaderCredential credentials = new HeaderCredential(headerUserId, req.getHeader("rms-roles")); // row-data
 
-        RmsHeaderAuthToken authenticationToken = new RmsHeaderAuthToken(principal, credentials);
-        authenticationToken.setDetails(authenticationDetailsSource.buildDetails(req));
+        RmsHeaderAuthRequest authenticationRequest = new RmsHeaderAuthRequest(userId, credentials);
+        authenticationRequest.setDetails(authenticationDetailsSource.buildDetails(req));
 
-        return authenticationToken;
+        return authenticationRequest;
     }
 
     // ---------------------------------------------------- setter for configure

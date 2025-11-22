@@ -12,27 +12,26 @@ import org.springframework.security.oauth2.jwt.JwtClaimNames;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.util.StringUtils;
 
-import io.extact.msa.spring.platform.core.auth.LoginUser;
-import io.extact.msa.spring.platform.core.auth.UserIdPrincipal;
+import io.extact.msa.spring.platform.core.auth.user.AuthUserId;
+import io.extact.msa.spring.platform.core.auth.user.LoginUser;
+import io.extact.msa.spring.platform.core.auth.user.UserAttributes;
+import io.extact.msa.spring.platform.core.auth.user.UserAttributesProvider;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public class RmsJwtAuthConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 
     private static final String AUTHORITY_PREFIX = "ROLE_";
 
-    private Converter<Jwt, Collection<GrantedAuthority>> authoritiesConverter;
-    private String principalClaimName;
-
-    RmsJwtAuthConverter(Converter<Jwt, Collection<GrantedAuthority>> authoritiesConverter,
-            String principalClaimName) {
-        this.authoritiesConverter = authoritiesConverter;
-        this.principalClaimName = principalClaimName;
-    }
+    private final Converter<Jwt, Collection<GrantedAuthority>> authoritiesConverter;
+    private final UserAttributesProvider<UserAttributes> attributesProvider;
+    private final String principalClaimName;
 
     @Override
     public AbstractAuthenticationToken convert(Jwt jwt) {
 
         Collection<GrantedAuthority> authorities = this.authoritiesConverter.convert(jwt);
-        String principalName = jwt.getClaimAsString(this.principalClaimName);
 
         // Authorityからgroup名を取得するが余計なROLE_は削除しておく
         Set<String> groups = authorities.stream()
@@ -40,10 +39,13 @@ public class RmsJwtAuthConverter implements Converter<Jwt, AbstractAuthenticatio
                 .map(roleName -> StringUtils.delete(roleName, AUTHORITY_PREFIX))
                 .collect(Collectors.toSet());
 
-        LoginUser loginUser = LoginUser.of(Integer.parseInt(jwt.getSubject()), groups);
+        AuthUserId userId = new AuthUserId(jwt.getSubject());
+        UserAttributes attributes = attributesProvider.provide(userId);
+        LoginUser loginUser = LoginUser.of(userId, groups, attributes);
 
-        return new RmsJwtAuthToken(new UserIdPrincipal(loginUser.getUserId()), principalName, jwt,
-                authorities, loginUser);
+        String principalName = jwt.getClaimAsString(this.principalClaimName);
+
+        return new RmsJwtAuthToken(jwt, loginUser, authorities, principalName);
     }
 
     public static RmsJwtAuthenticationConverterBuilder builder() {
@@ -57,6 +59,7 @@ public class RmsJwtAuthConverter implements Converter<Jwt, AbstractAuthenticatio
         private String authorityPrefix;
         private String principalClaimName;
         private JwtGrantedAuthoritiesConverter authoritiesConverter;
+        private UserAttributesProvider<UserAttributes> attributesProvider;
 
         RmsJwtAuthenticationConverterBuilder() {
             defaultSetting();
@@ -89,10 +92,15 @@ public class RmsJwtAuthConverter implements Converter<Jwt, AbstractAuthenticatio
             return this;
         }
 
+        public RmsJwtAuthenticationConverterBuilder userAttributesProvider(UserAttributesProvider<UserAttributes> provider) {
+            this.attributesProvider = provider;
+            return this;
+        }
+
         public RmsJwtAuthConverter build() {
             authoritiesConverter.setAuthoritiesClaimName(authoritiesClaimName);
             authoritiesConverter.setAuthorityPrefix(authorityPrefix);
-            return new RmsJwtAuthConverter(authoritiesConverter, principalClaimName);
+            return new RmsJwtAuthConverter(authoritiesConverter, attributesProvider, principalClaimName);
         }
     }
 }

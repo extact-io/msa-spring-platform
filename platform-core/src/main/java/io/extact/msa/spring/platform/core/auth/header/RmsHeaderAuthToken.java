@@ -5,25 +5,19 @@ import java.util.Collection;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
-import io.extact.msa.spring.platform.core.auth.LoginUser;
-import io.extact.msa.spring.platform.core.auth.RmsAuthentication;
-import io.extact.msa.spring.platform.core.auth.UserIdPrincipal;
+import io.extact.msa.spring.platform.core.auth.user.LoginUser;
+import io.extact.msa.spring.platform.core.auth.user.RmsAuthentication;
+import io.extact.msa.spring.platform.core.auth.user.AuthUserId;
 import lombok.ToString;
 
 @ToString
 public class RmsHeaderAuthToken extends AbstractAuthenticationToken implements RmsAuthentication {
 
-    private UserIdPrincipal principal;
+    private AuthUserId principal;
     private HeaderCredential credentials;
     private LoginUser loginUser;
 
-    public RmsHeaderAuthToken(UserIdPrincipal principal, HeaderCredential credentials) {
-        super(null);
-        this.principal = principal;
-        this.credentials = credentials;
-    }
-
-    public RmsHeaderAuthToken(UserIdPrincipal principal, HeaderCredential credentials,
+    public RmsHeaderAuthToken(AuthUserId principal, HeaderCredential credentials,
             Collection<? extends GrantedAuthority> authorities, LoginUser loginUser) {
         super(authorities);
         this.principal = principal;
@@ -51,7 +45,7 @@ public class RmsHeaderAuthToken extends AbstractAuthenticationToken implements R
         return credentials;
     }
 
-    public UserIdPrincipal getUserIdPrincipal() {
+    public AuthUserId getUserIdPrincipal() {
         return principal;
     }
 }

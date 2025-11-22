@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.core.auth;
+package io.extact.msa.spring.platform.core.auth.user;
 
 import org.springframework.security.core.Authentication;
 

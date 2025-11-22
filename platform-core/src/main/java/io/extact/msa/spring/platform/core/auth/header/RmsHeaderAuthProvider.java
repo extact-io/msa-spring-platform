@@ -11,14 +11,20 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import io.extact.msa.spring.platform.core.auth.LoginUser;
+import io.extact.msa.spring.platform.core.auth.user.LoginUser;
+import io.extact.msa.spring.platform.core.auth.user.UserAttributes;
+import io.extact.msa.spring.platform.core.auth.user.UserAttributesProvider;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class RmsHeaderAuthProvider implements AuthenticationProvider {
+
+    private final UserAttributesProvider<UserAttributes> attributesProvider;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
-        RmsHeaderAuthToken request = (RmsHeaderAuthToken) authentication;
+        RmsHeaderAuthRequest request = (RmsHeaderAuthRequest) authentication;
 
         String[] roles = request.getHeaderCredential().roles().transform(values -> values.split(","));
         Set<String> roleSet = Stream.of(roles).collect(Collectors.toSet());
@@ -27,10 +33,16 @@ public class RmsHeaderAuthProvider implements AuthenticationProvider {
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                 .toList();
 
-        LoginUser loginUser = LoginUser.of(request.getUserIdPrincipal().userId(), roleSet);
+        UserAttributes attributes = attributesProvider.provide(request.getAuthUserId());
 
-        RmsHeaderAuthToken token = new RmsHeaderAuthToken(request.getUserIdPrincipal(),
-                request.getHeaderCredential(), authorities, loginUser);
+        LoginUser loginUser = LoginUser.of(request.getAuthUserId(), roleSet, attributes);
+
+        RmsHeaderAuthToken token = new RmsHeaderAuthToken(
+                request.getAuthUserId(),
+                request.getHeaderCredential(),
+                authorities,
+                loginUser);
+
         token.setDetails(request.getDetails());
 
         return token;

@@ -8,26 +8,24 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 
-import io.extact.msa.spring.platform.core.auth.LoginUser;
-import io.extact.msa.spring.platform.core.auth.LoginUserCreator;
-import io.extact.msa.spring.platform.core.auth.RmsAuthentication;
-import io.extact.msa.spring.platform.core.auth.UserIdPrincipal;
+import io.extact.msa.spring.platform.core.auth.user.LoginUser;
+import io.extact.msa.spring.platform.core.auth.user.LoginUserCreator;
+import io.extact.msa.spring.platform.core.auth.user.RmsAuthentication;
 import lombok.ToString;
 
 @ToString(callSuper = true)
 public class RmsAnonymousAuthenticationToken extends AnonymousAuthenticationToken implements RmsAuthentication {
 
-    private LoginUser loginUser;
-
-    public RmsAnonymousAuthenticationToken(String key, Object principal,
-            Collection<? extends GrantedAuthority> authorities, LoginUser loginUser) {
+    public RmsAnonymousAuthenticationToken(
+            String key,
+            Object principal,
+            Collection<? extends GrantedAuthority> authorities) {
         super(key, principal, authorities);
-        this.loginUser = loginUser;
     }
 
     @Override
     public LoginUser getLoginUser() {
-        return loginUser;
+        return (LoginUser) getPrincipal();
     }
 
     public static RmsAnonymousAuthenticationTokenBuilder builder() {
@@ -35,9 +33,6 @@ public class RmsAnonymousAuthenticationToken extends AnonymousAuthenticationToke
     }
 
     public static class RmsAnonymousAuthenticationTokenBuilder {
-
-        private static final LoginUser ANONYMOUS_USER = LoginUser.ANONYMOUS_USER;
-        private static final UserIdPrincipal PRINCIPAL = new UserIdPrincipal(ANONYMOUS_USER.getUserId());
 
         private String key;
         private List<GrantedAuthority> authorities;
@@ -53,10 +48,6 @@ public class RmsAnonymousAuthenticationToken extends AnonymousAuthenticationToke
 
         public List<GrantedAuthority> authorities() {
             return authorities;
-        }
-
-        public UserIdPrincipal principal() {
-            return PRINCIPAL;
         }
 
         private void defaultSetting() {
@@ -80,8 +71,8 @@ public class RmsAnonymousAuthenticationToken extends AnonymousAuthenticationToke
         }
 
         public RmsAnonymousAuthenticationToken build() {
-            LoginUser loginUser = creator.create(ANONYMOUS_USER);
-            return new RmsAnonymousAuthenticationToken(key, PRINCIPAL, authorities, loginUser);
+            LoginUser loginUser = creator.create(LoginUser.ANONYMOUS_USER);
+            return new RmsAnonymousAuthenticationToken(key, loginUser, authorities);
         }
     }
 }

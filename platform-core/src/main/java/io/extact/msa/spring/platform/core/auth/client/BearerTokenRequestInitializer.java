@@ -4,7 +4,7 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestInitializer;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import io.extact.msa.spring.platform.core.auth.RmsAuthentication;
+import io.extact.msa.spring.platform.core.auth.user.RmsAuthentication;
 
 /**
  * サーバから発行されたBearerTokenをリクエストヘッダに付加するクラス

@@ -9,6 +9,7 @@ import org.springframework.security.web.authentication.AnonymousAuthenticationFi
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 
 import io.extact.msa.spring.platform.core.auth.anonymous.RmsAnonymousAuthenticationToken.RmsAnonymousAuthenticationTokenBuilder;
+import io.extact.msa.spring.platform.core.auth.user.LoginUser;
 
 public class RmsAnonymousAuthenticationFilter extends AnonymousAuthenticationFilter {
 
@@ -17,7 +18,7 @@ public class RmsAnonymousAuthenticationFilter extends AnonymousAuthenticationFil
     private AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource = new WebAuthenticationDetailsSource();
 
     RmsAnonymousAuthenticationFilter(RmsAnonymousAuthenticationTokenBuilder tokenBuilder) {
-        super(tokenBuilder.key(), tokenBuilder.principal(), tokenBuilder.authorities());
+        super(tokenBuilder.key(), LoginUser.ANONYMOUS_USER, tokenBuilder.authorities());
         this.tokenBuilder = tokenBuilder;
     }
 
