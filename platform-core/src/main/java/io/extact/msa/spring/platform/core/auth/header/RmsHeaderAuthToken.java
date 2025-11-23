@@ -7,22 +7,21 @@ import org.springframework.security.core.GrantedAuthority;
 
 import io.extact.msa.spring.platform.core.auth.user.LoginUser;
 import io.extact.msa.spring.platform.core.auth.user.RmsAuthentication;
-import io.extact.msa.spring.platform.core.auth.user.AuthUserId;
 import lombok.ToString;
 
 @ToString
 public class RmsHeaderAuthToken extends AbstractAuthenticationToken implements RmsAuthentication {
 
-    private AuthUserId principal;
+    private LoginUser principal;
     private HeaderCredential credentials;
-    private LoginUser loginUser;
 
-    public RmsHeaderAuthToken(AuthUserId principal, HeaderCredential credentials,
-            Collection<? extends GrantedAuthority> authorities, LoginUser loginUser) {
+    public RmsHeaderAuthToken(
+            LoginUser principal,
+            HeaderCredential credentials,
+            Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
         this.principal = principal;
         this.credentials = credentials;
-        this.loginUser = loginUser;
         this.setAuthenticated(true);
     }
 
@@ -38,14 +37,10 @@ public class RmsHeaderAuthToken extends AbstractAuthenticationToken implements R
 
     @Override
     public LoginUser getLoginUser() {
-        return loginUser;
+        return (LoginUser) principal;
     }
 
     public HeaderCredential getHeaderCredential() {
         return credentials;
-    }
-
-    public AuthUserId getUserIdPrincipal() {
-        return principal;
     }
 }

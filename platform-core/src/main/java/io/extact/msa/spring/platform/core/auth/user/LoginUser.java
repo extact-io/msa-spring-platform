@@ -4,11 +4,9 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import org.springframework.security.core.AuthenticatedPrincipal;
 
-public interface LoginUser {
+public interface LoginUser extends AuthenticatedPrincipal {
 
     public static final UserAttributes ANONYMOUS_ATTRIBUTES = new UserAttributes() {
         @Override
@@ -39,25 +37,10 @@ public interface LoginUser {
     }
 
     static LoginUser of(AuthUserId userId, Set<String> roles) {
-        return new LoginUserImpl(userId, roles, null);
+        return new SimpleLoginUser(userId, roles, null);
     }
 
     static LoginUser of(AuthUserId userId, Set<String> roles, UserAttributes attributes) {
-        return new LoginUserImpl(userId, roles, attributes);
-    }
-
-    @RequiredArgsConstructor
-    @Getter @ToString
-    static class LoginUserImpl implements LoginUser {
-
-        private final AuthUserId userId;
-        private final Set<String> groups;
-        private final UserAttributes attributes;
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public <T extends UserAttributes> T getAttributes(Class<T> clazz) {
-            return (T) attributes;
-        }
+        return new SimpleLoginUser(userId, roles, attributes);
     }
 }

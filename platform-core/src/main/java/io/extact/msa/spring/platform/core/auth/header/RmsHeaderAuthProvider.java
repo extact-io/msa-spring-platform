@@ -38,10 +38,9 @@ public class RmsHeaderAuthProvider implements AuthenticationProvider {
         LoginUser loginUser = LoginUser.of(request.getAuthUserId(), roleSet, attributes);
 
         RmsHeaderAuthToken token = new RmsHeaderAuthToken(
-                request.getAuthUserId(),
+                loginUser,
                 request.getHeaderCredential(),
-                authorities,
-                loginUser);
+                authorities);
 
         token.setDetails(request.getDetails());
 

@@ -22,16 +22,17 @@ import lombok.ToString;
 @ToString
 public class RmsClientAuthenticationToken extends AbstractAuthenticationToken implements RmsAuthentication {
 
-    private AuthUserId userId;
     private BearerTokenCredential credential;
-    private LoginUser loginUser;
+    private LoginUser principal;
 
-    RmsClientAuthenticationToken(AuthUserId userId, BearerTokenCredential credentials,
-            Collection<? extends GrantedAuthority> authorities, LoginUser loginUser) {
+    RmsClientAuthenticationToken(
+            LoginUser principal,
+            BearerTokenCredential credentials,
+            Collection<? extends GrantedAuthority> authorities) {
+
         super(authorities);
-        this.userId = userId;
         this.credential = credentials;
-        this.loginUser = loginUser;
+        this.principal = principal;
         this.setAuthenticated(true);
     }
 
@@ -42,20 +43,16 @@ public class RmsClientAuthenticationToken extends AbstractAuthenticationToken im
 
     @Override
     public Object getPrincipal() {
-        return userId;
+        return principal;
     }
 
     @Override
     public LoginUser getLoginUser() {
-        return loginUser;
+        return principal;
     }
 
     public BearerTokenCredential getBearerTokenCredential() {
         return credential;
-    }
-
-    public AuthUserId getUserIdPrincipal() {
-        return userId;
     }
 
     public static RmsClientAuthenticationTokenBuilder builder() {
@@ -97,8 +94,7 @@ public class RmsClientAuthenticationToken extends AbstractAuthenticationToken im
             LoginUser platformLoginUser = LoginUser.of(userId, groups);
             LoginUser loginUser = creator.create(platformLoginUser);
 
-            return new RmsClientAuthenticationToken(principal, credential, authorities, loginUser);
+            return new RmsClientAuthenticationToken(loginUser, credential, authorities);
         }
-
     }
 }

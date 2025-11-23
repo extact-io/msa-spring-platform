@@ -12,17 +12,13 @@ import io.extact.msa.spring.platform.core.auth.user.RmsAuthentication;
 
 public class RmsJwtAuthToken extends AbstractOAuth2TokenAuthenticationToken<Jwt> implements RmsAuthentication {
 
-    private String principalName;
-
     public RmsJwtAuthToken(
             Jwt token,
             LoginUser principal,
-            Collection<? extends GrantedAuthority> authorities,
-            String principlaName) {
+            Collection<? extends GrantedAuthority> authorities) {
 
         super(token, principal, token, authorities);
         this.setAuthenticated(true);
-        this.principalName = principlaName;
     }
 
     @Override
@@ -33,10 +29,5 @@ public class RmsJwtAuthToken extends AbstractOAuth2TokenAuthenticationToken<Jwt>
     @Override
     public Map<String, Object> getTokenAttributes() {
         return this.getToken().getClaims();
-    }
-
-    @Override
-    public String getName() {
-        return this.principalName;
     }
 }

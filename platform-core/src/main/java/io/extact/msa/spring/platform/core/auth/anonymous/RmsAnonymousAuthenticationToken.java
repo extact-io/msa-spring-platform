@@ -60,7 +60,7 @@ public class RmsAnonymousAuthenticationToken extends AnonymousAuthenticationToke
             return this;
         }
 
-        public RmsAnonymousAuthenticationTokenBuilder withAuthorities(String...  authorities) {
+        public RmsAnonymousAuthenticationTokenBuilder withAuthorities(String... authorities) {
             this.authorities = AuthorityUtils.createAuthorityList(authorities);
             return this;
         }

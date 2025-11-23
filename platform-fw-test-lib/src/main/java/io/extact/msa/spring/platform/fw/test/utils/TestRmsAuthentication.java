@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
 
+import io.extact.msa.spring.platform.core.auth.user.AuthUserId;
 import io.extact.msa.spring.platform.core.auth.user.LoginUser;
 import io.extact.msa.spring.platform.core.auth.user.RmsAuthentication;
 import lombok.Builder;
@@ -26,7 +27,7 @@ public class TestRmsAuthentication implements RmsAuthentication {
 
     @Override
     public LoginUser getLoginUser() {
-        return LoginUser.of(userId, roles);
+        return LoginUser.of(new AuthUserId(userId), roles);
     }
 
     @Override
