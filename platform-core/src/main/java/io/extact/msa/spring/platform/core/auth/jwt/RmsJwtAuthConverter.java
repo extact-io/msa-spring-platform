@@ -24,7 +24,7 @@ public class RmsJwtAuthConverter implements Converter<Jwt, AbstractAuthenticatio
     private static final String AUTHORITY_PREFIX = "ROLE_";
 
     private final Converter<Jwt, Collection<GrantedAuthority>> authoritiesConverter;
-    private final UserAttributesProvider<UserAttributes> attributesProvider;
+    private final UserAttributesProvider<? extends UserAttributes> attributesProvider;
 
     @Override
     public AbstractAuthenticationToken convert(Jwt jwt) {
@@ -54,7 +54,7 @@ public class RmsJwtAuthConverter implements Converter<Jwt, AbstractAuthenticatio
         private String authoritiesClaimName;
         private String authorityPrefix;
         private JwtGrantedAuthoritiesConverter authoritiesConverter;
-        private UserAttributesProvider<UserAttributes> attributesProvider;
+        private UserAttributesProvider<? extends UserAttributes> attributesProvider;
 
         RmsJwtAuthenticationConverterBuilder() {
             defaultSetting();
@@ -81,7 +81,7 @@ public class RmsJwtAuthConverter implements Converter<Jwt, AbstractAuthenticatio
             return this;
         }
 
-        public RmsJwtAuthenticationConverterBuilder userAttributesProvider(UserAttributesProvider<UserAttributes> provider) {
+        public RmsJwtAuthenticationConverterBuilder userAttributesProvider(UserAttributesProvider<? extends UserAttributes> provider) {
             this.attributesProvider = provider;
             return this;
         }

@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RmsHeaderAuthProvider implements AuthenticationProvider {
 
-    private final UserAttributesProvider<UserAttributes> attributesProvider;
+    private final UserAttributesProvider<? extends UserAttributes> attributesProvider;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -49,6 +49,7 @@ public class RmsHeaderAuthProvider implements AuthenticationProvider {
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return RmsHeaderAuthToken.class.isAssignableFrom(authentication);
+        // RmsHeaderAuthRequestインスタンスを認証リクエストの処理対象にする
+        return RmsHeaderAuthRequest.class.isAssignableFrom(authentication);
     }
 }

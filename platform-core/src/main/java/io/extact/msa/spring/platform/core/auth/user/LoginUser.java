@@ -24,7 +24,7 @@ public interface LoginUser extends AuthenticatedPrincipal {
 
     <T extends UserAttributes> T getAttributes(Class<T> clazz);
 
-    default boolean isUnknownUser() {
+    default boolean isAnonymousUser() {
         return this == ANONYMOUS_USER;
     }
 

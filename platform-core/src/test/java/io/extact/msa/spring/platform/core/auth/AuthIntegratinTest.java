@@ -2,7 +2,10 @@ package io.extact.msa.spring.platform.core.auth;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.Map;
 import java.util.Set;
+
+import jakarta.annotation.PostConstruct;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,7 +43,10 @@ import io.extact.msa.spring.platform.core.auth.testapp.server1.Server1Controller
 import io.extact.msa.spring.platform.core.auth.testapp.server1.Server2Api;
 import io.extact.msa.spring.platform.core.auth.testapp.server2.Server2Assert;
 import io.extact.msa.spring.platform.core.auth.testapp.server2.Server2Controller;
+import io.extact.msa.spring.platform.core.auth.user.AuthUserId;
 import io.extact.msa.spring.platform.core.auth.user.RmsAuthentication;
+import io.extact.msa.spring.platform.core.auth.user.UserAttributes;
+import io.extact.msa.spring.platform.core.auth.user.UserAttributesProvider;
 import io.extact.msa.spring.platform.core.condition.EnableAutoConfigurationWithoutJpa;
 import io.extact.msa.spring.platform.core.jwt.encode.JwtEncodeConfig;
 import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
@@ -73,6 +79,11 @@ public class AuthIntegratinTest {
             RmsJwtAuthConfig.class,
             RmsHeaderAuthConfig.class })
     static class TestConfig {
+
+        @Bean
+        TestUserAttributesProvider testUserAttributesProvider() {
+            return new TestUserAttributesProvider();
+        }
 
         // ---------- for Spring Security
         @Bean
@@ -233,33 +244,33 @@ public class AuthIntegratinTest {
         @Override
         public void doBeforeLoginAssert() {
             RmsAuthentication auth = getRmsAuthentication();
-            assertThat(auth.getLoginUser().isUnknownUser()).isTrue();
+            assertThat(auth.getLoginUser().isAnonymousUser()).isTrue();
         }
 
         @Override
         public void doMemberApiAssert() {
             RmsAuthentication auth = getRmsAuthentication();
-            assertThat(auth.getLoginUser().isUnknownUser()).isFalse();
-            assertThat(auth.getLoginUser().getUserId()).isEqualTo(1);
+            assertThat(auth.getLoginUser().isAnonymousUser()).isFalse();
+            assertThat(auth.getLoginUser().getUserId().value()).isEqualTo(1);
         }
 
         @Override
         public void doAdminApiAssert() {
             RmsAuthentication auth = getRmsAuthentication();
-            assertThat(auth.getLoginUser().isUnknownUser()).isFalse();
-            assertThat(auth.getLoginUser().getUserId()).isEqualTo(2);
+            assertThat(auth.getLoginUser().isAnonymousUser()).isFalse();
+            assertThat(auth.getLoginUser().getUserId().value()).isEqualTo(2);
         }
 
         @Override
         public void doGuestApiAssert() {
             RmsAuthentication auth = getRmsAuthentication();
-            assertThat(auth.getLoginUser().isUnknownUser()).isTrue();
+            assertThat(auth.getLoginUser().isAnonymousUser()).isTrue();
         }
 
         @Override
         public void doGuestApiWithLoginAssert() {
             RmsAuthentication auth = getRmsAuthentication();
-            assertThat(auth.getLoginUser().isUnknownUser()).isFalse();
+            assertThat(auth.getLoginUser().isAnonymousUser()).isFalse();
         }
 
         private RmsAuthentication getRmsAuthentication() {
@@ -274,21 +285,21 @@ public class AuthIntegratinTest {
         @Override
         public void doNotLoginApiAssert() {
             RmsAuthentication auth = getRmsAuthentication();
-            assertThat(auth.getLoginUser().isUnknownUser()).isTrue();
+            assertThat(auth.getLoginUser().isAnonymousUser()).isTrue();
         }
 
         @Override
         public void doMemberLoginApiAssert() {
             RmsAuthentication auth = getRmsAuthentication();
-            assertThat(auth.getLoginUser().isUnknownUser()).isFalse();
-            assertThat(auth.getLoginUser().getUserId()).isEqualTo(1);
+            assertThat(auth.getLoginUser().isAnonymousUser()).isFalse();
+            assertThat(auth.getLoginUser().getUserId().value()).isEqualTo(1);
         }
 
         @Override
         public void doAdminLoginApi() {
             RmsAuthentication auth = getRmsAuthentication();
-            assertThat(auth.getLoginUser().isUnknownUser()).isFalse();
-            assertThat(auth.getLoginUser().getUserId()).isEqualTo(2);
+            assertThat(auth.getLoginUser().isAnonymousUser()).isFalse();
+            assertThat(auth.getLoginUser().getUserId().value()).isEqualTo(2);
         }
 
         private RmsAuthentication getRmsAuthentication() {
@@ -297,5 +308,30 @@ public class AuthIntegratinTest {
                     .getAuthentication();
         }
 
+    }
+
+    static record TestUserAttributes(
+            AuthUserId authUserId,
+            String name,
+            int age) implements UserAttributes {
+    }
+
+    static class TestUserAttributesProvider implements UserAttributesProvider<TestUserAttributes> {
+
+        Map<AuthUserId, TestUserAttributes> userAttributsMap;
+
+        @PostConstruct
+        void init() {
+            TestUserAttributes user1 = new TestUserAttributes(new AuthUserId(1), "member", 20);
+            TestUserAttributes user2 = new TestUserAttributes(new AuthUserId(2), "member", 30);
+            userAttributsMap = Map.of(
+                    user1.authUserId(), user1,
+                    user2.authUserId(), user2);
+        }
+
+        @Override
+        public TestUserAttributes provide(AuthUserId id) {
+            return userAttributsMap.get(id);
+        }
     }
 }

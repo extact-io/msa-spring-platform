@@ -7,7 +7,6 @@ import io.extact.msa.spring.platform.core.auth.user.UserAttributes;
 
 public record RmsUserAttribute(
         AuthUserId authUserId,
-        String loginId,
-        String userName,
-        String phoneNumber) implements UserAttributes, Serializable {
+        String fullName,
+        String tel) implements UserAttributes, Serializable {
 }

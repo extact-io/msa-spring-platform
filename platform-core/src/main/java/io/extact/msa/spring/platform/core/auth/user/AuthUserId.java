@@ -1,34 +1,29 @@
 package io.extact.msa.spring.platform.core.auth.user;
 
-
-public class AuthUserId {
+public record AuthUserId(int value) {
 
     public static final AuthUserId ANONYMOUS_ID = new AuthUserId(-1);
-    private final int userId;
-
-    public AuthUserId(int userId) {
-        this.userId = userId;
-    }
 
     public AuthUserId(String userId) {
+        this(parse(userId));
+    }
+
+    private static int parse(String userId) {
         try {
-            this.userId = Integer.parseInt(userId);
+            return Integer.parseInt(userId);
         } catch (NumberFormatException e) {
             throw new InvalidUserIdException(e.getMessage(), e);
         }
     }
 
     public boolean isAnonymousId() {
-        return userId == ANONYMOUS_ID.value();
-    }
-
-    public int value() {
-        return userId;
+        return value == ANONYMOUS_ID.value();
     }
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName()
-                + (this.userId != ANONYMOUS_ID.value() ? "(userId=" + this.userId + ")" : "(Anonymous)");
+        return isAnonymousId()
+                ? getClass().getSimpleName() + "(Anonymous)"
+                : getClass().getSimpleName() + "(userId=" + value + ")";
     }
 }

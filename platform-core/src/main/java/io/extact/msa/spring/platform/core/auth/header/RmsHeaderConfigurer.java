@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class RmsHeaderConfigurer<H extends HttpSecurityBuilder<H>>
         extends AbstractHttpConfigurer<HttpBasicConfigurer<H>, H> {
 
-    private final UserAttributesProvider<UserAttributes> attributesProvider;
+    private final UserAttributesProvider<? extends UserAttributes> attributesProvider;
 
     private Optional<SecurityContextHolderStrategy> securityContextHolderStrategy = Optional.empty();
     private Optional<AuthenticationEntryPoint> authenticationEntryPoint = Optional.empty();

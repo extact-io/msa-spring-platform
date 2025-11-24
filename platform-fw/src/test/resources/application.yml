@@ -21,17 +21,6 @@ rms:
   log:
     server:
       enable: false
-  datasource:
-    fw:
-      generate-unique-name: false
-      name: framework-datasource
-      hikari:
-        maximum-pool-size: 10
-    applicaiton: # JPAの設定はspring.jpa.*をもとに行われる
-      generate-unique-name: false
-      name: applicaiton-datasource
-      hikari:
-        maximum-pool-size: 10
   debug:
     configdump:
       enable: false # change to true in the test class

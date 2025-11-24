@@ -25,7 +25,7 @@ public class RmsHeaderAuthConfig {
     SecurityFilterChain headerAuthFilterChain1(
             HttpSecurity http,
             AuthorizeHttpRequestCustomizer requestCustomizer,
-            UserAttributesProvider<UserAttributes> attributesProvider,
+            UserAttributesProvider<? extends UserAttributes> attributesProvider, // 利用側でBean登録すること
             AnonymousAuthenticationFilter anonymousFilter) throws Exception {
 
         return http
@@ -47,7 +47,7 @@ public class RmsHeaderAuthConfig {
     SecurityFilterChain withQualifireHeaderAuthFilterChain(
             HttpSecurity http,
             @RmsHeaderAuth AuthorizeRequestConfigure requestConfigure,
-            UserAttributesProvider<UserAttributes> attributesProvider,
+            UserAttributesProvider<? extends UserAttributes> attributesProvider, // 利用側でBean登録すること
             AnonymousAuthenticationFilter anonymousFilter) throws Exception {
 
         return requestConfigure

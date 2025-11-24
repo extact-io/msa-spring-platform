@@ -57,6 +57,7 @@ import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseTyp
 import io.extact.msa.spring.platform.fw.exception.RmsSystemException;
 import io.extact.msa.spring.platform.fw.exception.message.ValidationErrorMessage;
 import io.extact.msa.spring.platform.fw.exception.message.ValidationErrorMessage.MessageItem;
+import io.extact.msa.spring.platform.fw.feature.auth.FrameworkDataSourceConfig;
 import io.extact.msa.spring.platform.fw.feature.exception.RmsRequestCheckException;
 import io.extact.msa.spring.platform.fw.feature.exception.RmsServiceUnavailableException;
 import io.extact.msa.spring.platform.fw.feature.exception.RmsValidationException;
@@ -87,6 +88,7 @@ class ExceptionErrorHandlerIntegrationTest {
     @Import({
             RestControllerConfig.class,
             ValidatorConfig.class,
+            FrameworkDataSourceConfig.class,
             JwtEncodeConfig.class,
             RmsJwtAuthConfig.class })
     static class TestConfig {
@@ -515,7 +517,7 @@ class ExceptionErrorHandlerIntegrationTest {
 
         @GetExchange("/occurServiceUnavailableException")
         void occurServiceUnavailableException();
-        
+
         @GetExchange("/occurRmsRequestCheckException")
         void occurRequestCheckException();
 

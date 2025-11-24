@@ -25,6 +25,8 @@ import org.springframework.security.web.authentication.AnonymousAuthenticationFi
 import io.extact.msa.spring.platform.core.auth.anonymous.RmsAnonymousAuthConfig;
 import io.extact.msa.spring.platform.core.auth.configure.AuthorizeHttpRequestCustomizer;
 import io.extact.msa.spring.platform.core.auth.configure.AuthorizeRequestConfigure;
+import io.extact.msa.spring.platform.core.auth.user.UserAttributes;
+import io.extact.msa.spring.platform.core.auth.user.UserAttributesProvider;
 import io.extact.msa.spring.platform.core.jwt.decode.JwtDecodeConfig;
 
 @Configuration(proxyBeanMethods = false)
@@ -35,9 +37,11 @@ public class RmsJwtAuthConfig {
 
     @Bean
     @ConditionalOnProperty(name = "rms.auth.multi", havingValue = "false", matchIfMissing = true)
-    SecurityFilterChain securityFilterChain(HttpSecurity http, AuthorizeHttpRequestCustomizer requestCustomizer,
-            Converter<Jwt, AbstractAuthenticationToken> jwtConverter, AnonymousAuthenticationFilter anonymousFilter)
-            throws Exception {
+    SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            AuthorizeHttpRequestCustomizer requestCustomizer,
+            Converter<Jwt, AbstractAuthenticationToken> jwtConverter,
+            AnonymousAuthenticationFilter anonymousFilter) throws Exception {
 
         return http
                 .authorizeHttpRequests(requestCustomizer)
@@ -58,10 +62,11 @@ public class RmsJwtAuthConfig {
     @Bean
     @ConditionalOnProperty(name = "rms.auth.multi", havingValue = "true")
     @Order(1) // @RmsHeaderAuthのHttpSecurityインスタンスも同時に使われる場合を想定して優先度を指定（Order未指定よる優先）
-    SecurityFilterChain withQualifireJwtAuthChain(HttpSecurity http,
+    SecurityFilterChain withQualifireJwtAuthChain(
+            HttpSecurity http,
             @RmsJwtAuth AuthorizeRequestConfigure requestConfigure,
-            Converter<Jwt, AbstractAuthenticationToken> jwtConverter, AnonymousAuthenticationFilter anonymousFilter)
-            throws Exception {
+            Converter<Jwt, AbstractAuthenticationToken> jwtConverter,
+            AnonymousAuthenticationFilter anonymousFilter) throws Exception {
 
         return requestConfigure
                 .applySecurityMatcher(http)
@@ -93,7 +98,10 @@ public class RmsJwtAuthConfig {
 
     @Bean
     @ConditionalOnMissingBean
-    Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter() {
-        return RmsJwtAuthConverter.builder().build();
+    Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter(
+            UserAttributesProvider<? extends UserAttributes> attributesProvider) { // 利用側でBean登録する
+        return RmsJwtAuthConverter.builder()
+                .userAttributesProvider(attributesProvider)
+                .build();
     }
 }

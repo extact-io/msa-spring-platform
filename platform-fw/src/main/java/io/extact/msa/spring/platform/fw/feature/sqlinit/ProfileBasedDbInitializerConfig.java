@@ -22,7 +22,7 @@ import org.springframework.util.StringUtils;
  * @see org.springframework.boot.autoconfigure.sql.init.DataSourceInitializationConfiguration
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty(prefix = "spring.sql.init", name = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "rms.persistence.sql.init", name = "enabled", matchIfMissing = true)
 @Import(DatabaseInitializationDependencyConfigurer.class)
 public class ProfileBasedDbInitializerConfig {
 

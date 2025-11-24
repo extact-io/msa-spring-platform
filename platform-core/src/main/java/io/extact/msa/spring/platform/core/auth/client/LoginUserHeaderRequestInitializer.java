@@ -16,8 +16,11 @@ public class LoginUserHeaderRequestInitializer implements ClientHttpRequestIniti
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (auth != null && auth.isAuthenticated() && auth instanceof RmsAuthentication rmsAuth) {
-            request.getHeaders().add("rms-userId", String.valueOf(rmsAuth.getLoginUser().getUserId()));
+        if (auth != null
+                && auth.isAuthenticated()
+                && auth instanceof RmsAuthentication rmsAuth
+                && !rmsAuth.isAnonymous()) {
+            request.getHeaders().add("rms-userId", String.valueOf(rmsAuth.getLoginUser().getUserId().value()));
             request.getHeaders().add("rms-roles", rmsAuth.getLoginUser().getGroupsByStringValue());
         } else {
             log.warn("unknown Authentication. auth -> {}", auth);

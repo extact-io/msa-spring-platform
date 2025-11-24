@@ -15,11 +15,10 @@ public class RdbUserAttributesProvider implements UserAttributesProvider<RmsUser
     private static final String SELECT_SQL = """
             select
                   user_id
-                , login_id
-                , user_name
-                , phone_number
+                , full_name
+                , tel
             from
-                user_attribute
+                user_attributes
             where
                 user_id = ?
             """;
@@ -31,9 +30,8 @@ public class RdbUserAttributesProvider implements UserAttributesProvider<RmsUser
 
     private RowMapper<RmsUserAttribute> rowMapper() {
         return (rs, _) -> new RmsUserAttribute(
-                new AuthUserId(rs.getString("auth_user_id")),
-                rs.getString("login_id"),
-                rs.getString("user_name"),
-                rs.getString("phone_number"));
+                new AuthUserId(rs.getString("user_id")),
+                rs.getString("full_name"),
+                rs.getString("tel"));
     }
 }
