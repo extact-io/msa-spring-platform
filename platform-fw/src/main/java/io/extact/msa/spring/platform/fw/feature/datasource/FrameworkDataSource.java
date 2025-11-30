@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.feature.auth;
+package io.extact.msa.spring.platform.fw.feature.datasource;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

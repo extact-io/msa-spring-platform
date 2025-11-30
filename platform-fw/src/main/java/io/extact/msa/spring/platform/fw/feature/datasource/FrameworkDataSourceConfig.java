@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.feature.auth;
+package io.extact.msa.spring.platform.fw.feature.datasource;
 
 import javax.sql.DataSource;
 
@@ -45,11 +45,6 @@ public class FrameworkDataSourceConfig {
         return new JdbcTemplate(dataSource);
     }
 
-    @Bean
-    RdbUserAttributesProvider rdbUserAttributesProvider(JdbcTemplate jdbcTemplate) {
-        return new RdbUserAttributesProvider(jdbcTemplate);
-    }
-
     // 機能はspring.sql.init.*互換
     @Bean
     @FrameworkDataSource
@@ -76,6 +71,4 @@ public class FrameworkDataSourceConfig {
         }
         return dataSource;
     }
-
-
 }

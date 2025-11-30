@@ -44,9 +44,8 @@ import io.extact.msa.spring.platform.core.auth.testapp.server1.Server2Api;
 import io.extact.msa.spring.platform.core.auth.testapp.server2.Server2Assert;
 import io.extact.msa.spring.platform.core.auth.testapp.server2.Server2Controller;
 import io.extact.msa.spring.platform.core.auth.user.AuthUserId;
-import io.extact.msa.spring.platform.core.auth.user.RmsAuthentication;
-import io.extact.msa.spring.platform.core.auth.user.UserAttributes;
-import io.extact.msa.spring.platform.core.auth.user.UserAttributesProvider;
+import io.extact.msa.spring.platform.core.auth.user.LoginUserAttributes;
+import io.extact.msa.spring.platform.core.auth.user.LoginUserAttributesProvider;
 import io.extact.msa.spring.platform.core.condition.EnableAutoConfigurationWithoutJpa;
 import io.extact.msa.spring.platform.core.jwt.encode.JwtEncodeConfig;
 import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
@@ -313,10 +312,10 @@ public class AuthIntegratinTest {
     static record TestUserAttributes(
             AuthUserId authUserId,
             String name,
-            int age) implements UserAttributes {
+            int age) implements LoginUserAttributes {
     }
 
-    static class TestUserAttributesProvider implements UserAttributesProvider<TestUserAttributes> {
+    static class TestUserAttributesProvider implements LoginUserAttributesProvider<TestUserAttributes> {
 
         Map<AuthUserId, TestUserAttributes> userAttributsMap;
 

@@ -13,8 +13,8 @@ import org.springframework.util.StringUtils;
 
 import io.extact.msa.spring.platform.core.auth.user.AuthUserId;
 import io.extact.msa.spring.platform.core.auth.user.LoginUser;
-import io.extact.msa.spring.platform.core.auth.user.UserAttributes;
-import io.extact.msa.spring.platform.core.auth.user.UserAttributesProvider;
+import io.extact.msa.spring.platform.core.auth.user.LoginUserAttributes;
+import io.extact.msa.spring.platform.core.auth.user.LoginUserAttributesProvider;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -24,7 +24,7 @@ public class RmsJwtAuthConverter implements Converter<Jwt, AbstractAuthenticatio
     private static final String AUTHORITY_PREFIX = "ROLE_";
 
     private final Converter<Jwt, Collection<GrantedAuthority>> authoritiesConverter;
-    private final UserAttributesProvider<? extends UserAttributes> attributesProvider;
+    private final LoginUserAttributesProvider<? extends LoginUserAttributes> attributesProvider;
 
     @Override
     public AbstractAuthenticationToken convert(Jwt jwt) {
@@ -38,7 +38,7 @@ public class RmsJwtAuthConverter implements Converter<Jwt, AbstractAuthenticatio
                 .collect(Collectors.toSet());
 
         AuthUserId userId = new AuthUserId(jwt.getSubject());
-        UserAttributes attributes = attributesProvider.provide(userId);
+        LoginUserAttributes attributes = attributesProvider.provide(userId);
         LoginUser loginUser = LoginUser.of(userId, groups, attributes);
 
         return new RmsJwtAuthToken(jwt, loginUser, authorities);
@@ -54,7 +54,7 @@ public class RmsJwtAuthConverter implements Converter<Jwt, AbstractAuthenticatio
         private String authoritiesClaimName;
         private String authorityPrefix;
         private JwtGrantedAuthoritiesConverter authoritiesConverter;
-        private UserAttributesProvider<? extends UserAttributes> attributesProvider;
+        private LoginUserAttributesProvider<? extends LoginUserAttributes> attributesProvider;
 
         RmsJwtAuthenticationConverterBuilder() {
             defaultSetting();
@@ -81,7 +81,7 @@ public class RmsJwtAuthConverter implements Converter<Jwt, AbstractAuthenticatio
             return this;
         }
 
-        public RmsJwtAuthenticationConverterBuilder userAttributesProvider(UserAttributesProvider<? extends UserAttributes> provider) {
+        public RmsJwtAuthenticationConverterBuilder userAttributesProvider(LoginUserAttributesProvider<? extends LoginUserAttributes> provider) {
             this.attributesProvider = provider;
             return this;
         }

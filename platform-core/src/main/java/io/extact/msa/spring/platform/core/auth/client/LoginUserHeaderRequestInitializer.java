@@ -5,7 +5,7 @@ import org.springframework.http.client.ClientHttpRequestInitializer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import io.extact.msa.spring.platform.core.auth.user.RmsAuthentication;
+import io.extact.msa.spring.platform.core.auth.RmsAuthentication;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

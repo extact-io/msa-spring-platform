@@ -25,8 +25,8 @@ import org.springframework.security.web.authentication.AnonymousAuthenticationFi
 import io.extact.msa.spring.platform.core.auth.anonymous.RmsAnonymousAuthConfig;
 import io.extact.msa.spring.platform.core.auth.configure.AuthorizeHttpRequestCustomizer;
 import io.extact.msa.spring.platform.core.auth.configure.AuthorizeRequestConfigure;
-import io.extact.msa.spring.platform.core.auth.user.UserAttributes;
-import io.extact.msa.spring.platform.core.auth.user.UserAttributesProvider;
+import io.extact.msa.spring.platform.core.auth.user.LoginUserAttributes;
+import io.extact.msa.spring.platform.core.auth.user.LoginUserAttributesProvider;
 import io.extact.msa.spring.platform.core.jwt.decode.JwtDecodeConfig;
 
 @Configuration(proxyBeanMethods = false)
@@ -99,7 +99,7 @@ public class RmsJwtAuthConfig {
     @Bean
     @ConditionalOnMissingBean
     Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter(
-            UserAttributesProvider<? extends UserAttributes> attributesProvider) { // 利用側でBean登録する
+            LoginUserAttributesProvider<? extends LoginUserAttributes> attributesProvider) { // 利用側でBean登録する
         return RmsJwtAuthConverter.builder()
                 .userAttributesProvider(attributesProvider)
                 .build();

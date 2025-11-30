@@ -13,8 +13,8 @@ import org.springframework.security.web.authentication.AnonymousAuthenticationFi
 import io.extact.msa.spring.platform.core.auth.anonymous.RmsAnonymousAuthConfig;
 import io.extact.msa.spring.platform.core.auth.configure.AuthorizeHttpRequestCustomizer;
 import io.extact.msa.spring.platform.core.auth.configure.AuthorizeRequestConfigure;
-import io.extact.msa.spring.platform.core.auth.user.UserAttributes;
-import io.extact.msa.spring.platform.core.auth.user.UserAttributesProvider;
+import io.extact.msa.spring.platform.core.auth.user.LoginUserAttributes;
+import io.extact.msa.spring.platform.core.auth.user.LoginUserAttributesProvider;
 
 @Configuration(proxyBeanMethods = false)
 @Import(RmsAnonymousAuthConfig.class)
@@ -25,7 +25,7 @@ public class RmsHeaderAuthConfig {
     SecurityFilterChain headerAuthFilterChain1(
             HttpSecurity http,
             AuthorizeHttpRequestCustomizer requestCustomizer,
-            UserAttributesProvider<? extends UserAttributes> attributesProvider, // 利用側でBean登録すること
+            LoginUserAttributesProvider<? extends LoginUserAttributes> attributesProvider, // 利用側でBean登録すること
             AnonymousAuthenticationFilter anonymousFilter) throws Exception {
 
         return http
@@ -47,7 +47,7 @@ public class RmsHeaderAuthConfig {
     SecurityFilterChain withQualifireHeaderAuthFilterChain(
             HttpSecurity http,
             @RmsHeaderAuth AuthorizeRequestConfigure requestConfigure,
-            UserAttributesProvider<? extends UserAttributes> attributesProvider, // 利用側でBean登録すること
+            LoginUserAttributesProvider<? extends LoginUserAttributes> attributesProvider, // 利用側でBean登録すること
             AnonymousAuthenticationFilter anonymousFilter) throws Exception {
 
         return requestConfigure

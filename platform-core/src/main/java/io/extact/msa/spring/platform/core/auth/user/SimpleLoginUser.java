@@ -12,11 +12,11 @@ public class SimpleLoginUser implements LoginUser {
 
     private final AuthUserId userId;
     private final Set<String> groups;
-    private final UserAttributes attributes;
+    private final LoginUserAttributes attributes;
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends UserAttributes> T getAttributes(Class<T> clazz) {
+    public <T extends LoginUserAttributes> T getAttributes(Class<T> clazz) {
         return (T) attributes;
     }
 

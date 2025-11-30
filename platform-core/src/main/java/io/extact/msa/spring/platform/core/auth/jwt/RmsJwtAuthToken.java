@@ -7,8 +7,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.AbstractOAuth2TokenAuthenticationToken;
 
+import io.extact.msa.spring.platform.core.auth.RmsAuthentication;
 import io.extact.msa.spring.platform.core.auth.user.LoginUser;
-import io.extact.msa.spring.platform.core.auth.user.RmsAuthentication;
 
 public class RmsJwtAuthToken extends AbstractOAuth2TokenAuthenticationToken<Jwt> implements RmsAuthentication {
 

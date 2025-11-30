@@ -14,15 +14,15 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.util.Assert;
 
-import io.extact.msa.spring.platform.core.auth.user.UserAttributes;
-import io.extact.msa.spring.platform.core.auth.user.UserAttributesProvider;
+import io.extact.msa.spring.platform.core.auth.user.LoginUserAttributes;
+import io.extact.msa.spring.platform.core.auth.user.LoginUserAttributesProvider;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class RmsHeaderConfigurer<H extends HttpSecurityBuilder<H>>
         extends AbstractHttpConfigurer<HttpBasicConfigurer<H>, H> {
 
-    private final UserAttributesProvider<? extends UserAttributes> attributesProvider;
+    private final LoginUserAttributesProvider<? extends LoginUserAttributes> attributesProvider;
 
     private Optional<SecurityContextHolderStrategy> securityContextHolderStrategy = Optional.empty();
     private Optional<AuthenticationEntryPoint> authenticationEntryPoint = Optional.empty();

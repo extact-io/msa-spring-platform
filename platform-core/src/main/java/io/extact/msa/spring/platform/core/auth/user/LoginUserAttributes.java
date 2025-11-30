@@ -1,5 +1,8 @@
 package io.extact.msa.spring.platform.core.auth.user;
 
-public interface UserAttributes {
+/**
+ * ログインユーザ属性。
+ */
+public interface LoginUserAttributes {
     AuthUserId authUserId();
 }

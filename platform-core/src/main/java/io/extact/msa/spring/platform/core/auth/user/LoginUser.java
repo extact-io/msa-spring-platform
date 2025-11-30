@@ -8,7 +8,7 @@ import org.springframework.security.core.AuthenticatedPrincipal;
 
 public interface LoginUser extends AuthenticatedPrincipal {
 
-    public static final UserAttributes ANONYMOUS_ATTRIBUTES = new UserAttributes() {
+    public static final LoginUserAttributes ANONYMOUS_ATTRIBUTES = new LoginUserAttributes() {
         @Override
         public AuthUserId authUserId() {
             return AuthUserId.ANONYMOUS_ID;
@@ -22,7 +22,7 @@ public interface LoginUser extends AuthenticatedPrincipal {
 
     Set<String> getGroups();
 
-    <T extends UserAttributes> T getAttributes(Class<T> clazz);
+    <T extends LoginUserAttributes> T getAttributes(Class<T> clazz);
 
     default boolean isAnonymousUser() {
         return this == ANONYMOUS_USER;
@@ -40,7 +40,7 @@ public interface LoginUser extends AuthenticatedPrincipal {
         return new SimpleLoginUser(userId, roles, null);
     }
 
-    static LoginUser of(AuthUserId userId, Set<String> roles, UserAttributes attributes) {
+    static LoginUser of(AuthUserId userId, Set<String> roles, LoginUserAttributes attributes) {
         return new SimpleLoginUser(userId, roles, attributes);
     }
 }

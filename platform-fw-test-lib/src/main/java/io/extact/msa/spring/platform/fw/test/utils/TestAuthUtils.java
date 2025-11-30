@@ -6,8 +6,8 @@ import java.util.stream.Stream;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import io.extact.msa.spring.platform.core.auth.RmsAuthentication;
 import io.extact.msa.spring.platform.core.auth.client.RmsClientAuthenticationToken;
-import io.extact.msa.spring.platform.core.auth.user.RmsAuthentication;
 import io.extact.msa.spring.platform.core.jwt.encode.JsonWebTokenGenerator;
 import io.extact.msa.spring.platform.core.jwt.encode.UserClaims;
 

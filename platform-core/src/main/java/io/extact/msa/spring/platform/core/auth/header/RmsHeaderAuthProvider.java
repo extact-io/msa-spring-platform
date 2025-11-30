@@ -12,14 +12,14 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import io.extact.msa.spring.platform.core.auth.user.LoginUser;
-import io.extact.msa.spring.platform.core.auth.user.UserAttributes;
-import io.extact.msa.spring.platform.core.auth.user.UserAttributesProvider;
+import io.extact.msa.spring.platform.core.auth.user.LoginUserAttributes;
+import io.extact.msa.spring.platform.core.auth.user.LoginUserAttributesProvider;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class RmsHeaderAuthProvider implements AuthenticationProvider {
 
-    private final UserAttributesProvider<? extends UserAttributes> attributesProvider;
+    private final LoginUserAttributesProvider<? extends LoginUserAttributes> attributesProvider;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -33,7 +33,7 @@ public class RmsHeaderAuthProvider implements AuthenticationProvider {
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                 .toList();
 
-        UserAttributes attributes = attributesProvider.provide(request.getAuthUserId());
+        LoginUserAttributes attributes = attributesProvider.provide(request.getAuthUserId());
 
         LoginUser loginUser = LoginUser.of(request.getAuthUserId(), roleSet, attributes);
 

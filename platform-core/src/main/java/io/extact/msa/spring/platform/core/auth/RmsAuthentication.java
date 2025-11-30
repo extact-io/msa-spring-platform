@@ -1,6 +1,8 @@
-package io.extact.msa.spring.platform.core.auth.user;
+package io.extact.msa.spring.platform.core.auth;
 
 import org.springframework.security.core.Authentication;
+
+import io.extact.msa.spring.platform.core.auth.user.LoginUser;
 
 public interface RmsAuthentication extends Authentication {
 

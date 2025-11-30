@@ -5,8 +5,8 @@ import java.util.Collection;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
+import io.extact.msa.spring.platform.core.auth.RmsAuthentication;
 import io.extact.msa.spring.platform.core.auth.user.LoginUser;
-import io.extact.msa.spring.platform.core.auth.user.RmsAuthentication;
 import lombok.ToString;
 
 @ToString
