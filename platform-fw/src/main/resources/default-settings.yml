@@ -93,7 +93,6 @@ rms:
   login-user-attributes:
     cache:
       enabled: true
-      cache-name: loginUserAttributes
   rest:
     controller:
       format:

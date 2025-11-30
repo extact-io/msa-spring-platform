@@ -18,7 +18,7 @@ public class RdbAttributesProvider implements LoginUserAttributesProvider<RmsLog
             """;
 
     @Override
-    @Cacheable(cacheNames = "${rms.login-user-attributes.cache-name}")
+    @Cacheable(cacheNames = LoginUserAttributesCacheKeys.CACHE_NAME)
     public RmsLoginUserAttributes provide(AuthUserId id) {
         return template.query(SELECT_SQL, rowMapper(), id.value())
                 .stream()

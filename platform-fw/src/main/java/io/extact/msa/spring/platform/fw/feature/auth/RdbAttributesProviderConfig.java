@@ -2,9 +2,9 @@ package io.extact.msa.spring.platform.fw.feature.auth;
 
 import java.time.Duration;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -30,14 +30,14 @@ public class RdbAttributesProviderConfig {
 
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnProperty(name = "rms.login-user-attributes.cache.enabled", havingValue = "true")
+    @EnableCaching
     static class WithRedisCacheConfig {
-
-        @Value("${login-user-attributes.cache.cache-name}")
-        private String cacheName;
 
         @Bean
         RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer() {
-            return builder -> builder.withCacheConfiguration(cacheName, buildRedisCacheConfiguration());
+            return builder -> builder.withCacheConfiguration(
+                    LoginUserAttributesCacheKeys.CACHE_NAME,
+                    buildRedisCacheConfiguration());
         }
 
         private RedisCacheConfiguration buildRedisCacheConfiguration() {
@@ -47,7 +47,7 @@ public class RdbAttributesProviderConfig {
             registry.addConverter(new CacheKeyConverter());
 
             return config
-                    .computePrefixWith(cacheName -> cacheName + ":")
+                    .computePrefixWith(LoginUserAttributesCacheKeys.CACHE_KEY_PREFIX)
                     .withConversionService((ConversionService) registry)
                     .serializeValuesWith(SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
                     .entryTtl(Duration.ofMinutes(10));
