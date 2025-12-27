@@ -25,8 +25,7 @@ class CacheIntegrationTest {
 
     @Configuration(proxyBeanMethods = false)
     @EnableConfigurationProperties
-    @Import({ RdbAttributesProviderConfig.class,
-            RedisAttributesProviderConfig.class })
+    @Import(RdbAttributesProviderConfig.class)
     @EnableAutoConfigurationWithoutJpa
     static class TestConfig {
         @Bean
@@ -52,6 +51,8 @@ class CacheIntegrationTest {
                 "ID-2の拡張属性2",
                 "ID-2の拡張属性3");
         assertThat(attributes).isEqualTo(expected);
+
+        attributes = provider.provide(userId);
     }
 
     @Test

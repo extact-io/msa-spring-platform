@@ -28,6 +28,11 @@ public class RedisAttributesProviderConfig {
         return template;
     }
 
+    @Bean
+    RedisAttributesProvider redisAttributesProvider(RedisTemplate<AuthUserId, RmsLoginUserAttributes> redisTemplate) {
+        return new RedisAttributesProvider(redisTemplate);
+    }
+
     static class AuthUserIdCacheKeySerializer implements RedisSerializer<AuthUserId> {
 
         private final Charset charset;

@@ -46,6 +46,8 @@ public class RdbAttributesProviderConfig {
             ConverterRegistry registry = (ConverterRegistry) config.getConversionService();
             registry.addConverter(new CacheKeyConverter());
 
+            GenericJackson2JsonRedisSerializer serializer = RedisJsonSerializerBuilder.defaultSettings()
+
             return config
                     .computePrefixWith(LoginUserAttributesCacheKeys.CACHE_KEY_PREFIX)
                     .withConversionService((ConversionService) registry)
