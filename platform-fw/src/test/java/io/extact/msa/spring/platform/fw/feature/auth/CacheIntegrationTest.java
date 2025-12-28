@@ -30,8 +30,9 @@ class CacheIntegrationTest {
     static class TestConfig {
         @Bean
         @ServiceConnection
+        @SuppressWarnings("resource")
         RedisContainer redisContainer() {
-            return new RedisContainer("redis:6.2.6");
+            return new RedisContainer("redis:6.2.6").withReuse(false);
         }
     }
 

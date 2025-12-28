@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +16,7 @@ import io.extact.msa.spring.platform.fw.stub.apps.person.domain.PersonRepository
 import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.Person;
 import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.Person.PersonCreatable;
 import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.PersonId;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * PersonリポジトリのFileとJPA実装に共通なテストクラス。
@@ -29,6 +32,8 @@ import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.PersonId;
  */
 @Transactional
 @Rollback
+@Slf4j
+@Execution(ExecutionMode.SAME_THREAD)
 public abstract class AbstractPersonRepositoryTest {
 
     protected static final PersonCreatable testCreator = new PersonCreatable() {};
@@ -37,6 +42,7 @@ public abstract class AbstractPersonRepositoryTest {
 
     @Test
     void testGet() {
+log.info("★：testGet");
 
         Person expected = testCreator.newInstance(new PersonId(1), "name1");
         Optional<Person> actual = repository().find(new PersonId(1));
@@ -50,12 +56,14 @@ public abstract class AbstractPersonRepositoryTest {
 
     @Test
     void testGetAll() {
+        log.info("★：testGetAll");
         List<Person> actual = repository().findAll();
         assertThat(actual).hasSize(4);
     }
 
     @Test
     void testUpdate() {
+        log.info("★：testUpdate");
         Person expected = testCreator.newInstance(new PersonId(4), "UP");
         repository().update(testCreator.newInstance(new PersonId(4), "UP"));
         assertThat(repository().find(new PersonId(4)).get()).isEqualTo(expected);
@@ -63,6 +71,7 @@ public abstract class AbstractPersonRepositoryTest {
 
     @Test
     void testUpdateOnDuplicate() {
+        log.info("★：testUpdateOnDuplicate");
         // 重複チェックは上位で行うので正常に処理できることを確認
         assertThatCode(() -> repository().update(testCreator.newInstance(new PersonId(2), "name3")))
                 .doesNotThrowAnyException();
@@ -70,12 +79,14 @@ public abstract class AbstractPersonRepositoryTest {
 
     @Test
     void testUpdateOnNotFound() {
+        log.info("★：testUpdateOnNotFound");
         Throwable thrown = catchThrowable(() -> repository().update(testCreator.newInstance(new PersonId(999), "UP")));
         assertThat(thrown).isInstanceOf(RmsPersistenceException.class).hasMessageContaining("id:" + 999);
     }
 
     @Test
     void testAdd() {
+        log.info("★：testAdd");
         Person expected = testCreator.newInstance(new PersonId(5), "ADD");
         repository().add(testCreator.newInstance(new PersonId(5), "ADD"));
         assertThat(repository().find(new PersonId(5)).get()).isEqualTo(expected);
@@ -83,6 +94,7 @@ public abstract class AbstractPersonRepositoryTest {
 
     @Test
     void testAddOnDuplicateError() {
+        log.info("★：testAddOnDuplicateError");
         // 重複チェックは上位で行うので正常に処理できることを確認
         assertThatCode(() -> repository().add(testCreator.newInstance(new PersonId(5), "name3")))
                 .doesNotThrowAnyException();
@@ -90,6 +102,7 @@ public abstract class AbstractPersonRepositoryTest {
 
     @Test
     void testDelete() {
+        log.info("★：testDelete");
         Person deleted = testCreator.newInstance(new PersonId(1), "dummy");
         repository().delete(deleted);
         assertThat(repository().find(new PersonId(1))).isNotPresent();
@@ -97,6 +110,7 @@ public abstract class AbstractPersonRepositoryTest {
 
     @Test
     void testDeleteOnNotFound() {
+        log.info("★：testDeleteOnNotFound");
         Throwable thrown = catchThrowable(
                 () -> repository().delete(testCreator.newInstance(new PersonId(999), "dummy")));
         assertThat(thrown).isInstanceOf(RmsPersistenceException.class).hasMessageContaining("id:" + 999);

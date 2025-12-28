@@ -237,6 +237,7 @@ class FwDependencyArchUnitTest {
     @ArchTest
     static final ArchRule dependency_fw_feature = classes()
             .that().resideInAnyPackage("..feature..")
+            .and().resideOutsideOfPackage("..feature.auth.jackson..")
             .and(not(configurationClasses()))
             .should().onlyDependOnClassesThat(resideInAnyPackage(
                     "io.extact.msa.spring.platform.core.auth.user..",

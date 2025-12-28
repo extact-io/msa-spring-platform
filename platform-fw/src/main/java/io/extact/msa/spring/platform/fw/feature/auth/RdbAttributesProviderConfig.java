@@ -12,18 +12,18 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import io.extact.msa.spring.platform.core.auth.user.AuthUserId;
+import io.extact.msa.spring.platform.fw.feature.auth.jackson.RmsLoginUserAttributesSerializer;
 import io.extact.msa.spring.platform.fw.feature.datasource.FrameworkDataSourceConfig;
 
 @Configuration(proxyBeanMethods = false)
 @Import(FrameworkDataSourceConfig.class)
 public class RdbAttributesProviderConfig {
 
-    @Bean
+    @Bean // JdbcTemplate from FrameworkDataSourceConfig
     RdbAttributesProvider rdbLoginUserAttributesProvider(JdbcTemplate jdbcTemplate) {
         return new RdbAttributesProvider(jdbcTemplate);
     }
@@ -46,12 +46,10 @@ public class RdbAttributesProviderConfig {
             ConverterRegistry registry = (ConverterRegistry) config.getConversionService();
             registry.addConverter(new CacheKeyConverter());
 
-            GenericJackson2JsonRedisSerializer serializer = RedisJsonSerializerBuilder.defaultSettings()
-
             return config
                     .computePrefixWith(LoginUserAttributesCacheKeys.CACHE_KEY_PREFIX)
                     .withConversionService((ConversionService) registry)
-                    .serializeValuesWith(SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
+                    .serializeValuesWith(SerializationPair.fromSerializer(new RmsLoginUserAttributesSerializer()))
                     .entryTtl(Duration.ofMinutes(10));
         }
     }

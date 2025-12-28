@@ -48,6 +48,9 @@ import io.extact.msa.spring.platform.core.auth.client.BearerTokenRequestInitiali
 import io.extact.msa.spring.platform.core.auth.client.RmsClientAuthenticationToken;
 import io.extact.msa.spring.platform.core.auth.configure.AuthorizeHttpRequestCustomizer;
 import io.extact.msa.spring.platform.core.auth.jwt.RmsJwtAuthConfig;
+import io.extact.msa.spring.platform.core.auth.user.AuthUserId;
+import io.extact.msa.spring.platform.core.auth.user.LoginUserAttributes;
+import io.extact.msa.spring.platform.core.auth.user.LoginUserAttributesProvider;
 import io.extact.msa.spring.platform.core.condition.EnableAutoConfigurationWithoutJpa;
 import io.extact.msa.spring.platform.core.jwt.encode.GenerateToken;
 import io.extact.msa.spring.platform.core.jwt.encode.JwtEncodeConfig;
@@ -118,6 +121,12 @@ class ExceptionErrorHandlerIntegrationTest {
             return (AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry configurer) -> configurer
                     .requestMatchers("/auth").hasRole("admin")
                     .anyRequest().permitAll();
+        }
+
+        // ---------- for jwtAuthenticationConverter
+        @Bean
+        NopUserAttributesProvider nopUserAttributesProvider() {
+            return new NopUserAttributesProvider();
         }
     }
 
@@ -655,4 +664,14 @@ class ExceptionErrorHandlerIntegrationTest {
         }
     }
 
+    static record SimpleUserAttributes(
+            AuthUserId authUserId) implements LoginUserAttributes {
+    }
+
+    static class NopUserAttributesProvider implements LoginUserAttributesProvider<SimpleUserAttributes> {
+        @Override
+        public SimpleUserAttributes provide(AuthUserId id) {
+            return new SimpleUserAttributes(id);
+        }
+    }
 }

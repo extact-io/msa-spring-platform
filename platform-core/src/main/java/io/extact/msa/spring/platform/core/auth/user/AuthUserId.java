@@ -16,13 +16,13 @@ public record AuthUserId(int value) {
         }
     }
 
-    public boolean isAnonymousId() {
+    public boolean isAnonymous() {
         return value == ANONYMOUS_ID.value();
     }
 
     @Override
     public String toString() {
-        return isAnonymousId()
+        return isAnonymous()
                 ? getClass().getSimpleName() + "(Anonymous)"
                 : getClass().getSimpleName() + "(userId=" + value + ")";
     }

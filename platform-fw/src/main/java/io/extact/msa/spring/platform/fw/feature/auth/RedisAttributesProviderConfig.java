@@ -7,11 +7,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.SerializationException;
 
 import io.extact.msa.spring.platform.core.auth.user.AuthUserId;
+import io.extact.msa.spring.platform.fw.feature.auth.jackson.RmsLoginUserAttributesSerializer;
 
 @Configuration(proxyBeanMethods = false)
 public class RedisAttributesProviderConfig {
@@ -23,7 +23,7 @@ public class RedisAttributesProviderConfig {
         template.setConnectionFactory(connectionFactory);
 
         template.setKeySerializer(new AuthUserIdCacheKeySerializer());
-        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        template.setValueSerializer(new RmsLoginUserAttributesSerializer());
 
         return template;
     }

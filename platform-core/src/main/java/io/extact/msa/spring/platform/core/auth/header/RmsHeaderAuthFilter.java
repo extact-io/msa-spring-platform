@@ -90,7 +90,7 @@ public class RmsHeaderAuthFilter extends OncePerRequestFilter {
         }
 
         AuthUserId userId = new AuthUserId(headerUserId);
-        if (userId.isAnonymousId()) {
+        if (userId.isAnonymous()) {
             return null; // go to AnonymousAuthenticationFilter
         }
 
