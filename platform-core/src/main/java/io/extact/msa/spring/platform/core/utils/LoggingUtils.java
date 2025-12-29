@@ -23,5 +23,4 @@ public class LoggingUtils {
             loggingSystem.setLogLevel(loggerName, level);
         }
     }
-
 }

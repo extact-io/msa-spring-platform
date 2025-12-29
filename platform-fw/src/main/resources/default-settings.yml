@@ -93,6 +93,14 @@ rms:
   login-user-attributes:
     cache:
       enabled: true
+      type: caffeine
+      caffeine:
+        cache-null-values: true
+        spec: "maximumSize=100,expireAfterAccess=10m"
+      redis:
+        cache-null-values: true
+        enable-statistics: false
+        time-to-idle: 10m
   rest:
     controller:
       format:
