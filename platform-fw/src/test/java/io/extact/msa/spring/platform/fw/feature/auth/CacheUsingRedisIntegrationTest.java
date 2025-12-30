@@ -18,6 +18,8 @@ import com.redis.testcontainers.RedisContainer;
 import io.extact.msa.spring.platform.core.auth.user.AuthUserId;
 import io.extact.msa.spring.platform.core.condition.EnableAutoConfigurationWithoutJpa;
 
+
+// TODO:caffeineと同じように作ることろから
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 @TestPropertySource(properties = "rms.login-user-attributes.cache.enabled=true")
 class CacheUsingRedisIntegrationTest {

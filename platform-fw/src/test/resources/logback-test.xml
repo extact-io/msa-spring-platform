@@ -11,8 +11,7 @@
       <pattern>%date [%-5level] [%thread] [%logger{1}] - %message%n</pattern>
     </encoder>
   </appender>
-  <logger name="org.springframework.cache.interceptor" level="TRACE"/>
-  <root level="DEBUG">
+  <root level="INFO">
     <appender-ref ref="STDOUT" />
   </root>
 </configuration>

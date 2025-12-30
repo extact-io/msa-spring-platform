@@ -96,7 +96,7 @@ rms:
       type: caffeine
       caffeine:
         cache-null-values: true
-        spec: "maximumSize=100,expireAfterAccess=10m"
+        spec: "maximumSize=100,expireAfterAccess=1s"
       redis:
         cache-null-values: true
         enable-statistics: false
