@@ -14,7 +14,7 @@ import org.springframework.boot.test.system.CapturedOutput;
 
 import io.extact.msa.spring.platform.core.auth.user.AuthUserId;
 import io.extact.msa.spring.platform.core.auth.user.LoginUserAttributesProvider;
-import io.extact.msa.spring.test.spring.RestorableLoggingSilencer;
+import io.extact.msa.spring.test.spring.RestorableLoggingSuppressor;
 
 class AbstractCacheIntegrationTest {
 
@@ -26,16 +26,16 @@ class AbstractCacheIntegrationTest {
 
         @Autowired
         private LoginUserAttributesProvider<RmsLoginUserAttributes> provider;
-        private RestorableLoggingSilencer loggingSilencer;
+        private RestorableLoggingSuppressor loggingSilencer;
 
         // インスタンスメソッドにするためにTestInstance.Lifecycle.PER_CLASSにしている
         @BeforeAll
         void beforeAll(@Autowired LoggingSystem loggingSystem) {
-            // OutputCaptureExtensionのBeforeAllの開始は起動直後くらいでDEBUGの場合、大量にログが出ちゃってるので
-            // OutputCaptureExtensionオーバーライドして、BeforeAfterAllBypassOutputCaptureExtensionを作ってそれぞ
-            // れのフェーズを飛ばすようにしよう
-            loggingSilencer = new RestorableLoggingSilencer(loggingSystem);
-            loggingSilencer.muteLogLevel("org.springframework.cache.interceptor", LogLevel.TRACE, LogLevel.ERROR);
+            loggingSilencer = new RestorableLoggingSuppressor(loggingSystem);
+            loggingSilencer.suppressAllExcluding(
+                    "org.springframework.cache.interceptor",
+                    LogLevel.TRACE,
+                    LogLevel.ERROR);
         }
 
         @AfterAll
@@ -60,7 +60,6 @@ class AbstractCacheIntegrationTest {
                     "ID-1の拡張属性2",
                     "ID-1の拡張属性3");
             assertThat(first).isEqualTo(expected);
-            assertThat(first).isSameAs(second); // メモリ上のキャッシュなので参照が同じこと
 
             assertThat(output.getOut()).containsSubsequence(
                     MISS_CACHE_MESSAGE.formatted(userId.value()), // キャッシュミス
@@ -84,15 +83,16 @@ class AbstractCacheIntegrationTest {
 
         @Autowired
         private LoginUserAttributesProvider<RmsLoginUserAttributes> provider;
-        private RestorableLoggingSilencer loggingSilencer;
+        private RestorableLoggingSuppressor loggingSilencer;
 
         @BeforeAll
         void beforeAll(@Autowired LoggingSystem loggingSystem) {
             // OutputCaptureExtensionのBeforeAllの開始は起動直後くらいでDEBUGの場合、大量にログが出ちゃってるので
             // OutputCaptureExtensionオーバーライドして、BeforeAfterAllBypassOutputCaptureExtensionを作ってそれぞ
             // れのフェーズを飛ばすようにしよう
-            loggingSilencer = new RestorableLoggingSilencer(loggingSystem);
-            loggingSilencer.muteLogLevel("org.springframework.cache.interceptor", LogLevel.TRACE, LogLevel.ERROR);
+            loggingSilencer = new RestorableLoggingSuppressor(loggingSystem);
+            loggingSilencer.suppressAllExcluding("org.springframework.cache.interceptor", LogLevel.TRACE,
+                    LogLevel.ERROR);
         }
 
         @AfterAll

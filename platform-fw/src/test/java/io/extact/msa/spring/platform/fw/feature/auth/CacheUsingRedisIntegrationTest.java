@@ -1,73 +1,57 @@
 package io.extact.msa.spring.platform.fw.feature.auth;
 
-import static org.assertj.core.api.Assertions.*;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 
 import com.redis.testcontainers.RedisContainer;
 
-import io.extact.msa.spring.platform.core.auth.user.AuthUserId;
 import io.extact.msa.spring.platform.core.condition.EnableAutoConfigurationWithoutJpa;
+import io.extact.msa.spring.platform.fw.feature.auth.AbstractCacheIntegrationTest.DefaultSettingsCase;
+import io.extact.msa.spring.platform.fw.feature.auth.AbstractCacheIntegrationTest.ShortTimeoutSettingsCase;
+import io.extact.msa.spring.test.spring.StartupLogSuppressInitializer;
 
-
-// TODO:caffeineと同じように作ることろから
-@SpringBootTest(webEnvironment = WebEnvironment.NONE)
-@TestPropertySource(properties = "rms.login-user-attributes.cache.enabled=true")
 class CacheUsingRedisIntegrationTest {
-
-    @Autowired
-    private RdbAttributesProvider provider;
 
     @Configuration(proxyBeanMethods = false)
     @Import(RdbAttributesProviderConfig.class)
     @EnableAutoConfigurationWithoutJpa
-    static class TestConfig {
+    static class CacheUsingRedisIntegrationTestConfig {
         @Bean
         @ServiceConnection
         @SuppressWarnings("resource")
-        @ConditionalOnProperty(name = "rms.login-user-attributes.cache.type", havingValue = "redis")
         RedisContainer redisContainer() {
             return new RedisContainer("redis:6.2.6").withReuse(false);
         }
     }
 
-    @Test
-    void testExistsAttributes() {
-
-        // given
-        AuthUserId userId = new AuthUserId(2);
-
-        // when
-        RmsLoginUserAttributes attributes = provider.provide(userId);
-
-        // then
-        RmsLoginUserAttributes expected = new RmsLoginUserAttributes(
-                userId,
-                "ID-2の拡張属性1",
-                "ID-2の拡張属性2",
-                "ID-2の拡張属性3");
-        assertThat(attributes).isEqualTo(expected);
+    @SpringBootTest(classes = CacheUsingRedisIntegrationTestConfig.class, webEnvironment = WebEnvironment.NONE)
+    @ContextConfiguration(initializers = StartupLogSuppressInitializer.class)
+    @TestPropertySource(properties = "rms.login-user-attributes.cache.enabled=true")
+    @TestPropertySource(properties = "rms.login-user-attributes.cache.type=redis")
+    @ExtendWith(OutputCaptureExtension.class)
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class DefaultSettingsTest extends DefaultSettingsCase {
     }
 
-    @Test
-    void testNotExistsAttributes() {
-
-        // given
-        AuthUserId userId = new AuthUserId(4);
-
-        // when
-        RmsLoginUserAttributes attributes = provider.provide(userId);
-
-        // then
-        assertThat(attributes).isNull();
+    @SpringBootTest(classes = CacheUsingRedisIntegrationTestConfig.class, webEnvironment = WebEnvironment.NONE)
+    @ContextConfiguration(initializers = StartupLogSuppressInitializer.class)
+    @TestPropertySource(properties = "rms.login-user-attributes.cache.enabled=true")
+    @TestPropertySource(properties = "rms.login-user-attributes.cache.type=redis")
+    @TestPropertySource(properties = "rms.login-user-attributes.cache.redis.time-to-idle=1s")
+    @ExtendWith(OutputCaptureExtension.class)
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class ShortSettingsTest extends ShortTimeoutSettingsCase {
     }
 }

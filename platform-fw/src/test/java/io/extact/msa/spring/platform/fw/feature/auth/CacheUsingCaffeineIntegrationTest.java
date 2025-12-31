@@ -8,19 +8,22 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 
 import io.extact.msa.spring.platform.fw.feature.auth.AbstractCacheIntegrationTest.DefaultSettingsCase;
 import io.extact.msa.spring.platform.fw.feature.auth.AbstractCacheIntegrationTest.ShortTimeoutSettingsCase;
+import io.extact.msa.spring.test.spring.StartupLogSuppressInitializer;
 
-class CacheUsingcaffeineIntegrationTest {
+class CacheUsingCaffeineIntegrationTest {
 
     @Configuration(proxyBeanMethods = false)
     @Import(RdbAttributesProviderConfig.class)
-    static class CacheUsingcaffeineIntegrationTestConfig {
+    static class CacheUsingCaffeineIntegrationTestConfig {
     }
 
-    @SpringBootTest(classes = CacheUsingcaffeineIntegrationTestConfig.class, webEnvironment = WebEnvironment.NONE)
+    @SpringBootTest(classes = CacheUsingCaffeineIntegrationTestConfig.class, webEnvironment = WebEnvironment.NONE)
+    @ContextConfiguration(initializers = StartupLogSuppressInitializer.class)
     @TestPropertySource(properties = "rms.login-user-attributes.cache.enabled=true")
     @TestPropertySource(properties = "rms.login-user-attributes.cache.type=caffeine")
     @ExtendWith(OutputCaptureExtension.class)
@@ -29,7 +32,8 @@ class CacheUsingcaffeineIntegrationTest {
     class DefaultSettingsTest extends DefaultSettingsCase {
     }
 
-    @SpringBootTest(classes = CacheUsingcaffeineIntegrationTestConfig.class, webEnvironment = WebEnvironment.NONE)
+    @SpringBootTest(classes = CacheUsingCaffeineIntegrationTestConfig.class, webEnvironment = WebEnvironment.NONE)
+    @ContextConfiguration(initializers = StartupLogSuppressInitializer.class)
     @TestPropertySource(properties = "rms.login-user-attributes.cache.enabled=true")
     @TestPropertySource(properties = "rms.login-user-attributes.cache.type=caffeine")
     @TestPropertySource(properties = "rms.login-user-attributes.cache.caffeine.spec=expireAfterAccess=1s")
