@@ -15,6 +15,8 @@ import org.springframework.util.StringUtils;
 
 import com.zaxxer.hikari.HikariDataSource;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * フレームワーク自身がDBアクセスに利用するJdbcTemplate設定。
  * アプリの接続をprimary(デフォルト)としているため、フレームワークが使う接続は
@@ -22,6 +24,7 @@ import com.zaxxer.hikari.HikariDataSource;
  * トランザクションは不要なのでTransactionMangerのBean登録はしていない。
  */
 @Configuration(proxyBeanMethods = false)
+@Slf4j
 public class FrameworkDataSourceConfig {
 
     @Bean
@@ -57,8 +60,13 @@ public class FrameworkDataSourceConfig {
     SqlDataSourceScriptDatabaseInitializer dataSourceScriptDatabaseInitializer(
             @FrameworkDataSource DataSource dataSource,
             @FrameworkDataSource SqlInitializationProperties properties) {
+
+        log.info("Run schema script => " + properties.getSchemaLocations());
+        log.info("Run data script => " + properties.getDataLocations());
+
         return new SqlDataSourceScriptDatabaseInitializer(
-                determineDataSource(dataSource, properties.getUsername(), properties.getPassword()), properties);
+                determineDataSource(dataSource, properties.getUsername(), properties.getPassword()),
+                properties);
     }
 
     private static DataSource determineDataSource(DataSource dataSource, String username, String password) {

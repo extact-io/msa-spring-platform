@@ -1,5 +1,9 @@
 package io.extact.msa.spring.platform.core.auth.header;
 
+import static io.extact.msa.spring.platform.core.auth.configure.AuthConfigureUtils.*;
+
+import java.util.List;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,12 +28,13 @@ public class RmsHeaderAuthConfig {
     @ConditionalOnProperty(name = "rms.auth.multi", havingValue = "false", matchIfMissing = true)
     SecurityFilterChain headerAuthFilterChain1(
             HttpSecurity http,
-            AuthorizeHttpRequestCustomizer requestCustomizer,
+            List<AuthorizeHttpRequestCustomizer> requestCustomizers,
             LoginUserAttributesProvider<? extends LoginUserAttributes> attributesProvider, // 利用側でBean登録すること
             AnonymousAuthenticationFilter anonymousFilter) throws Exception {
 
+        requestCustomizers.forEach(customizer -> applyCustomizeToHttp(http, customizer));
+
         return http
-                .authorizeHttpRequests(requestCustomizer)
                 .with(new RmsHeaderConfigurer<>(attributesProvider), Customizer.withDefaults())
                 .anonymous(anonymous -> anonymous.authenticationFilter(anonymousFilter))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

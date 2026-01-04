@@ -8,15 +8,10 @@ import org.springframework.security.core.AuthenticatedPrincipal;
 
 public interface LoginUser extends AuthenticatedPrincipal {
 
-    public static final LoginUserAttributes ANONYMOUS_ATTRIBUTES = new LoginUserAttributes() {
-        @Override
-        public AuthUserId authUserId() {
-            return AuthUserId.ANONYMOUS_ID;
-        }};
     public static final LoginUser ANONYMOUS_USER = LoginUser.of(
             AuthUserId.ANONYMOUS_ID,
             Collections.emptySet(),
-            ANONYMOUS_ATTRIBUTES);
+            null);
 
     AuthUserId getUserId();
 

@@ -2,6 +2,7 @@ package io.extact.msa.spring.platform.core.auth;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,6 +30,7 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 import io.extact.msa.spring.platform.core.auth.client.BearerTokenRequestInitializer;
 import io.extact.msa.spring.platform.core.auth.client.LoginUserHeaderRequestInitializer;
+import io.extact.msa.spring.platform.core.auth.configure.AuthorizeHttpRequestCustomizer;
 import io.extact.msa.spring.platform.core.auth.configure.AuthorizeRequestConfigure;
 import io.extact.msa.spring.platform.core.auth.header.RmsHeaderAuth;
 import io.extact.msa.spring.platform.core.auth.header.RmsHeaderAuthConfig;
@@ -61,9 +63,7 @@ import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
  * ・スタブアプリ：RestController(Server2Controller) ※Header-Auth
  * </pre>
  */
-@TestPropertySource(properties = """
-        rms.auth.multi=true
-        """)
+@TestPropertySource(properties = "rms.auth.multi=true")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class AuthIntegratinTest {
 
@@ -84,34 +84,45 @@ public class AuthIntegratinTest {
             return new TestUserAttributesProvider();
         }
 
+
         // ---------- for Spring Security
         @Bean
         @RmsJwtAuth
-        AuthorizeRequestConfigure jwtAuthorizeRequestConfigure() {
+        AuthorizeHttpRequestCustomizer jwtAuthorizeRequestCustomizer() {
+            return (AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry configurer) -> configurer
+                    .requestMatchers("*/login").permitAll()
+                    .requestMatchers("*/member").hasRole("member")
+                    .requestMatchers("*/admin").hasRole("admin")
+                    .requestMatchers("*/guest").permitAll()
+                    .requestMatchers("*/guest-with-login").permitAll()
+                    .anyRequest().authenticated();
+        }
+
+        @Bean
+        @RmsJwtAuth
+        AuthorizeRequestConfigure jwtAuthorizeRequestConfigure(@RmsJwtAuth List<AuthorizeHttpRequestCustomizer> customizers) {
             return AuthorizeRequestConfigure.builder()
                     .securityMatcher("/server1/**")
-                    .authorizeHttpRequest((
-                            AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry configurer) -> configurer
-                                    .requestMatchers("*/login").permitAll()
-                                    .requestMatchers("*/member").hasRole("member")
-                                    .requestMatchers("*/admin").hasRole("admin")
-                                    .requestMatchers("*/guest").permitAll()
-                                    .requestMatchers("*/guest-with-login").permitAll()
-                                    .anyRequest().authenticated())
+                    .authorizeHttpRequest(customizers)
                     .build();
         }
 
         @Bean
         @RmsHeaderAuth
-        AuthorizeRequestConfigure headerAuthorizeRequestConfigure() {
+        AuthorizeHttpRequestCustomizer headerAuthorizeRequestCustomizer() {
+            return (AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry configurer) -> configurer
+                    .requestMatchers("*/not-login").permitAll()
+                    .requestMatchers("*/member-login").hasRole("member")
+                    .requestMatchers("*/admin-login").hasRole("admin")
+                    .anyRequest().authenticated();
+        }
+
+        @Bean
+        @RmsHeaderAuth
+        AuthorizeRequestConfigure headerAuthorizeRequestConfigure(@RmsHeaderAuth List<AuthorizeHttpRequestCustomizer> customizers) {
             return AuthorizeRequestConfigure.builder()
                     .securityMatcher("/server2/**")
-                    .authorizeHttpRequest((
-                            AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry configurer) -> configurer
-                                    .requestMatchers("*/not-login").permitAll()
-                                    .requestMatchers("*/member-login").hasRole("member")
-                                    .requestMatchers("*/admin-login").hasRole("admin")
-                                    .anyRequest().authenticated())
+                    .authorizeHttpRequest(customizers)
                     .build();
         }
 

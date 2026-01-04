@@ -1,6 +1,9 @@
 package io.extact.msa.spring.platform.core.auth.jwt;
 
+import static io.extact.msa.spring.platform.core.auth.configure.AuthConfigureUtils.*;
+
 import java.security.interfaces.RSAPublicKey;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -39,12 +42,13 @@ public class RmsJwtAuthConfig {
     @ConditionalOnProperty(name = "rms.auth.multi", havingValue = "false", matchIfMissing = true)
     SecurityFilterChain securityFilterChain(
             HttpSecurity http,
-            AuthorizeHttpRequestCustomizer requestCustomizer,
+            List<AuthorizeHttpRequestCustomizer> requestCustomizers,
             Converter<Jwt, AbstractAuthenticationToken> jwtConverter,
             AnonymousAuthenticationFilter anonymousFilter) throws Exception {
 
+        requestCustomizers.forEach(customizer -> applyCustomizeToHttp(http, customizer));
+
         return http
-                .authorizeHttpRequests(requestCustomizer)
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
                                 .jwtAuthenticationConverter(jwtConverter)))

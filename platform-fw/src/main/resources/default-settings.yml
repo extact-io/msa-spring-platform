@@ -83,6 +83,7 @@ rms:
       hikari:
         maximum-pool-size: 10
       sql:
+        mode: ALWAYS
         schema-locations: classpath:sql/login-user-attributes-schema.sql
         data-locations: classpath:sql/login-user-attributes-data.sql
     applicaiton: # JPAの設定はspring.jpa.*をもとに行われる
