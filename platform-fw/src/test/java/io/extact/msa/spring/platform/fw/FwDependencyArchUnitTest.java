@@ -37,6 +37,7 @@ class FwDependencyArchUnitTest {
                     "..application..")
             // それぞれのapapterは独立し、相互に依存関係がないこともチェックされる
             .adapter("interface-webapi", "..interfaces", "..interfaces.webapi..")
+            .adapter("datasource", "..infrastructure.datasource..")
             .adapter("persistence", "..infrastructure.persistence..") // さらにslicesで個別に独立性をチェック
             .adapter("external", "..infrastructure.external..")
             // Cofigurationクラスからの依存はすべて無視する

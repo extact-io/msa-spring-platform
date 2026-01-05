@@ -60,11 +60,11 @@ import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseTyp
 import io.extact.msa.spring.platform.fw.exception.RmsSystemException;
 import io.extact.msa.spring.platform.fw.exception.message.ValidationErrorMessage;
 import io.extact.msa.spring.platform.fw.exception.message.ValidationErrorMessage.MessageItem;
-import io.extact.msa.spring.platform.fw.feature.datasource.FrameworkDataSourceConfig;
 import io.extact.msa.spring.platform.fw.feature.exception.RmsRequestCheckException;
 import io.extact.msa.spring.platform.fw.feature.exception.RmsServiceUnavailableException;
 import io.extact.msa.spring.platform.fw.feature.exception.RmsValidationException;
 import io.extact.msa.spring.platform.fw.feature.validator.ValidatorConfig;
+import io.extact.msa.spring.platform.fw.infrastructure.datasource.FrameworkDataSourceConfig;
 import io.extact.msa.spring.platform.fw.interfaces.webapi.ExceptionHandled;
 import io.extact.msa.spring.platform.fw.interfaces.webapi.RestControllerConfig;
 import io.extact.msa.spring.platform.fw.interfaces.webapi.RestControllerExceptionHandler;

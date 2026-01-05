@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.feature.datasource;
+package io.extact.msa.spring.platform.fw.infrastructure.datasource;
 
 import javax.sql.DataSource;
 

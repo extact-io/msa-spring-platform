@@ -20,7 +20,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import io.extact.msa.spring.platform.core.auth.user.AuthUserId;
 import io.extact.msa.spring.platform.fw.feature.auth.jackson.RmsLoginUserAttributesSerializer;
-import io.extact.msa.spring.platform.fw.feature.datasource.FrameworkDataSourceConfig;
+import io.extact.msa.spring.platform.fw.infrastructure.datasource.FrameworkDataSourceConfig;
 import lombok.Data;
 
 @Configuration(proxyBeanMethods = false)

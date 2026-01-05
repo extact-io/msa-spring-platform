@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.feature.datasource;
+package io.extact.msa.spring.platform.fw.infrastructure.datasource;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -11,4 +11,5 @@ import org.springframework.beans.factory.annotation.Qualifier;
 @Retention(RetentionPolicy.RUNTIME)
 @Qualifier
 public @interface FrameworkDataSource {
+    public static String NAME = "frameworkDataSource";
 }

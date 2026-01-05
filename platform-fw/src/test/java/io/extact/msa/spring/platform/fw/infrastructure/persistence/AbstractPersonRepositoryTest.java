@@ -42,8 +42,6 @@ public abstract class AbstractPersonRepositoryTest {
 
     @Test
     void testGet() {
-log.info("★：testGet");
-
         Person expected = testCreator.newInstance(new PersonId(1), "name1");
         Optional<Person> actual = repository().find(new PersonId(1));
 
@@ -56,14 +54,12 @@ log.info("★：testGet");
 
     @Test
     void testGetAll() {
-        log.info("★：testGetAll");
         List<Person> actual = repository().findAll();
         assertThat(actual).hasSize(4);
     }
 
     @Test
     void testUpdate() {
-        log.info("★：testUpdate");
         Person expected = testCreator.newInstance(new PersonId(4), "UP");
         repository().update(testCreator.newInstance(new PersonId(4), "UP"));
         assertThat(repository().find(new PersonId(4)).get()).isEqualTo(expected);
@@ -71,7 +67,6 @@ log.info("★：testGet");
 
     @Test
     void testUpdateOnDuplicate() {
-        log.info("★：testUpdateOnDuplicate");
         // 重複チェックは上位で行うので正常に処理できることを確認
         assertThatCode(() -> repository().update(testCreator.newInstance(new PersonId(2), "name3")))
                 .doesNotThrowAnyException();
@@ -79,14 +74,12 @@ log.info("★：testGet");
 
     @Test
     void testUpdateOnNotFound() {
-        log.info("★：testUpdateOnNotFound");
         Throwable thrown = catchThrowable(() -> repository().update(testCreator.newInstance(new PersonId(999), "UP")));
         assertThat(thrown).isInstanceOf(RmsPersistenceException.class).hasMessageContaining("id:" + 999);
     }
 
     @Test
     void testAdd() {
-        log.info("★：testAdd");
         Person expected = testCreator.newInstance(new PersonId(5), "ADD");
         repository().add(testCreator.newInstance(new PersonId(5), "ADD"));
         assertThat(repository().find(new PersonId(5)).get()).isEqualTo(expected);
@@ -94,7 +87,6 @@ log.info("★：testGet");
 
     @Test
     void testAddOnDuplicateError() {
-        log.info("★：testAddOnDuplicateError");
         // 重複チェックは上位で行うので正常に処理できることを確認
         assertThatCode(() -> repository().add(testCreator.newInstance(new PersonId(5), "name3")))
                 .doesNotThrowAnyException();
@@ -102,7 +94,6 @@ log.info("★：testGet");
 
     @Test
     void testDelete() {
-        log.info("★：testDelete");
         Person deleted = testCreator.newInstance(new PersonId(1), "dummy");
         repository().delete(deleted);
         assertThat(repository().find(new PersonId(1))).isNotPresent();
@@ -110,7 +101,6 @@ log.info("★：testGet");
 
     @Test
     void testDeleteOnNotFound() {
-        log.info("★：testDeleteOnNotFound");
         Throwable thrown = catchThrowable(
                 () -> repository().delete(testCreator.newInstance(new PersonId(999), "dummy")));
         assertThat(thrown).isInstanceOf(RmsPersistenceException.class).hasMessageContaining("id:" + 999);

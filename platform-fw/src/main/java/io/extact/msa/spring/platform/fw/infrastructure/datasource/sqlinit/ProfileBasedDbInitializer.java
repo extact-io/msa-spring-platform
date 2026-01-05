@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.feature.sqlinit;
+package io.extact.msa.spring.platform.fw.infrastructure.datasource.sqlinit;
 
 import javax.sql.DataSource;
 

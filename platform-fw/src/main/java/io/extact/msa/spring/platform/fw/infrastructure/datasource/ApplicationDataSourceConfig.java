@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.infrastructure.persistence.jpa;
+package io.extact.msa.spring.platform.fw.infrastructure.datasource;
 
 import javax.sql.DataSource;
 
@@ -7,9 +7,12 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 
 import com.zaxxer.hikari.HikariDataSource;
+
+import io.extact.msa.spring.platform.fw.infrastructure.datasource.sqlinit.ProfileBasedDbInitializerConfig;
 
 /**
  * アプリで利用するDataSourceをprimaryとして登録するコンフィグクラス。
@@ -25,19 +28,20 @@ import com.zaxxer.hikari.HikariDataSource;
  * @see HibernateJpaConfiguration
  */
 @Configuration(proxyBeanMethods = false)
+@Import(ProfileBasedDbInitializerConfig.class)
 public class ApplicationDataSourceConfig {
 
     @Bean
     @Primary
     @ConfigurationProperties("rms.datasource.applicaiton")
-    DataSourceProperties primaryDataSourceProperties() {
+    DataSourceProperties appDataSourceProperties() {
         return new DataSourceProperties();
     }
 
     @Bean
     @Primary
     @ConfigurationProperties("rms.datasource.applicaiton.hikari")
-    DataSource primaryDataSource(DataSourceProperties properties) {
+    DataSource appDataSource(DataSourceProperties properties) {
         return properties.initializeDataSourceBuilder()
                 .type(HikariDataSource.class)
                 .build();

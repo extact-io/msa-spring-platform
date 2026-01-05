@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
-import io.extact.msa.spring.platform.fw.feature.sqlinit.ProfileBasedDbInitializerConfig;
+import io.extact.msa.spring.platform.fw.infrastructure.datasource.ApplicationDataSourceConfig;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.AbstractPersonRepositoryTest;
 import io.extact.msa.spring.platform.fw.stub.apps.person.domain.PersonRepository;
 import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.PersonId;
@@ -24,7 +24,7 @@ class PersonJpaRepositoryTest extends AbstractPersonRepositoryTest {
 
     @Configuration(proxyBeanMethods = false)
     @Import({
-            ProfileBasedDbInitializerConfig.class,
+            ApplicationDataSourceConfig.class,
             PersonJpaRepositoryConfig.class })
     static class TestConfig {
     }
