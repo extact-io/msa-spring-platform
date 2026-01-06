@@ -2,6 +2,7 @@ package io.extact.msa.spring.platform.fw.feature.auth;
 
 import static java.util.concurrent.TimeUnit.*;
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterAll;
@@ -69,13 +70,15 @@ class AbstractCacheIntegrationTest {
         }
 
         @Test
-        void testMasterDataNotExistsAndCreateNullCache() {
+        void testMasterDataNotExistsAndCreateNullError() {
             // given
             AuthUserId userId = new AuthUserId(4);
             // when
-            RmsLoginUserAttributes attributes = provider.provide(userId);
+            IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
+                provider.provide(userId);
+            });
             // then
-            assertThat(attributes).isNull();
+            assertThat(thrown).hasMessageContainingAll("loginUserAttributes", "null");
         }
     }
 

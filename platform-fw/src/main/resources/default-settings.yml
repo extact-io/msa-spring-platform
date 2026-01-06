@@ -96,10 +96,10 @@ rms:
       enabled: true
       type: caffeine
       caffeine:
-        cache-null-values: true
+        cache-null-values: false
         spec: "maximumSize=100,expireAfterAccess=1s"
       redis:
-        cache-null-values: true
+        cache-null-values: false
         enable-statistics: false
         time-to-idle: 10m
   rest:

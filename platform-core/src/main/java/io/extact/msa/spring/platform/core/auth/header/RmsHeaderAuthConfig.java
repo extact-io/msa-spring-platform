@@ -13,7 +13,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
+import org.springframework.security.web.session.DisableEncodeUrlFilter;
 
+import io.extact.msa.spring.platform.core.auth.SecurityFallbackExceptionFilter;
 import io.extact.msa.spring.platform.core.auth.anonymous.RmsAnonymousAuthConfig;
 import io.extact.msa.spring.platform.core.auth.configure.AuthorizeHttpRequestCustomizer;
 import io.extact.msa.spring.platform.core.auth.configure.AuthorizeRequestConfigure;
@@ -39,11 +41,12 @@ public class RmsHeaderAuthConfig {
                 .anonymous(anonymous -> anonymous.authenticationFilter(anonymousFilter))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exceptions -> exceptions
-                        .authenticationEntryPoint(new RmsHeaderAuthEntryPoint())
-                        .accessDeniedHandler(new RmsHeaderAccessDeniedHandler()))
+                        .authenticationEntryPoint(new RmsHeaderAuthEntryPoint()) // handles only AuthenticationException
+                        .accessDeniedHandler(new RmsHeaderAccessDeniedHandler())) // handles only AccessDeniedException
                 .csrf(csrf -> csrf.disable())
                 .logout(logout -> logout.disable())
                 .requestCache(cache -> cache.disable())
+                .addFilterBefore(new SecurityFallbackExceptionFilter(), DisableEncodeUrlFilter.class)
                 .build();
     }
 
@@ -67,6 +70,7 @@ public class RmsHeaderAuthConfig {
                 .csrf(csrf -> csrf.disable())
                 .logout(logout -> logout.disable())
                 .requestCache(cache -> cache.disable())
+                .addFilterBefore(new SecurityFallbackExceptionFilter(), DisableEncodeUrlFilter.class)
                 .build();
     }
 }

@@ -56,13 +56,13 @@ public class RmsHeaderAuthFilter extends OncePerRequestFilter {
         } catch (InvalidUserIdException e) {
             this.logger.trace("Sending to authentication entry point since failed to resolve  rms-userId header", e);
             this.authenticationEntryPoint.commence(request, response, e);
-            return;
+            return; // send error-response.
         }
 
         if (authenticationRequest == null) {
             this.logger.trace("Did not process request since did not find auth header");
             filterChain.doFilter(request, response);
-            return;
+            return; // go to AnonymousAuthenticationFilter
         }
 
         try {
@@ -78,7 +78,7 @@ public class RmsHeaderAuthFilter extends OncePerRequestFilter {
         } catch (AuthenticationException failed) {
             this.securityContextHolderStrategy.clearContext();
             this.logger.trace("Failed to process authentication request", failed);
-            this.authenticationFailureHandler.onAuthenticationFailure(request, response, failed);
+            this.authenticationFailureHandler.onAuthenticationFailure(request, response, failed); // send error-response.
         }
     }
 
@@ -89,7 +89,7 @@ public class RmsHeaderAuthFilter extends OncePerRequestFilter {
             return null;
         }
 
-        AuthUserId userId = new AuthUserId(headerUserId);
+        AuthUserId userId = new AuthUserId(headerUserId); // throwable InvalidUserIdException.
         if (userId.isAnonymous()) {
             return null; // go to AnonymousAuthenticationFilter
         }
