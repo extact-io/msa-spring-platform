@@ -15,6 +15,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.session.DisableEncodeUrlFilter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.extact.msa.spring.platform.core.auth.SecurityFallbackExceptionFilter;
 import io.extact.msa.spring.platform.core.auth.anonymous.RmsAnonymousAuthConfig;
 import io.extact.msa.spring.platform.core.auth.configure.AuthorizeHttpRequestCustomizer;
@@ -32,7 +34,8 @@ public class RmsHeaderAuthConfig {
             HttpSecurity http,
             List<AuthorizeHttpRequestCustomizer> requestCustomizers,
             LoginUserAttributesProvider<? extends LoginUserAttributes> attributesProvider, // 利用側でBean登録すること
-            AnonymousAuthenticationFilter anonymousFilter) throws Exception {
+            AnonymousAuthenticationFilter anonymousFilter,
+            ObjectMapper mapper) throws Exception {
 
         requestCustomizers.forEach(customizer -> applyCustomizeToHttp(http, customizer));
 
@@ -46,7 +49,7 @@ public class RmsHeaderAuthConfig {
                 .csrf(csrf -> csrf.disable())
                 .logout(logout -> logout.disable())
                 .requestCache(cache -> cache.disable())
-                .addFilterBefore(new SecurityFallbackExceptionFilter(), DisableEncodeUrlFilter.class)
+                .addFilterBefore(new SecurityFallbackExceptionFilter(mapper), DisableEncodeUrlFilter.class)
                 .build();
     }
 
@@ -56,7 +59,8 @@ public class RmsHeaderAuthConfig {
             HttpSecurity http,
             @RmsHeaderAuth AuthorizeRequestConfigure requestConfigure,
             LoginUserAttributesProvider<? extends LoginUserAttributes> attributesProvider, // 利用側でBean登録すること
-            AnonymousAuthenticationFilter anonymousFilter) throws Exception {
+            AnonymousAuthenticationFilter anonymousFilter,
+            ObjectMapper mapper) throws Exception {
 
         return requestConfigure
                 .applySecurityMatcher(http)
@@ -70,7 +74,7 @@ public class RmsHeaderAuthConfig {
                 .csrf(csrf -> csrf.disable())
                 .logout(logout -> logout.disable())
                 .requestCache(cache -> cache.disable())
-                .addFilterBefore(new SecurityFallbackExceptionFilter(), DisableEncodeUrlFilter.class)
+                .addFilterBefore(new SecurityFallbackExceptionFilter(mapper), DisableEncodeUrlFilter.class)
                 .build();
     }
 }

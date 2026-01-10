@@ -15,11 +15,15 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.extact.msa.spring.platform.core.auth.user.AuthUserId;
-import io.extact.msa.spring.platform.fw.feature.auth.jackson.RmsLoginUserAttributesSerializer;
+import io.extact.msa.spring.platform.fw.feature.auth.jackson.RedisObjectMapper;
+import io.extact.msa.spring.platform.fw.feature.auth.jackson.RedisObjectMapperConfig;
 import io.extact.msa.spring.platform.fw.infrastructure.datasource.FrameworkDataSourceConfig;
 import lombok.Data;
 
@@ -37,6 +41,7 @@ public class RdbAttributesProviderConfig {
     @ConditionalOnProperty(name = "rms.login-user-attributes.cache.type", havingValue = "redis")
     @EnableConfigurationProperties
     @EnableCaching
+    @Import(RedisObjectMapperConfig.class)
     static class WithRedisCacheConfig {
 
         @Bean
@@ -46,26 +51,34 @@ public class RdbAttributesProviderConfig {
         }
 
         @Bean
-        RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer(RedisCacheProperties props) {
+        RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer(
+                RedisCacheProperties props,
+                @RedisObjectMapper ObjectMapper mapper) {
             return builder -> {
                 builder = props.isEnableStatistics() ? builder.enableStatistics() : builder;
                 builder.withCacheConfiguration(
                         LoginUserAttributesCacheKeys.CACHE_NAME,
-                        buildRedisCacheConfiguration(props));
+                        buildRedisCacheConfiguration(props, mapper));
             };
         }
 
-        private RedisCacheConfiguration buildRedisCacheConfiguration(RedisCacheProperties props) {
+        private RedisCacheConfiguration buildRedisCacheConfiguration(RedisCacheProperties props, ObjectMapper mapper) {
             RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig();
 
             ConverterRegistry registry = (ConverterRegistry) config.getConversionService();
             registry.addConverter(new CacheKeyConverter());
+            Jackson2JsonRedisSerializer<RmsLoginUserAttributes> serializer = new Jackson2JsonRedisSerializer<>(
+                    mapper,
+                    RmsLoginUserAttributes.class);
 
-            config = !props.isCacheNullValues() ? config.disableCachingNullValues() : config;
+            if (!props.isCacheNullValues()) {
+                config = config.disableCachingNullValues();
+            }
+
             return config
                     .computePrefixWith(LoginUserAttributesCacheKeys.CACHE_KEY_PREFIX)
                     .withConversionService((ConversionService) registry)
-                    .serializeValuesWith(SerializationPair.fromSerializer(new RmsLoginUserAttributesSerializer()))
+                    .serializeValuesWith(SerializationPair.fromSerializer(serializer))
                     .entryTtl(props.getTimeToIdle());
         }
     }

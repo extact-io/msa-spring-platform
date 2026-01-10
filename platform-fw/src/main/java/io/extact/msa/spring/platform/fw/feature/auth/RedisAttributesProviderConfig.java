@@ -5,25 +5,34 @@ import java.nio.charset.StandardCharsets;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.SerializationException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.extact.msa.spring.platform.core.auth.user.AuthUserId;
-import io.extact.msa.spring.platform.fw.feature.auth.jackson.RmsLoginUserAttributesSerializer;
+import io.extact.msa.spring.platform.fw.feature.auth.jackson.RedisObjectMapper;
+import io.extact.msa.spring.platform.fw.feature.auth.jackson.RedisObjectMapperConfig;
 
 @Configuration(proxyBeanMethods = false)
+@Import(RedisObjectMapperConfig.class)
 public class RedisAttributesProviderConfig {
 
     @Bean
-    RedisTemplate<AuthUserId, RmsLoginUserAttributes> redisTemplate(RedisConnectionFactory connectionFactory) {
+    RedisTemplate<AuthUserId, RmsLoginUserAttributes> redisTemplate(
+            RedisConnectionFactory connectionFactory,
+            @RedisObjectMapper ObjectMapper mapper) {
 
         RedisTemplate<AuthUserId, RmsLoginUserAttributes> template = new RedisTemplate<>();
-        template.setConnectionFactory(connectionFactory);
 
+        template.setConnectionFactory(connectionFactory);
         template.setKeySerializer(new AuthUserIdCacheKeySerializer());
-        template.setValueSerializer(new RmsLoginUserAttributesSerializer());
+        template.setValueSerializer(
+                new Jackson2JsonRedisSerializer<RmsLoginUserAttributes>(mapper, RmsLoginUserAttributes.class));
 
         return template;
     }

@@ -60,7 +60,7 @@ class AbstractCacheIntegrationTest {
                     "ID-1の拡張属性1",
                     "ID-1の拡張属性2",
                     "ID-1の拡張属性3");
-            assertThat(first).isEqualTo(expected);
+            assertThat(first).isEqualTo(second).isEqualTo(expected);
 
             assertThat(output.getOut()).containsSubsequence(
                     MISS_CACHE_MESSAGE.formatted(userId.value()), // キャッシュミス

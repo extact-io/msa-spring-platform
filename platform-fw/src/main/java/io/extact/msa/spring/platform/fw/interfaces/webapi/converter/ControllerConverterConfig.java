@@ -43,7 +43,9 @@ public class ControllerConverterConfig {
     // --------------------------------------------- for JsonBinding
 
     @Bean
-    Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
+    Jackson2ObjectMapperBuilderCustomizer primaryObjectMapperCustomizer() {
+        // ObjectMapperの他の設定は"spring.jackson.*"のとおりにJacksonAutoConfigurationで
+        // 設定され、@PrimaryでBean登録される
         return builder -> {
             JavaTimeModule module = new JavaTimeModule();
 
