@@ -102,8 +102,7 @@ rms:
         cache-null-values: false
         enable-statistics: false
         time-to-idle: 10m
-  rest:
-    controller:
-      format:
-        date: ${spring.mvc.format.date}
-        date-time: ${spring.mvc.format.date-time}
+  json:
+    converter:
+      date: ${spring.mvc.format.date}
+      date-time: ${spring.mvc.format.date-time}

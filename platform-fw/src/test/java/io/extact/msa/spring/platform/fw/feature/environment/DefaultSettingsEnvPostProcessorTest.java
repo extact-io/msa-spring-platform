@@ -24,7 +24,7 @@ class DefaultSettingsEnvPostProcessorTest {
         @Test
         void test(@Autowired Environment env) {
             // given
-            String propName = "rms.rest.controller.format.date";
+            String propName = "rms.json.converter.date";
             // when
             String actual = env.getProperty(propName);
             // then
@@ -39,7 +39,7 @@ class DefaultSettingsEnvPostProcessorTest {
         @Test
         void test(@Autowired Environment env) {
             // given
-            String propName = "rms.rest.controller.format.date";
+            String propName = "rms.json.converter.date";
             // when
             String actual = env.getProperty(propName);
             // then
@@ -55,7 +55,7 @@ class DefaultSettingsEnvPostProcessorTest {
         @Test
         void test(@Autowired Environment env) {
             // given
-            String propName = "rms.rest.controller.format.date";
+            String propName = "rms.json.converter.date";
             // when
             String actual = env.getProperty(propName);
             // then
@@ -71,7 +71,7 @@ class DefaultSettingsEnvPostProcessorTest {
         @Test
         void test(@Autowired Environment env) {
             // given
-            String propName = "rms.rest.controller.format.date";
+            String propName = "rms.json.converter.date";
             // when
             String actual = env.getProperty(propName);
             // then
@@ -89,7 +89,7 @@ class DefaultSettingsEnvPostProcessorTest {
         @Test
         void test(@Autowired Environment env) {
             // given
-            String propName = "rms.rest.controller.format.date";
+            String propName = "rms.json.converter.date";
             // when
             String actual = env.getProperty(propName);
             // then
@@ -108,7 +108,7 @@ class DefaultSettingsEnvPostProcessorTest {
         @Test
         void test(@Autowired Environment env) {
             // given
-            String propName = "rms.rest.controller.format.date";
+            String propName = "rms.json.converter.date";
             // when
             String actual = env.getProperty(propName);
             // then

@@ -8,15 +8,15 @@ import org.springframework.context.annotation.Import;
 import io.extact.msa.spring.platform.core.env.ActiveProfileResolver;
 import io.extact.msa.spring.platform.core.env.EnvConfig;
 import io.extact.msa.spring.platform.core.env.MainModuleInformation;
+import io.extact.msa.spring.platform.fw.feature.json.PrimaryObjectMapperConfig;
 import io.extact.msa.spring.platform.fw.feature.validator.ValidationErrorTranslator;
 import io.extact.msa.spring.platform.fw.feature.validator.ValidatorConfig;
-import io.extact.msa.spring.platform.fw.interfaces.webapi.converter.ControllerConverterConfig;
 
 @Configuration(proxyBeanMethods = false)
 @Import({
         EnvConfig.class,
         ValidatorConfig.class,
-        ControllerConverterConfig.class })
+        PrimaryObjectMapperConfig.class })
 public class RestControllerConfig {
 
     @Bean

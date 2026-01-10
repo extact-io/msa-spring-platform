@@ -1,4 +1,4 @@
-package io.extact.msa.spring.platform.fw.interfaces.webapi.converter;
+package io.extact.msa.spring.platform.fw.feature.json;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,26 +17,28 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
-import io.extact.msa.spring.platform.core.condition.ConditionalOnPrefixedProperty;
 import io.extact.msa.spring.platform.core.utils.EnvironmentUtils;
 
 /**
- * RestControllerで使用する日付フォーマットの設定。
- * <code>@PathVariable</code>と<code>@RequestParam</code>のフォーマットはSpring Bootの
- * <code>spring.mvc.format.*</code>の設定で行っている。
+ * @Primaryで登録されるObjectMapperに対するcustomizerを定義するコンフィグ。
+ * @PrimaryのObjectMapperが利用される機能は以下のとおり
+ * <pre>
+ * ・RESTサーバの正常レスポンスのbodyのシリアライズに利用するMapper
+ * ・RESTサーバでセキュリティFilterエラーになった際のエラーレスポンスのbodyのシリアライズに利用するMapper
+ * </pre>
+ * @PathVariableと@RequestParamのフォーマットはSpring Bootのspring.mvc.format.*の設定で行っている。
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnPrefixedProperty("rms.rest.controller.format")
-public class ControllerConverterConfig {
+public class PrimaryObjectMapperConfig {
 
     private Optional<String> datePattern;
     private Optional<String> dateTimePattern;
 
-    ControllerConverterConfig(Environment env) {
+    PrimaryObjectMapperConfig(Environment env) {
         this.datePattern = EnvironmentUtils
-                .getOptionalProperty(env, "rms.rest.controller.format.date");
+                .getOptionalProperty(env, "rms.json.converter.date");
         this.dateTimePattern = EnvironmentUtils
-                .getOptionalProperty(env, "rms.rest.controller.format.date-time");
+                .getOptionalProperty(env, "rms.json.converter.date-time");
     }
 
 
