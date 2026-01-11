@@ -215,6 +215,7 @@ class FwDependencyArchUnitTest {
             .and(not(configurationClasses()))
             .should().onlyDependOnClassesThat(resideInAnyPackage(
                     "io.extact.msa.spring.platform.core.generic..",
+                    "io.extact.msa.spring.platform.core.auth.client..",
                     "io.extact.msa.spring.platform.fw.domain..",
                     "io.extact.msa.spring.platform.fw.exception..",
                     "io.extact.msa.spring.platform.fw.infrastructure.external..",

@@ -15,13 +15,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.convert.ConversionService;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import org.springframework.web.util.UriBuilderFactory;
 
@@ -29,6 +26,8 @@ import io.extact.msa.spring.platform.core.condition.EnableAutoConfigurationWitho
 import io.extact.msa.spring.platform.fw.infrastructure.external.ExternalProperties;
 import io.extact.msa.spring.platform.fw.infrastructure.external.converter.ConverterClientApi.DateTypeDto;
 import io.extact.msa.spring.platform.fw.infrastructure.external.converter.ConverterClientApi.StringTypeDto;
+import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.RmsRestClientCustomizer;
+import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.SimpleRestClientCustomizerConfig;
 import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -41,6 +40,7 @@ class HttpInterfaceConverterTest {
     private ConverterClientApi converterClient;
 
     @Configuration(proxyBeanMethods = false)
+    @Import(SimpleRestClientCustomizerConfig.class)
     @EnableAutoConfigurationWithoutJpa
     static class TestConfig {
 
@@ -56,7 +56,7 @@ class HttpInterfaceConverterTest {
         ConverterClientApiController converterClientApiController() {
             return new ConverterClientApiController();
         }
-        
+
         @Bean
         @ConfigurationProperties("rms.persistence.person.remote")
         ExternalProperties externalProperties() {
@@ -64,32 +64,19 @@ class HttpInterfaceConverterTest {
         }
 
         @Bean
-        ConverterClientApi converterClientApi(ExternalProperties prop, Environment env) {
+        RmsRestClientCustomizer overrideUriBuilderFactory(Environment env) {
+            return (builder, _) -> {
+                /*
+                 * HttpInterfaceの型変換にはUriBuilderFactoryは使用されないため、
+                 * CustomeUriBuilderFactoryは使わなくてもOK
+                 */
+                UriBuilderFactory uriFactory = new LocalHostUriBuilderFactory(env);
+                builder.uriBuilderFactory(uriFactory);
+            };
+        }
 
-            /*
-             * HttpInterfaceの型変換にはUriBuilderFactoryは使用されないため、
-             * CustomeUriBuilderFactoryは使わなくてもOK
-             */
-            UriBuilderFactory uriFactory = new LocalHostUriBuilderFactory(env);
-
-            HttpMessageConverter<Object> converter = ConfigMessageConveterBuilder
-                    .builder(prop)
-                    .build();
-            ConversionService conversionService = ConfigConversionServiceBuilder
-                    .builder(prop)
-                    .build();
-
-            RestClient restClient = RestClient.builder()
-                    .uriBuilderFactory(uriFactory)
-                    .messageConverters(converters -> converters.addFirst(converter))
-                    .build();
-
-            RestClientAdapter adapter = RestClientAdapter.create(restClient);
-            HttpServiceProxyFactory factory = HttpServiceProxyFactory
-                    .builderFor(adapter)
-                    .conversionService(conversionService)
-                    .build();
-
+        @Bean
+        ConverterClientApi converterClientApi(HttpServiceProxyFactory factory) {
             return factory.createClient(ConverterClientApi.class);
         }
     }

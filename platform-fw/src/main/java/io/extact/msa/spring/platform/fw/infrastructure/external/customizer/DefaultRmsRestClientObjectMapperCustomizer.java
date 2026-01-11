@@ -1,51 +1,44 @@
-package io.extact.msa.spring.platform.fw.infrastructure.external.converter;
+package io.extact.msa.spring.platform.fw.infrastructure.external.customizer;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 import io.extact.msa.spring.platform.fw.infrastructure.external.ExternalProperties;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class ConfigMessageConveterBuilder {
+@RequiredArgsConstructor
+public class DefaultRmsRestClientObjectMapperCustomizer implements RmsRestClientObjectMapperCustomizer {
 
-    private final ExternalProperties prop;
+    private final ExternalProperties props;
 
-    public static ConfigMessageConveterBuilder builder(ExternalProperties prop) {
-        return new ConfigMessageConveterBuilder(prop);
-    }
+    @Override
+    public void customize(Jackson2ObjectMapperBuilder builder) {
+        JavaTimeModule module = new JavaTimeModule();
 
-    public MappingJackson2HttpMessageConverter build() {
-
-        ObjectMapper mapper = new ObjectMapper();
-        SimpleModule module = new SimpleModule();
-
-        prop.getOptinalDateFormat().ifPresent(fmt -> {
+        props.getOptinalDateFormat().ifPresent(fmt -> {
             module.addSerializer(LocalDate.class, new LocalDateSerializer(
                     DateTimeFormatter.ofPattern(fmt)));
             module.addDeserializer(LocalDate.class, new LocalDateDeserializer(
                     DateTimeFormatter.ofPattern(fmt)));
         });
-        prop.getOptinalDateTimeFormat().ifPresent(fmt -> {
+        props.getOptinalDateTimeFormat().ifPresent(fmt -> {
             module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(
                     DateTimeFormatter.ofPattern(fmt)));
             module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(
                     DateTimeFormatter.ofPattern(fmt)));
         });
 
-        mapper.registerModule(module);
-
-        return new MappingJackson2HttpMessageConverter(mapper);
+        builder.modules(module);
+        builder.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 }

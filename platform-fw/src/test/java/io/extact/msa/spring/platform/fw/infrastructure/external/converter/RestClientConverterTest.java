@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -15,19 +16,23 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.Environment;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.util.UriBuilderFactory;
+import org.springframework.web.client.RestClient.Builder;
 
 import io.extact.msa.spring.platform.core.condition.EnableAutoConfigurationWithoutJpa;
 import io.extact.msa.spring.platform.fw.infrastructure.external.CustomUriBuilderFactory;
 import io.extact.msa.spring.platform.fw.infrastructure.external.ExternalProperties;
 import io.extact.msa.spring.platform.fw.infrastructure.external.converter.ConverterClientApi.DateTypeDto;
 import io.extact.msa.spring.platform.fw.infrastructure.external.converter.ConverterClientApi.StringTypeDto;
+import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.RmsProxyFactorySourceCreator;
+import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.RmsRestClientCustomizer;
+import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.RmsRestClientCustomizerContext;
+import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.SimpleRestClientCustomizerConfig;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class RestClientConverterTest {
@@ -39,6 +44,7 @@ class RestClientConverterTest {
     private RestClient client;
 
     @Configuration(proxyBeanMethods = false)
+    @Import(SimpleRestClientCustomizerConfig.class)
     @EnableAutoConfigurationWithoutJpa
     static class TestConfig {
 
@@ -60,26 +66,35 @@ class RestClientConverterTest {
         ExternalProperties externalProperties() {
             return new ExternalProperties();
         }
-        
+
         @Bean
-        RestClient converterClientApi(ExternalProperties prop, Environment env) {
+        RmsRestClientCustomizer overrideUriBuilderFactory(Environment env) {
+            return new RmsRestClientCustomizer() {
+                private ConversionService applied;
+                @Override
+                public void customize(Builder builder, RmsRestClientCustomizerContext context) {
+                    CustomUriBuilderFactory.Builder uriBuilder = CustomUriBuilderFactory.newInstance()
+                            .env(env)
+                            .uriTemplate("http://localhost:${local.server.port}/converter");
+                    context.currentAppiedConversionService().ifPresent(service -> {
+                        uriBuilder.conversionService(service);
+                        applied = service;
+                    });
+                    builder.uriBuilderFactory(uriBuilder.build());
+                }
+                @Override
+                public ConversionService appliedConversionService() {
+                    return applied;
+                }
+            };
+        }
 
-            ConversionService conversionService = ConfigConversionServiceBuilder
-                    .builder(prop)
-                    .build();
-            UriBuilderFactory uriFactory = CustomUriBuilderFactory.newInstance()
-                    .env(env)
-                    .conversionService(conversionService)
-                    .uriTemplate("http://localhost:${local.server.port}/converter")
-                    .build();
-            HttpMessageConverter<Object> converter = ConfigMessageConveterBuilder
-                    .builder(prop)
-                    .build();
-
-            return RestClient.builder()
-                    .uriBuilderFactory(uriFactory)
-                    .messageConverters(converters -> converters.addFirst(converter))
-                    .build();
+        @Bean
+        RestClient converterClientApi(
+                RestClient.Builder builder, // RestClientAutoConfigurationでCustomierが提供済みのBuilderを使用する
+                List<RmsRestClientCustomizer> customizers) {
+            RmsProxyFactorySourceCreator creator = new RmsProxyFactorySourceCreator(builder, customizers);
+            return creator.create().restClient();
         }
     }
 

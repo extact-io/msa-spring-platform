@@ -7,7 +7,7 @@ import org.springframework.web.util.UriBuilder;
 
 import lombok.Builder;
 
-@Builder(builderMethodName = "newInstance")
+@Builder(builderMethodName = "newInstance", builderClassName = "Builder")
 public class CustomUriBuilderFactory extends DefaultUriBuilderFactory {
 
     private Environment env;

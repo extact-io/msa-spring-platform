@@ -15,19 +15,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.extact.msa.spring.platform.fw.exception.message.ErrorMessage;
 import io.extact.msa.spring.platform.fw.exception.message.SimpleErrorMessage;
 import io.extact.msa.spring.platform.fw.exception.message.ValidationErrorMessage;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@RequiredArgsConstructor
 public class ErrorMessageDeserializer {
 
     private final ObjectMapper objectMapper;
 
     public ErrorMessageDeserializer() {
-        this(new ObjectMapper());
-    }
-
-    public ErrorMessageDeserializer(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
+        this.objectMapper = new ObjectMapper();
     }
 
     public <T extends ErrorMessage> T deserializeResponse(ClientHttpResponse response, Class<T> responseType) {
