@@ -29,7 +29,7 @@ public class DefaultRmsRestClientCustomizer implements RmsRestClientCustomizer, 
     private final List<RmsRestClientObjectMapperCustomizer> mapperCustomizers;
 
     private ApplicationContext context;
-    private ConversionService conversionService; // HttpServiceProxyFactoryで利用するため
+    private ConversionService applyConversionService; // HttpServiceProxyFactoryで利用するため
 
     @Override
     public void setApplicationContext(ApplicationContext context) throws BeansException {
@@ -38,18 +38,18 @@ public class DefaultRmsRestClientCustomizer implements RmsRestClientCustomizer, 
 
     @Override
     public ConversionService appliedConversionService() {
-        return conversionService;
+        return applyConversionService;
     }
 
     @Override
     public void customize(Builder builder, RmsRestClientCustomizerContext unused) {
 
-        conversionService = ConfigConversionServiceBuilder
+        applyConversionService = ConfigConversionServiceBuilder
                 .builder(props)
                 .build();
         UriBuilderFactory uriFactory = CustomUriBuilderFactory.newInstance()
                 .env(context.getEnvironment())
-                .conversionService(conversionService)
+                .conversionService(applyConversionService)
                 .uriTemplate(props.getUrl())
                 .build();
         ObjectMapper mapper = buildObjectMapper();

@@ -23,7 +23,7 @@ rms:
       enable: false
   debug:
     configdump:
-      enable: false # change to true in the test class
+      enable: true # change to true in the test class
       #system-properties: true
       #system-environment: true
     sleep:

@@ -1,5 +1,4 @@
 rms:
-  rest:
-    controller:
-      format:
+  json:
+    converter:
         date: "profile" # for DefaultSettingsTest override

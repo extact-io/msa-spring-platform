@@ -8,11 +8,11 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 import io.extact.msa.spring.platform.fw.domain.model.ModelValidator;
 import io.extact.msa.spring.platform.fw.infrastructure.external.ExternalProperties;
-import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.SimpleRestClientCustomizerConfig;
+import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.SingleRestClientConfig;
 import io.extact.msa.spring.platform.fw.infrastructure.persistence.DefaultModelEntityMapper;
 
 @Configuration(proxyBeanMethods = false)
-@Import(SimpleRestClientCustomizerConfig.class)
+@Import(SingleRestClientConfig.class)
 public class RemotePersonRepositoryConfig {
 
     @Bean

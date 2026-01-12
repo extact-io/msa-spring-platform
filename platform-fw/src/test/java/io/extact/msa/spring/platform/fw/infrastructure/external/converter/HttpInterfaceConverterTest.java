@@ -27,7 +27,7 @@ import io.extact.msa.spring.platform.fw.infrastructure.external.ExternalProperti
 import io.extact.msa.spring.platform.fw.infrastructure.external.converter.ConverterClientApi.DateTypeDto;
 import io.extact.msa.spring.platform.fw.infrastructure.external.converter.ConverterClientApi.StringTypeDto;
 import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.RmsRestClientCustomizer;
-import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.SimpleRestClientCustomizerConfig;
+import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.SingleRestClientConfig;
 import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -40,7 +40,7 @@ class HttpInterfaceConverterTest {
     private ConverterClientApi converterClient;
 
     @Configuration(proxyBeanMethods = false)
-    @Import(SimpleRestClientCustomizerConfig.class)
+    @Import(SingleRestClientConfig.class)
     @EnableAutoConfigurationWithoutJpa
     static class TestConfig {
 

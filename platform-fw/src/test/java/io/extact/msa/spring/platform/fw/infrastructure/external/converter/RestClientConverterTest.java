@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -29,10 +30,10 @@ import io.extact.msa.spring.platform.fw.infrastructure.external.CustomUriBuilder
 import io.extact.msa.spring.platform.fw.infrastructure.external.ExternalProperties;
 import io.extact.msa.spring.platform.fw.infrastructure.external.converter.ConverterClientApi.DateTypeDto;
 import io.extact.msa.spring.platform.fw.infrastructure.external.converter.ConverterClientApi.StringTypeDto;
-import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.RmsProxyFactorySourceCreator;
 import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.RmsRestClientCustomizer;
 import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.RmsRestClientCustomizerContext;
-import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.SimpleRestClientCustomizerConfig;
+import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.RmsRestClientFactory;
+import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.SingleRestClientConfig;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class RestClientConverterTest {
@@ -44,7 +45,7 @@ class RestClientConverterTest {
     private RestClient client;
 
     @Configuration(proxyBeanMethods = false)
-    @Import(SimpleRestClientCustomizerConfig.class)
+    @Import(SingleRestClientConfig.class)
     @EnableAutoConfigurationWithoutJpa
     static class TestConfig {
 
@@ -91,10 +92,11 @@ class RestClientConverterTest {
 
         @Bean
         RestClient converterClientApi(
+                ApplicationContext context,
                 RestClient.Builder builder, // RestClientAutoConfigurationでCustomierが提供済みのBuilderを使用する
                 List<RmsRestClientCustomizer> customizers) {
-            RmsProxyFactorySourceCreator creator = new RmsProxyFactorySourceCreator(builder, customizers);
-            return creator.create().restClient();
+            RmsRestClientFactory factory = new RmsRestClientFactory(builder, context);
+            return factory.create(customizers);
         }
     }
 

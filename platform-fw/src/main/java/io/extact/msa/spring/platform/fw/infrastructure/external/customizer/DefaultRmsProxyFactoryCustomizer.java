@@ -13,12 +13,12 @@ import lombok.RequiredArgsConstructor;
 public class DefaultRmsProxyFactoryCustomizer implements RmsProxyFactoryCustomizer {
 
     private final RestClient restClient;
-    private final Optional<ConversionService> optional;
+    private final Optional<ConversionService> uriBuilderAppliedConversionService; // uriBuilderに提供したものと同じにする
 
     @Override
-    public void customize(HttpServiceProxyFactory.Builder factoryBuilder) {
+    public void customize(HttpServiceProxyFactory.Builder builder) {
         RestClientAdapter adapter = RestClientAdapter.create(restClient);
-        factoryBuilder.exchangeAdapter(adapter);
-        optional.ifPresent(factoryBuilder::conversionService);
+        builder.exchangeAdapter(adapter);
+        uriBuilderAppliedConversionService.ifPresent(builder::conversionService);
     }
 }
