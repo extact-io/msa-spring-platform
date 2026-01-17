@@ -102,13 +102,22 @@ public class SingleRestClientConfig {
         ObjectMapper mapper = builder.createXmlMapper(false).build();
         HttpMessageConverter<Object> converter = new MappingJackson2HttpMessageConverter(mapper);
 
+        /*
+         * NOTE: URL展開時に利用されるオブジェクト変換
+         * ------------
+         * RestClientのフォーマットはRestClientを生で使うときはUriBuilderFactoryが使われ
+         * HttpInterface経由で使う場合は、@PathVariableと@RequestParamのすべてフォーマットはUriBuilderFactoryではなく
+         * HttpServiceProxyFactory#conversionServiceが使われる。
+         * このため、RestClientを単独で使うことがない場合は、HttpServiceProxyFactory#conversionServiceだけにConversionServiceを
+         * 設定していても問題はないが、念のため同じものを設定しておく
+         */
         ConversionService conversionService = ConfigConversionServiceBuilder
                 .builder(props)
                 .build();
         UriBuilderFactory uriFactory = CustomUriBuilderFactory.newInstance()
                 .env(context.getEnvironment())
                 .conversionService(conversionService)
-                .uriTemplate(props.getUrl())
+                .baseUri(props.getUrl())
                 .build();
 
         RestClient restClient = RestClient.builder()

@@ -7,11 +7,18 @@ import org.springframework.web.util.UriBuilder;
 
 import lombok.Builder;
 
+/**
+ * RestClient利用時のURL変換に独自のConversationServiceを使いたい場合に
+ * 利用するUriBuilderFactory実装。
+ * このUriBuilderFactoryが設定されたRestClientを元にHttpInterfaceを作って
+ * もURLの変換にはここで設定したConversationServiceが使われることはなく、
+ * HttpInterfaceに設定したConversationServiceが使われるため注意すること。
+ */
 @Builder(builderMethodName = "newInstance", builderClassName = "Builder")
 public class CustomUriBuilderFactory extends DefaultUriBuilderFactory {
 
     private Environment env;
-    private String uriTemplate;
+    private String baseUri;
     private ConversionService conversionService;
 
     @Override
@@ -27,6 +34,6 @@ public class CustomUriBuilderFactory extends DefaultUriBuilderFactory {
     }
 
     private String resolveTemplate() {
-        return env.resolveRequiredPlaceholders(this.uriTemplate);
+        return env.resolveRequiredPlaceholders(this.baseUri);
     }
 }

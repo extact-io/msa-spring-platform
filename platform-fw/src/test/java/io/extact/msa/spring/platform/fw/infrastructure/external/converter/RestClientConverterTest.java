@@ -35,6 +35,12 @@ import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.RmsRe
 import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.RmsRestClientFactory;
 import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.SingleRestClientConfig;
 
+/**
+ * RestClientではURL上のオブジェクト変換はCustomUriBuilderFactoryに設定した
+ * ConversionServiceが使われる。
+ * このクラスはCustomUriBuilderFactoryに設定したConversionServiceが正しく使わ
+ * れるかのテストクラスとなる。
+ */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class RestClientConverterTest {
 
@@ -76,7 +82,7 @@ class RestClientConverterTest {
                 public void customize(Builder builder, RmsRestClientCustomizerContext context) {
                     CustomUriBuilderFactory.Builder uriBuilder = CustomUriBuilderFactory.newInstance()
                             .env(env)
-                            .uriTemplate("http://localhost:${local.server.port}/converter");
+                            .baseUri("http://localhost:${local.server.port}/converter");
                     context.currentAppiedConversionService().ifPresent(service -> {
                         uriBuilder.conversionService(service);
                         applied = service;

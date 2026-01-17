@@ -14,22 +14,22 @@ import org.springframework.web.service.annotation.PostExchange;
 public interface ConverterClientApi {
 
     @GetExchange("/date/{date}")
-    String pathLocalDate(@PathVariable("date") LocalDate date);
+    String pathLocalDate(@PathVariable LocalDate date);
 
     @GetExchange("/datetime/{datetime}")
-    String pathLocalDateTime(@PathVariable("datetime") LocalDateTime dateTime);
+    String pathLocalDateTime(@PathVariable LocalDateTime datetime);
 
     @GetExchange("/date")
-    String paramLocalDate(@RequestParam("date") LocalDate date);
+    String paramLocalDate(@RequestParam LocalDate date);
 
     @GetExchange("/datetime")
-    String paramLocalDateTime(@RequestParam("datetime") LocalDateTime dateTime);
+    String paramLocalDateTime(@RequestParam LocalDateTime datetime);
 
     @GetExchange("/return/date")
-    LocalDate returnLocalDate(@RequestParam("date") String date);
+    LocalDate returnLocalDate(@RequestParam String date);
 
     @GetExchange("/return/datetime")
-    LocalDateTime returnLocalDateTime(@RequestParam("datetime") String dateTime);
+    LocalDateTime returnLocalDateTime(@RequestParam String datetime);
 
     @PostExchange("/serialize")
     StringTypeDto serializeDto(@RequestBody DateTypeDto dto);

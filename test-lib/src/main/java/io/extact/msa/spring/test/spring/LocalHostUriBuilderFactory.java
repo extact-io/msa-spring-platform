@@ -4,6 +4,12 @@ import org.springframework.core.env.Environment;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriBuilder;
 
+/**
+ * HttpInterceを利用する場合はUriBuilderFactoryに設定したConversionServiceは
+ * 利用されない。よってHttpInterceを利用するためにRestClientを作る場合は、
+ * 簡易的なこのクラスを使っても問題ない。
+ * ただし、テストでRestClientを直接使う場合はCustomUriBuilderFactoryを使うこと。
+ */
 public class LocalHostUriBuilderFactory extends DefaultUriBuilderFactory {
 
     private Environment env;

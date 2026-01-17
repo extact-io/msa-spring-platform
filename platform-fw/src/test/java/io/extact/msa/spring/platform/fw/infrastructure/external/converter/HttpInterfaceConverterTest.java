@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -30,6 +31,12 @@ import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.RmsRe
 import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.SingleRestClientConfig;
 import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
 
+/**
+ * HttpInterfaceではURL上のオブジェクト変換は
+ * {@link HttpServiceProxyFactory.Builder#conversionService(ConversionService)}が
+ * 使われる。このクラスはbuilderに設定したConversionServiceが正しく使われるかの
+ * テストクラスとなる。
+ */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class HttpInterfaceConverterTest {
 
@@ -67,8 +74,9 @@ class HttpInterfaceConverterTest {
         RmsRestClientCustomizer overrideUriBuilderFactory(Environment env) {
             return (builder, _) -> {
                 /*
-                 * HttpInterfaceの型変換にはUriBuilderFactoryは使用されないため、
-                 * CustomeUriBuilderFactoryは使わなくてもOK
+                 * RestClientに設定したConversionServiceではなく、HttpInterfaceに
+                 * 設定したConversionServiceが効いていることを確認するため、意図的に
+                 * CustomeUriBuilderFactoryを使わないようにしている
                  */
                 UriBuilderFactory uriFactory = new LocalHostUriBuilderFactory(env);
                 builder.uriBuilderFactory(uriFactory);

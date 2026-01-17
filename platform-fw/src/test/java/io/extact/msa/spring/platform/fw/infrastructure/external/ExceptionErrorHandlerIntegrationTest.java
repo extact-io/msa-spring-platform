@@ -34,17 +34,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
+import org.springframework.web.util.UriBuilderFactory;
 
 import io.extact.msa.spring.platform.core.auth.client.BearerTokenExtractor;
-import io.extact.msa.spring.platform.core.auth.client.BearerTokenRequestInitializer;
 import io.extact.msa.spring.platform.core.auth.client.RmsClientAuthenticationToken;
 import io.extact.msa.spring.platform.core.auth.configure.AuthorizeHttpRequestCustomizer;
 import io.extact.msa.spring.platform.core.auth.jwt.RmsJwtAuthConfig;
@@ -65,6 +63,10 @@ import io.extact.msa.spring.platform.fw.feature.exception.RmsServiceUnavailableE
 import io.extact.msa.spring.platform.fw.feature.exception.RmsValidationException;
 import io.extact.msa.spring.platform.fw.feature.validator.ValidatorConfig;
 import io.extact.msa.spring.platform.fw.infrastructure.datasource.FrameworkDataSourceConfig;
+import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.BearerTokenRequestInitializerCustomizer;
+import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.CompositRmsRestClientCustomizer;
+import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.RmsRestClientCustomizer;
+import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.SingleRestClientConfig;
 import io.extact.msa.spring.platform.fw.interfaces.webapi.ExceptionHandled;
 import io.extact.msa.spring.platform.fw.interfaces.webapi.RestControllerConfig;
 import io.extact.msa.spring.platform.fw.interfaces.webapi.RestControllerExceptionHandler;
@@ -90,6 +92,7 @@ class ExceptionErrorHandlerIntegrationTest {
     @EnableWebSecurity(debug = true)
     @Import({
             RestControllerConfig.class,
+            SingleRestClientConfig.class,
             ValidatorConfig.class,
             FrameworkDataSourceConfig.class,
             JwtEncodeConfig.class,
@@ -101,22 +104,32 @@ class ExceptionErrorHandlerIntegrationTest {
             return new ExceptionTestController();
         }
 
+        @Bean // 今回は使用しないがSingleRestClientConfigで利用するためダミーで登録
+        ExternalProperties dummyExternalProperties() {
+            return new ExternalProperties();
+        }
+
         @Bean
-        ExceptionTestClient exceptionTestClient(Environment env) {
+        RmsRestClientCustomizer overrideUriBuilderFactory(Environment env) {
 
-            RestClient restClient = RestClient.builder()
-                    .uriBuilderFactory(new LocalHostUriBuilderFactory(env))
-                    .defaultStatusHandler(new RestClientErrorHandler(new ErrorMessageDeserializer()))
-                    .requestInitializer(new BearerTokenRequestInitializer())
+            RmsRestClientCustomizer localHostUriFactoryCustomizer = (builder, _) -> {
+                UriBuilderFactory uriFactory = new LocalHostUriBuilderFactory(env);
+                builder.uriBuilderFactory(uriFactory);
+            };
+
+            return CompositRmsRestClientCustomizer.builder()
+                    .add(BearerTokenRequestInitializerCustomizer.INSTANCE)
+                    .add(localHostUriFactoryCustomizer)
                     .build();
+        }
 
-            RestClientAdapter adapter = RestClientAdapter.create(restClient);
-            HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
+        @Bean
+        ExceptionTestClient exceptionTestClient(HttpServiceProxyFactory factory) {
             return factory.createClient(ExceptionTestClient.class);
         }
 
-        // ---------- for Spring Security
         @Bean
+        // ---------- for Spring Security
         AuthorizeHttpRequestCustomizer authorizeRequestCustomizer() {
             return (AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry configurer) -> configurer
                     .requestMatchers("/auth").hasRole("admin")
@@ -479,8 +492,8 @@ class ExceptionErrorHandlerIntegrationTest {
     static interface ExceptionTestClient {
 
         @GetExchange("/login") // 認証なし
-        ResponseEntity<AuthData> authenticate(@RequestParam("loginId") String loginId,
-                @RequestParam("password") String password);
+        ResponseEntity<AuthData> authenticate(@RequestParam String loginId,
+                @RequestParam String password);
 
         @GetExchange("/auth") // 認証あり(admin-role)
         boolean adminApi();
@@ -568,8 +581,7 @@ class ExceptionErrorHandlerIntegrationTest {
 
         @GetMapping("/login") // 認証なし
         @GenerateToken
-        public AuthData authenticate(@RequestParam("loginId") String loginId,
-                @RequestParam("password") String password) {
+        public AuthData authenticate(@RequestParam String loginId, @RequestParam String password) {
             return new AuthData(loginId, Set.of(password));
         }
 

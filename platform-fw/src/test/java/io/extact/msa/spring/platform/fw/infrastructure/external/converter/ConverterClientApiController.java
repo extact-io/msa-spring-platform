@@ -33,13 +33,13 @@ public class ConverterClientApiController {
     }
 
     @GetMapping(path = "/return/date", produces = MediaType.APPLICATION_JSON_VALUE)
-    String returnLocalDate(@RequestParam("date") String date) {
+    String returnLocalDate(@RequestParam String date) {
         return "\"" + date + "\""; // JSONデータとするため明示的に"で囲んでいる
     }
 
     @GetMapping(path = "/return/datetime", produces = MediaType.APPLICATION_JSON_VALUE)
-    String returnLocalDateTime(@RequestParam("datetime") String dateTime) {
-        return "\"" + dateTime + "\""; // JSONデータとするため明示的に"で囲んでいる
+    String returnLocalDateTime(@RequestParam String datetime) {
+        return "\"" + datetime + "\""; // JSONデータとするため明示的に"で囲んでいる
     }
 
     @PostMapping("/serialize")

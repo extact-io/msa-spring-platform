@@ -50,7 +50,7 @@ public class DefaultRmsRestClientCustomizer implements RmsRestClientCustomizer, 
         UriBuilderFactory uriFactory = CustomUriBuilderFactory.newInstance()
                 .env(context.getEnvironment())
                 .conversionService(applyConversionService)
-                .uriTemplate(props.getUrl())
+                .baseUri(props.getUrl())
                 .build();
         ObjectMapper mapper = buildObjectMapper();
         HttpMessageConverter<Object> converter = new MappingJackson2HttpMessageConverter(mapper);
