@@ -5,10 +5,10 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriBuilder;
 
 /**
- * HttpInterceを利用する場合はUriBuilderFactoryに設定したConversionServiceは
- * 利用されない。よってHttpInterceを利用するためにRestClientを作る場合は、
- * 簡易的なこのクラスを使っても問題ない。
- * ただし、テストでRestClientを直接使う場合はCustomUriBuilderFactoryを使うこと。
+ * platform-coreはplatform-fwのSingleRestClientConfigが依存関係上使えない。
+ * よって、RestClientはこのクラスなどを使いすべて構成する必要がある。
+ * 一方、platform-fwでlocalhost向けのテストをしたい場合はSingleRestClientConfigと
+ * LocalHostUriExternalPropertiesを使って構成すること
  */
 public class LocalHostUriBuilderFactory extends DefaultUriBuilderFactory {
 

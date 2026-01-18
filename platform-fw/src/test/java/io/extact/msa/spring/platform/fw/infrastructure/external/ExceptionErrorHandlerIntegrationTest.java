@@ -40,7 +40,6 @@ import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
-import org.springframework.web.util.UriBuilderFactory;
 
 import io.extact.msa.spring.platform.core.auth.client.BearerTokenExtractor;
 import io.extact.msa.spring.platform.core.auth.client.RmsClientAuthenticationToken;
@@ -53,6 +52,7 @@ import io.extact.msa.spring.platform.core.condition.EnableAutoConfigurationWitho
 import io.extact.msa.spring.platform.core.jwt.encode.GenerateToken;
 import io.extact.msa.spring.platform.core.jwt.encode.JwtEncodeConfig;
 import io.extact.msa.spring.platform.core.jwt.encode.UserClaims;
+import io.extact.msa.spring.platform.fw.LocalHostUriDefaultFormatExternalPropeties;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException;
 import io.extact.msa.spring.platform.fw.exception.BusinessFlowException.CauseType;
 import io.extact.msa.spring.platform.fw.exception.RmsSystemException;
@@ -64,7 +64,6 @@ import io.extact.msa.spring.platform.fw.feature.exception.RmsValidationException
 import io.extact.msa.spring.platform.fw.feature.validator.ValidatorConfig;
 import io.extact.msa.spring.platform.fw.infrastructure.datasource.FrameworkDataSourceConfig;
 import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.BearerTokenRequestInitializerCustomizer;
-import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.CompositRmsRestClientCustomizer;
 import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.RmsRestClientCustomizer;
 import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.SingleRestClientConfig;
 import io.extact.msa.spring.platform.fw.interfaces.webapi.ExceptionHandled;
@@ -72,7 +71,6 @@ import io.extact.msa.spring.platform.fw.interfaces.webapi.RestControllerConfig;
 import io.extact.msa.spring.platform.fw.interfaces.webapi.RestControllerExceptionHandler;
 import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.EqualPairFields;
 import io.extact.msa.spring.platform.fw.stub.apps.person.domain.model.EqualPairFields.EqualPairFieldsValidatable;
-import io.extact.msa.spring.test.spring.LocalHostUriBuilderFactory;
 
 /**
  * {@link RestControllerExceptionHandler}と{@link RestClientErrorHandler}の両方を使った
@@ -104,23 +102,14 @@ class ExceptionErrorHandlerIntegrationTest {
             return new ExceptionTestController();
         }
 
-        @Bean // 今回は使用しないがSingleRestClientConfigで利用するためダミーで登録
-        ExternalProperties dummyExternalProperties() {
-            return new ExternalProperties();
+        @Bean
+        ExternalProperties externalProperties(Environment env) {
+            return new LocalHostUriDefaultFormatExternalPropeties(env);
         }
 
         @Bean
-        RmsRestClientCustomizer overrideUriBuilderFactory(Environment env) {
-
-            RmsRestClientCustomizer localHostUriFactoryCustomizer = (builder, _) -> {
-                UriBuilderFactory uriFactory = new LocalHostUriBuilderFactory(env);
-                builder.uriBuilderFactory(uriFactory);
-            };
-
-            return CompositRmsRestClientCustomizer.builder()
-                    .add(BearerTokenRequestInitializerCustomizer.INSTANCE)
-                    .add(localHostUriFactoryCustomizer)
-                    .build();
+        RmsRestClientCustomizer overrideUriBuilderFactory() {
+            return BearerTokenRequestInitializerCustomizer.INSTANCE;
         }
 
         @Bean

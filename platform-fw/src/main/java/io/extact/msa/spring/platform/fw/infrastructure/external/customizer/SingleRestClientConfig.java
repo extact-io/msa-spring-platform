@@ -47,14 +47,14 @@ public class SingleRestClientConfig {
 
     @Bean
     @Order(Ordered.LOWEST_PRECEDENCE)
-    RmsRestClientObjectMapperCustomizer defaultItemObjectMapperCustomizer(ExternalProperties props) {
+    RmsRestClientObjectMapperCustomizer defaultObjectMapperCustomizer(ExternalProperties props) {
         return new DefaultRmsRestClientObjectMapperCustomizer(props);
     }
 
     @Bean
     @Order(Ordered.LOWEST_PRECEDENCE)
     @Scope(SCOPE_PROTOTYPE) // 状態を持つのでprototypeにしておく
-    RmsRestClientCustomizer defaultItemRestClientCustomizer(
+    RmsRestClientCustomizer defaultRestClientCustomizer(
             ExternalProperties props,
             List<RmsRestClientObjectMapperCustomizer> mapperCustomizers) {
         return new DefaultRmsRestClientCustomizer(props, mapperCustomizers);
@@ -62,7 +62,7 @@ public class SingleRestClientConfig {
 
     @Bean
     @Order(Ordered.LOWEST_PRECEDENCE)
-    RmsProxyFactoryCustomizer defaultItemProxyFactoryCustomizer(
+    RmsProxyFactoryCustomizer defaultProxyFactoryCustomizer(
             ApplicationContext context,
             RestClient.Builder builder, // RestClientAutoConfigurationでCustomierが提供済みのBuilderを使用する
             List<RmsRestClientCustomizer> customizers) {
@@ -77,8 +77,11 @@ public class SingleRestClientConfig {
         return builder.build();
     }
 
-    // 使うことはなにをやっているか一目でわかるようにデフォルトのCustomizerをすべて展開した処理を書いておく
-    static <T> T applyExpandedDefaultCustomizers(ExternalProperties props, ApplicationContext context, Class<T> clazz) {
+    // なにをやっているか一目でわかるようにデフォルトのCustomizerをすべて展開した処理を書いておく
+    public static <T> T applyExpandedDefaultCustomizers(
+            ExternalProperties props,
+            ApplicationContext context,
+            Class<T> clazz) {
 
         Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder()
                 .applicationContext(context);

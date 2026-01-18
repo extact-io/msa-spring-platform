@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Bean;
@@ -24,6 +23,7 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import org.springframework.web.util.UriBuilderFactory;
 
 import io.extact.msa.spring.platform.core.condition.EnableAutoConfigurationWithoutJpa;
+import io.extact.msa.spring.platform.fw.LocalHostUriDefaultFormatExternalPropeties;
 import io.extact.msa.spring.platform.fw.infrastructure.external.ExternalProperties;
 import io.extact.msa.spring.platform.fw.infrastructure.external.converter.ConverterClientApi.DateTypeDto;
 import io.extact.msa.spring.platform.fw.infrastructure.external.converter.ConverterClientApi.StringTypeDto;
@@ -65,9 +65,8 @@ class HttpInterfaceConverterTest {
         }
 
         @Bean
-        @ConfigurationProperties("rms.persistence.person.remote")
-        ExternalProperties externalProperties() {
-            return new ExternalProperties();
+        ExternalProperties externalProperties(Environment env) {
+            return new LocalHostUriDefaultFormatExternalPropeties(env);
         }
 
         @Bean

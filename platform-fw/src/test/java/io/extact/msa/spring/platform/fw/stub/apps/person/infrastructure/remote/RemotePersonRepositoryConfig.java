@@ -1,6 +1,5 @@
 package io.extact.msa.spring.platform.fw.stub.apps.person.infrastructure.remote;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +16,6 @@ import io.extact.msa.spring.platform.fw.infrastructure.persistence.DefaultModelE
 public class RemotePersonRepositoryConfig {
 
     @Bean
-    @ConditionalOnMissingBean // ExternalPersonClientConfigで先に登録されていた場合はskip
     @ConfigurationProperties("rms.persistence.person.remote")
     ExternalProperties externalProperties() {
         return new ExternalProperties();

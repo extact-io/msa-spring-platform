@@ -18,20 +18,16 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClient.Builder;
 
 import io.extact.msa.spring.platform.core.condition.EnableAutoConfigurationWithoutJpa;
-import io.extact.msa.spring.platform.fw.infrastructure.external.CustomUriBuilderFactory;
 import io.extact.msa.spring.platform.fw.infrastructure.external.ExternalProperties;
 import io.extact.msa.spring.platform.fw.infrastructure.external.converter.ConverterClientApi.DateTypeDto;
 import io.extact.msa.spring.platform.fw.infrastructure.external.converter.ConverterClientApi.StringTypeDto;
 import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.RmsRestClientCustomizer;
-import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.RmsRestClientCustomizerContext;
 import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.RmsRestClientFactory;
 import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.SingleRestClientConfig;
 
@@ -42,6 +38,7 @@ import io.extact.msa.spring.platform.fw.infrastructure.external.customizer.Singl
  * れるかのテストクラスとなる。
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@TestPropertySource(properties = "rms.persistence.person.remote.url=http://localhost:${local.server.port}/converter")
 class RestClientConverterTest {
 
     private static DateTimeFormatter dateFormatter;
@@ -72,28 +69,6 @@ class RestClientConverterTest {
         @ConfigurationProperties("rms.persistence.person.remote")
         ExternalProperties externalProperties() {
             return new ExternalProperties();
-        }
-
-        @Bean
-        RmsRestClientCustomizer overrideUriBuilderFactory(Environment env) {
-            return new RmsRestClientCustomizer() {
-                private ConversionService applied;
-                @Override
-                public void customize(Builder builder, RmsRestClientCustomizerContext context) {
-                    CustomUriBuilderFactory.Builder uriBuilder = CustomUriBuilderFactory.newInstance()
-                            .env(env)
-                            .baseUri("http://localhost:${local.server.port}/converter");
-                    context.currentAppiedConversionService().ifPresent(service -> {
-                        uriBuilder.conversionService(service);
-                        applied = service;
-                    });
-                    builder.uriBuilderFactory(uriBuilder.build());
-                }
-                @Override
-                public ConversionService appliedConversionService() {
-                    return applied;
-                }
-            };
         }
 
         @Bean

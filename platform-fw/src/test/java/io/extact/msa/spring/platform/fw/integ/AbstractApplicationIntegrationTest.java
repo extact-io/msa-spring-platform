@@ -32,6 +32,7 @@ import io.extact.msa.spring.test.spring.EnableAutoConfigurationWithoutSecurityAn
 
 /**
  * スタブのPersonアプリを使ってplatform.fwクラスをテストする。
+ * client.person(ExternalPersonClient) → apps.person
  * <pre>
  * ・スタブアプリ：Component(PersonClient)
  * ・スタブアプリ：Component(PersonClientAdapter)
