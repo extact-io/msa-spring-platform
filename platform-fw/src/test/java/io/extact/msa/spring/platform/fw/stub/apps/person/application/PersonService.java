@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import io.extact.msa.spring.platform.fw.application.ApplicationCrudSupport;
 import io.extact.msa.spring.platform.fw.application.ApplicationService;
+import io.extact.msa.spring.platform.fw.domain.service.DomainEventPublisher;
 import io.extact.msa.spring.platform.fw.domain.service.DuplicateChecker;
 import io.extact.msa.spring.platform.fw.stub.apps.person.domain.PersonCreator;
 import io.extact.msa.spring.platform.fw.stub.apps.person.domain.PersonRepository;
@@ -22,10 +23,11 @@ public class PersonService {
     public PersonService(
             PersonCreator modelCreator,
             DuplicateChecker<Person> duplicateChecker,
-            PersonRepository repository) {
+            PersonRepository repository,
+            DomainEventPublisher eventPublisher) {
 
         this.modelCreator = modelCreator;
-        this.support = new ApplicationCrudSupport<>(duplicateChecker, repository);
+        this.support = new ApplicationCrudSupport<>(duplicateChecker, repository, eventPublisher);
     }
 
     public List<PersonModelView> getAll() {

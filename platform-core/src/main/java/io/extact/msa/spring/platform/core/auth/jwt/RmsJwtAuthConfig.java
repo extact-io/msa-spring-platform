@@ -24,7 +24,11 @@ import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthen
 import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
+import org.springframework.security.web.session.DisableEncodeUrlFilter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.extact.msa.spring.platform.core.auth.SecurityFallbackExceptionFilter;
 import io.extact.msa.spring.platform.core.auth.anonymous.RmsAnonymousAuthConfig;
 import io.extact.msa.spring.platform.core.auth.configure.AuthorizeHttpRequestCustomizer;
 import io.extact.msa.spring.platform.core.auth.configure.AuthorizeRequestConfigure;
@@ -44,7 +48,8 @@ public class RmsJwtAuthConfig {
             HttpSecurity http,
             List<AuthorizeHttpRequestCustomizer> requestCustomizers,
             Converter<Jwt, AbstractAuthenticationToken> jwtConverter,
-            AnonymousAuthenticationFilter anonymousFilter) throws Exception {
+            AnonymousAuthenticationFilter anonymousFilter,
+            ObjectMapper mapper) throws Exception {
 
         requestCustomizers.forEach(customizer -> applyCustomizeToHttp(http, customizer));
 
@@ -60,6 +65,7 @@ public class RmsJwtAuthConfig {
                 .csrf(csrf -> csrf.disable())
                 .logout(logout -> logout.disable())
                 .requestCache(cache -> cache.disable())
+                .addFilterBefore(new SecurityFallbackExceptionFilter(mapper), DisableEncodeUrlFilter.class)
                 .build();
     }
 
@@ -70,7 +76,8 @@ public class RmsJwtAuthConfig {
             HttpSecurity http,
             @RmsJwtAuth AuthorizeRequestConfigure requestConfigure,
             Converter<Jwt, AbstractAuthenticationToken> jwtConverter,
-            AnonymousAuthenticationFilter anonymousFilter) throws Exception {
+            AnonymousAuthenticationFilter anonymousFilter,
+            ObjectMapper mapper) throws Exception {
 
         return requestConfigure
                 .applySecurityMatcher(http)
@@ -86,6 +93,7 @@ public class RmsJwtAuthConfig {
                 .csrf(csrf -> csrf.disable())
                 .logout(logout -> logout.disable())
                 .requestCache(cache -> cache.disable())
+                .addFilterBefore(new SecurityFallbackExceptionFilter(mapper), DisableEncodeUrlFilter.class)
                 .build();
     }
 

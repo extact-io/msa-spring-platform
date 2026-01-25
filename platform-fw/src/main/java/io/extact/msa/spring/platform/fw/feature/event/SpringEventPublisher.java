@@ -4,8 +4,8 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import io.extact.msa.spring.platform.fw.application.event.ApplicationServiceEvent;
 import io.extact.msa.spring.platform.fw.application.event.ApplicationServiceEventPublisher;
-import io.extact.msa.spring.platform.fw.domain.event.DomainEvent;
-import io.extact.msa.spring.platform.fw.domain.event.DomainEventPublisher;
+import io.extact.msa.spring.platform.fw.domain.model.DomainEvent;
+import io.extact.msa.spring.platform.fw.domain.service.DomainEventPublisher;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

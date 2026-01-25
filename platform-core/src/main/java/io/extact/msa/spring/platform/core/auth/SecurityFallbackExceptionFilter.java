@@ -17,12 +17,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Spring Security のフィルタチェーン内で発生した想定外の例外を捕捉し、
  * エラーレスポンスを返すフィルター。
  */
 @RequiredArgsConstructor
+@Slf4j
 public class SecurityFallbackExceptionFilter extends OncePerRequestFilter {
 
     private final ObjectMapper objectMapper;
@@ -38,6 +40,7 @@ public class SecurityFallbackExceptionFilter extends OncePerRequestFilter {
         try {
             chain.doFilter(request, response);
         } catch (Exception ex) {
+            log.error("exception occurred while processing the security file.", ex);
             SecurityContextHolder.clearContext();
             writeJsonError(response, HttpStatus.INTERNAL_SERVER_ERROR, "system_error", ex.getMessage());
         }

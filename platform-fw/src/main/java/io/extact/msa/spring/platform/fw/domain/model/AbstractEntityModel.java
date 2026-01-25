@@ -16,6 +16,7 @@ public abstract class AbstractEntityModel implements EntityModel {
     public void verify() {
         validator.validateModel(this);
     }
+
     public void verify(Object... groups) {
         validator.validateModel(this, groups);
     }

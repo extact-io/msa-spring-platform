@@ -30,7 +30,6 @@ class FwDependencyArchUnitTest {
                     "..domain.constraint..",
                     "..exception..")
             .domainServices(
-                    "..domain.event..",
                     "..domain.service..",
                     "..domain.repository..")
             .applicationServices(
@@ -51,7 +50,7 @@ class FwDependencyArchUnitTest {
                     resideInAnyPackage("..feature.."),
                     resideInAnyPackage(
                             "..application..",
-                            "..domain.event..",
+                            "..domain.service..",
                             "..domain.model..",
                             "..exception.."));
 

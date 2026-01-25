@@ -7,8 +7,10 @@ import org.springframework.jdbc.core.RowMapper;
 import io.extact.msa.spring.platform.core.auth.user.AuthUserId;
 import io.extact.msa.spring.platform.core.auth.user.LoginUserAttributesProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
+@Slf4j
 public class RdbAttributesProvider implements LoginUserAttributesProvider<RmsLoginUserAttributes> {
 
     private final JdbcTemplate template;
@@ -16,14 +18,28 @@ public class RdbAttributesProvider implements LoginUserAttributesProvider<RmsLog
     private static final String SELECT_SQL = """
             select user_id, attr1, attr2, attr3 from login_user_attributes where user_id = ?
             """;
+    private static final String INSERT_SQL = """
+            insert into login_user_attributes (user_id, attr1, attr2, attr3) values (?, ?, ?, ?)
+            """;
 
     @Override
     @Cacheable(cacheNames = LoginUserAttributesCacheKeys.CACHE_NAME)
     public RmsLoginUserAttributes provide(AuthUserId id) {
+        log.trace("no cache, so get data...-> id={}", id.value());
         return template.query(SELECT_SQL, rowMapper(), id.value())
                 .stream()
                 .findAny()
                 .orElse(null);
+    }
+
+    public void register(RmsLoginUserAttributes attributes) {
+        log.trace("insert attributes...-> id={}", attributes.authUserId().value());
+        template.update(
+                INSERT_SQL,
+                attributes.authUserId().value(),
+                attributes.attr1(),
+                attributes.attr2(),
+                attributes.attr3());
     }
 
     private RowMapper<RmsLoginUserAttributes> rowMapper() {
