@@ -1,0 +1,20 @@
+# 個人用設定 - テストよりも優先度は高い
+debug: false
+env:
+  otlp:
+    enabled: false
+      
+logging.level:
+  org.springframework: INFO
+  io.extact: TRACE
+
+spring:
+  main:
+    log-startup-info: false
+  
+rms:
+  debug:
+    configdump:
+      enable: false
+      #system-properties: true
+      #system-environment: true

@@ -8,8 +8,11 @@ import java.util.Optional;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
@@ -45,6 +48,7 @@ public class PrimaryObjectMapperConfig {
     // --------------------------------------------- for JsonBinding
 
     @Bean
+    @Primary
     Jackson2ObjectMapperBuilderCustomizer primaryObjectMapperCustomizer() {
         // ObjectMapperの他の設定は"spring.jackson.*"のとおりにJacksonAutoConfigurationで
         // 設定され、@PrimaryでBean登録される
@@ -68,5 +72,13 @@ public class PrimaryObjectMapperConfig {
             builder.modules(module);
             builder.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         };
+    }
+
+    @Bean
+    @Primary
+    ObjectMapper primaryObjectMapper(Jackson2ObjectMapperBuilderCustomizer customizer) {
+        Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
+        customizer.customize(builder);
+        return builder.createXmlMapper(false).build();
     }
 }
